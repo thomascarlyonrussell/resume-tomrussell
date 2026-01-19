@@ -54,6 +54,7 @@ export { professionalSummary, careerHighlights, workPhilosophy } from './profess
 export type { ProfessionalSummary, CareerHighlights, WorkPhilosophy } from './professional-summary';
 // Import for computed helpers
 import { skills } from './skills';
+import { experience } from './experience';
 import { categories, categoryMap } from './categories';
 import { milestones } from './milestones';
 import type {
@@ -62,48 +63,33 @@ import type {
   CategoryId,
   TimelineDataPoint,
   TimelineSkillInfo,
+  ProficiencyLevel,
 } from './types';
-import { calculateFibonacciSize, isSkillActive } from '@/lib/calculations';
+import { isSkillActive } from '@/lib/calculations';
+import { computeSkill } from '@/lib/skill-computation';
 
 // ============================================================================
 // Computed Skill Helpers
 // ============================================================================
 
 /**
- * Get a skill with computed properties for visualization
- */
-export function getComputedSkill(skill: Skill, referenceDate: Date = new Date()): ComputedSkill {
-  const result = calculateFibonacciSize({
-    proficiency: skill.proficiency,
-    startDate: skill.startDate,
-    endDate: skill.endDate,
-    referenceDate,
-  });
-
-  return {
-    ...skill,
-    isActive: result.isActive,
-    yearsOfExperience: result.yearsOfExperience,
-    fibonacciSize: result.fibonacciSize,
-  };
-}
-
-/**
- * Get all skills with computed properties
+ * Get all skills with computed properties from experiences
+ *
+ * This is the canonical approach: derive all skill properties from experiences.
  */
 export function getAllComputedSkills(referenceDate: Date = new Date()): ComputedSkill[] {
-  return skills.map((skill) => getComputedSkill(skill, referenceDate));
+  return skills.map((skill) => computeSkill(skill, experience, referenceDate));
 }
 
 /**
- * Get active skills only
+ * Get active skills (reference-only)
  */
 export function getActiveSkills(): Skill[] {
   return skills.filter((s) => isSkillActive(s.endDate));
 }
 
 /**
- * Get inactive (ended) skills
+ * Get inactive (ended) skills (reference-only)
  */
 export function getInactiveSkills(): Skill[] {
   return skills.filter((s) => !isSkillActive(s.endDate));
@@ -144,11 +130,12 @@ export function getCategorySkillCounts(): Record<CategoryId, number> {
  * Get category with computed totals
  */
 export function getCategoryStats(categoryId: CategoryId) {
-  const categorySkills = skills.filter((s) => s.category === categoryId);
+  const computedSkills = getAllComputedSkills();
+  const categorySkills = computedSkills.filter((s) => s.category === categoryId);
   const category = categoryMap[categoryId];
 
-  const activeSkills = categorySkills.filter((s) => isSkillActive(s.endDate));
-  const totalProficiency = categorySkills.reduce((sum, s) => sum + s.proficiency, 0);
+  const activeSkills = categorySkills.filter((s) => s.isActive);
+  const totalProficiency = categorySkills.reduce((sum, s) => sum + (s.proficiency || 0), 0);
 
   return {
     ...category,
@@ -167,12 +154,16 @@ export function getCategoryStats(categoryId: CategoryId) {
  * Generate timeline data points for the stacked area chart
  *
  * Creates monthly data points showing active skill counts per category over time.
+ * Uses computeSkill() to derive skill timelines from experiences.
  */
 export function generateTimelineData(
   startYear: number = 2009,
   endYear: number = new Date().getFullYear()
 ): TimelineDataPoint[] {
   const dataPoints: TimelineDataPoint[] = [];
+
+  // Compute all skills once to get their timelines
+  const computedSkills = getAllComputedSkills();
 
   for (let year = startYear; year <= endYear; year++) {
     for (let month = 1; month <= 12; month++) {
@@ -190,9 +181,9 @@ export function generateTimelineData(
 
       // Count active skills per category at this point in time
       for (const category of categories) {
-        const activeCount = skills.filter((skill) => {
+        const activeCount = computedSkills.filter((skill) => {
           if (skill.category !== category.id) return false;
-          if (skill.startDate > dateStr) return false;
+          if (!skill.startDate || skill.startDate > dateStr) return false;
           if (skill.endDate && skill.endDate < dateStr) return false;
           return true;
         }).length;
@@ -209,19 +200,25 @@ export function generateTimelineData(
 
 /**
  * Get skills active at a specific date (for timeline hover)
+ *
+ * Uses computeSkill() to derive skill timelines and proficiency from experiences.
  */
 export function getSkillsAtDate(dateStr: string): TimelineSkillInfo[] {
-  return skills
+  // Compute all skills to get their timelines and proficiency
+  const computedSkills = getAllComputedSkills();
+
+  return computedSkills
     .filter((skill) => {
-      if (skill.startDate > dateStr) return false;
+      if (!skill.startDate || skill.startDate > dateStr) return false;
       if (skill.endDate && skill.endDate < dateStr) return false;
+      if (!skill.proficiency) return false; // Skip skills without proficiency
       return true;
     })
     .map((skill) => ({
       skillId: skill.id,
       skillName: skill.name,
       category: skill.category,
-      proficiency: skill.proficiency,
+      proficiency: Math.round(skill.proficiency!) as ProficiencyLevel,
     }));
 }
 

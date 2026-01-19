@@ -18,6 +18,8 @@ const mockSkills: ComputedSkill[] = [
     startDate: '2020-01-01',
     isActive: true,
     fibonacciSize: 21,
+    experiences: [],
+    degradationFactor: 1.0,
   },
   {
     id: 'skill-2',
@@ -29,6 +31,8 @@ const mockSkills: ComputedSkill[] = [
     startDate: '2016-01-01',
     isActive: true,
     fibonacciSize: 21,
+    experiences: [],
+    degradationFactor: 1.0,
   },
   {
     id: 'skill-3',
@@ -40,6 +44,8 @@ const mockSkills: ComputedSkill[] = [
     startDate: '2021-01-01',
     isActive: true,
     fibonacciSize: 13,
+    experiences: [],
+    degradationFactor: 1.0,
   },
   {
     id: 'skill-4',
@@ -51,6 +57,8 @@ const mockSkills: ComputedSkill[] = [
     startDate: '2019-01-01',
     isActive: true,
     fibonacciSize: 13,
+    experiences: [],
+    degradationFactor: 1.0,
   },
 ];
 

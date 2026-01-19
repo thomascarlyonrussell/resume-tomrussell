@@ -54,7 +54,7 @@ export function SkillTooltip({
   if (!skill || !position) return null;
 
   const category = getCategory(skill.category);
-  const proficiencyLabel = getProficiencyLabel(skill.proficiency);
+  const proficiencyLabel = skill.proficiency ? getProficiencyLabel(skill.proficiency) : '';
   const experienceText = formatYearsOfExperience(skill.yearsOfExperience);
 
   return (
@@ -81,7 +81,7 @@ export function SkillTooltip({
               <span className="truncate font-semibold text-gray-900 dark:text-gray-100">
                 {skill.name}
               </span>
-              <ProficiencyStars level={skill.proficiency} />
+              {skill.proficiency && <ProficiencyStars level={skill.proficiency} />}
             </div>
 
             {/* Category breadcrumb */}

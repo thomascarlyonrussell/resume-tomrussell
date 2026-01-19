@@ -44,25 +44,79 @@ export type ProficiencyLevel = 1 | 2 | 3 | 5 | 8;
 
 /**
  * Skill entry representing a technical or professional capability
+ * In the new model, skills contain only reference data.
+ * Proficiency and timeline information are derived from experiences.
  */
 export interface Skill {
   id: string;
   name: string;
   category: CategoryId;
   subcategory: string;
-  proficiency: ProficiencyLevel;
-  startDate: string; // YYYY-MM format
+  /** @deprecated Use ExperienceSkill.proficiency in Experience.skills instead */
+  proficiency?: ProficiencyLevel;
+  /** @deprecated Computed from experiences via computeSkillTimeline() */
+  startDate?: string; // YYYY-MM format
+  /** @deprecated Computed from experiences via computeSkillTimeline() */
   endDate?: string | null; // YYYY-MM format, null/undefined if current
   description?: string;
 }
 
 /**
- * Skill with computed properties for visualization
+ * Skill reference in an experience with proficiency level
+ * Used in the new experience-based model where experiences define
+ * which skills were used and at what proficiency level
  */
-export interface ComputedSkill extends Skill {
+export interface ExperienceSkill {
+  /** Reference to skill ID */
+  skillId: string;
+  /** Proficiency level achieved in this experience (1, 2, 3, 5, or 8) */
+  proficiency: ProficiencyLevel;
+}
+
+/**
+ * Computed skill properties derived from experiences
+ * In the new model, skill timelines and proficiency are calculated
+ * from the experiences that reference them
+ */
+export interface ComputedSkill {
+  /** Skill ID */
+  id: string;
+  /** Display name */
+  name: string;
+  /** Primary category */
+  category: CategoryId;
+  /** Secondary grouping */
+  subcategory: string;
+  /** General description (not experience-specific) */
+  description?: string;
+  /** Earliest start date from experiences (computed) */
+  startDate?: string;
+  /** Latest end date from experiences (computed) */
+  endDate?: string;
+  /** Whether any experience is currently active (computed) */
   isActive: boolean;
+  /** Weighted average proficiency with degradation (computed, not discrete) */
+  proficiency?: number;
+  /** Years of experience across all experiences (computed) */
   yearsOfExperience: number;
-  fibonacciSize: number; // Mapped to [1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+  /** Experiences that used this skill (computed) */
+  experiences: Experience[];
+  /** Fibonacci size for visualization (computed) */
+  fibonacciSize: number;
+  /** Degradation factor applied (1.0, 0.5, or 0.25) (computed) */
+  degradationFactor: number;
+}
+
+/**
+ * Point in time showing skill proficiency for proficiency history
+ */
+export interface SkillTimelinePoint {
+  /** Date in YYYY-MM format */
+  date: string;
+  /** Experience ID where this proficiency was achieved */
+  experienceId: string;
+  /** Proficiency level at this point */
+  proficiency: ProficiencyLevel;
 }
 
 // ============================================================================
@@ -96,7 +150,10 @@ export interface Experience {
   location?: string;
   description: string;
   highlights?: string[];
+  /** @deprecated Use skills instead */
   skillIds?: string[];
+  /** Skills used in this experience with proficiency levels (new model) */
+  skills?: ExperienceSkill[];
 }
 
 // ============================================================================

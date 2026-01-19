@@ -155,8 +155,9 @@ export function isValidProficiency(value: number): value is ProficiencyLevel {
 
 /**
  * Get proficiency label for display
+ * Accepts both discrete ProficiencyLevel and continuous number values
  */
-export function getProficiencyLabel(proficiency: ProficiencyLevel): string {
+export function getProficiencyLabel(proficiency: ProficiencyLevel | number): string {
   const labels: Record<ProficiencyLevel, string> = {
     1: 'Beginner',
     2: 'Familiar',
@@ -164,7 +165,17 @@ export function getProficiencyLabel(proficiency: ProficiencyLevel): string {
     5: 'Proficient',
     8: 'Expert',
   };
-  return labels[proficiency];
+
+  // If continuous value, round to nearest Fibonacci proficiency level
+  if (![1, 2, 3, 5, 8].includes(proficiency)) {
+    const validProficiencies: ProficiencyLevel[] = [1, 2, 3, 5, 8];
+    const nearest = validProficiencies.reduce((prev, curr) =>
+      Math.abs(curr - proficiency) < Math.abs(prev - proficiency) ? curr : prev
+    );
+    return labels[nearest];
+  }
+
+  return labels[proficiency as ProficiencyLevel];
 }
 
 /**

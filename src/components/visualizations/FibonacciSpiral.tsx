@@ -12,7 +12,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ParentSize } from '@visx/responsive';
 import { Group } from '@visx/group';
 import type { ComputedSkill, CategoryId } from '@/data/types';
-import { getAllComputedSkills, getCategorySkillCounts } from '@/data';
+import { skills, experience, getCategorySkillCounts } from '@/data';
+import { computeSkill } from '@/lib/skill-computation';
 
 import { SkillNode, SkillNodeFocusRing } from './SkillNode';
 import { SkillTooltip } from './SkillTooltip';
@@ -30,7 +31,7 @@ export interface FibonacciSpiralProps {
 }
 
 // Size multiplier for converting Fibonacci values to pixels
-const SIZE_MULTIPLIER = 1.5;
+const SIZE_MULTIPLIER = 4;
 
 interface SpiralContentProps extends FibonacciSpiralProps {
   width: number;
@@ -50,16 +51,19 @@ function SpiralContent({
   const skillRefs = useRef<Map<string, SVGCircleElement>>(new Map());
   const reducedMotion = useReducedMotion();
 
-  // Get skills data
-  const skills = useMemo(() => skillsProp ?? getAllComputedSkills(), [skillsProp]);
+  // Get skills data - compute from experiences
+  const computedSkills = useMemo(
+    () => skillsProp ?? skills.map((skill) => computeSkill(skill, experience)),
+    [skillsProp]
+  );
 
   // Filter skills by category if a filter is active
   const filteredSkills = useMemo(
     () =>
       selectedCategoryFilter
-        ? skills.filter((skill) => skill.category === selectedCategoryFilter)
-        : skills,
-    [skills, selectedCategoryFilter]
+        ? computedSkills.filter((skill) => skill.category === selectedCategoryFilter)
+        : computedSkills,
+    [computedSkills, selectedCategoryFilter]
   );
 
   // Calculate layout

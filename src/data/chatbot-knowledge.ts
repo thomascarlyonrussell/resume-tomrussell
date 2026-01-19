@@ -5,25 +5,24 @@
  * This enables the AI chatbot to answer questions about Tom's background.
  */
 
-import { skills } from './skills';
 import { experience } from './experience';
 import { milestones } from './milestones';
 import { publications } from './publications';
 import { education, certifications } from './education';
 import { categories, categoryMap } from './categories';
-import { getActiveSkills, getTotalYearsOfExperience } from './index';
-import {
-  getProficiencyLabel,
-  formatYearsOfExperience,
-  calculateYearsOfExperience,
-} from '@/lib/calculations';
-import type { CategoryId, ProficiencyLevel } from './types';
+import { getAllComputedSkills, getTotalYearsOfExperience } from './index';
+import { getProficiencyLabel, formatYearsOfExperience } from '@/lib/calculations';
+import type { CategoryId } from './types';
 
 /**
  * Format skills for a category in the knowledge base
+ * Uses computed skills from experiences
  */
 function formatCategorySkills(categoryId: CategoryId): string {
-  const categorySkills = skills.filter((s) => s.category === categoryId);
+  // Get all computed skills with proficiency/timeline from experiences
+  const computedSkills = getAllComputedSkills();
+  const categorySkills = computedSkills.filter((s) => s.category === categoryId);
+
   if (categorySkills.length === 0) return '';
 
   const category = categoryMap[categoryId];
@@ -40,11 +39,13 @@ function formatCategorySkills(categoryId: CategoryId): string {
   for (const [subcategory, subcategorySkills] of bySubcategory) {
     lines.push(`\n**${subcategory}:**`);
     for (const skill of subcategorySkills) {
-      const profLabel = getProficiencyLabel(skill.proficiency as ProficiencyLevel);
-      const years = formatYearsOfExperience(
-        calculateYearsOfExperience(skill.startDate, skill.endDate)
-      );
-      const status = skill.endDate ? '(past)' : '(current)';
+      // All computed skills should have proficiency
+      if (!skill.proficiency || !skill.startDate) {
+        continue;
+      }
+      const profLabel = getProficiencyLabel(skill.proficiency);
+      const years = formatYearsOfExperience(skill.yearsOfExperience);
+      const status = skill.isActive ? '(current)' : '(past)';
       lines.push(`- ${skill.name}: ${profLabel} level, ${years} ${status}`);
       if (skill.description) {
         lines.push(`  - ${skill.description}`);
@@ -147,11 +148,13 @@ function formatPublications(): string {
 
 /**
  * Generate the professional summary
+ * Uses computed skills from experiences
  */
 function generateProfessionalSummary(): string {
   const currentRole = experience[0];
   const totalYears = Math.round(getTotalYearsOfExperience());
-  const activeSkillCount = getActiveSkills().length;
+  const computedSkills = getAllComputedSkills();
+  const activeSkillCount = computedSkills.filter(s => s.isActive).length;
 
   return `### Professional Summary
 
@@ -254,14 +257,17 @@ export function getCondensedKnowledge(): string {
     '## Top Skills:',
   ];
 
-  // Get top skills by proficiency
-  const topSkills = [...skills]
-    .filter((s) => !s.endDate)
-    .sort((a, b) => b.proficiency - a.proficiency)
+  // Get top skills by proficiency using computed skills
+  const computedSkills = getAllComputedSkills();
+  const topSkills = computedSkills
+    .filter((s) => s.isActive && s.proficiency !== undefined)
+    .sort((a, b) => (b.proficiency || 0) - (a.proficiency || 0))
     .slice(0, 10);
 
   for (const skill of topSkills) {
-    lines.push(`- ${skill.name} (${getProficiencyLabel(skill.proficiency as ProficiencyLevel)})`);
+    if (skill.proficiency) {
+      lines.push(`- ${skill.name} (${getProficiencyLabel(skill.proficiency)})`);
+    }
   }
 
   lines.push('');

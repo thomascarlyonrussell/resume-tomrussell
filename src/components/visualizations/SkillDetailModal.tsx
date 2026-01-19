@@ -53,7 +53,7 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
     : [];
 
   const category = skill ? categoryMap[skill.category] : null;
-  const proficiencyLabel = skill ? getProficiencyLabel(skill.proficiency) : '';
+  const proficiencyLabel = skill && skill.proficiency ? getProficiencyLabel(skill.proficiency) : '';
   const yearsText = skill ? formatYearsOfExperience(skill.yearsOfExperience) : '';
 
   const handleBackdropClick = useCallback(
@@ -133,7 +133,7 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
                       <div
                         className="h-full rounded-full transition-all"
                         style={{
-                          width: `${(skill.proficiency / 8) * 100}%`,
+                          width: `${((skill.proficiency || 0) / 8) * 100}%`,
                           backgroundColor: category?.color,
                         }}
                       />
@@ -142,9 +142,11 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
                       {proficiencyLabel}
                     </span>
                   </div>
-                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                    {skill.proficiency} / 8
-                  </p>
+                  {skill.proficiency && (
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      {skill.proficiency} / 8
+                    </p>
+                  )}
                 </div>
 
                 <div>
