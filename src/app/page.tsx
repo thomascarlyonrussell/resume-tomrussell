@@ -7,6 +7,7 @@ import {
   ContactSection,
 } from '@/components/sections';
 import { SectionNav, type SectionConfig } from '@/components/navigation';
+import { ChatWidget } from '@/components/chat';
 
 const sections: SectionConfig[] = [
   { id: 'hero', label: 'Home' },
@@ -43,6 +44,9 @@ export default function Home() {
         <ExperienceSection id="experience" />
         <ContactSection id="contact" />
       </main>
+
+      {/* Chat Widget */}
+      <ChatWidget />
     </>
   );
 }
