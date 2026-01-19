@@ -12,7 +12,13 @@
     "format:check": "prettier --check .",
     "type-check": "tsc --noEmit",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:e2e": "cucumber-js",
+    "test:e2e:chatbot": "cucumber-js tests/features/chatbot/**/*.feature",
+    "test:e2e:visualizations": "cucumber-js tests/features/visualizations/**/*.feature",
+    "test:e2e:site-structure": "cucumber-js tests/features/site-structure/**/*.feature",
+    "test:e2e:data-model": "cucumber-js tests/features/data-model/**/*.feature",
+    "test:all": "npm run test:run && npm run test:e2e"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.12",
@@ -32,18 +38,22 @@
     "recharts": "^2.0.0"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^12.5.0",
     "@eslint/eslintrc": "^3.3.3",
+    "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
-    "@types/node": "^20",
+    "@types/node": "^20.19.30",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "^15.0.0",
+    "playwright": "^1.57.0",
     "prettier": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.6.0",
     "tailwindcss": "^4.0.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5",
     "vitest": "^4.0.17"
   }
