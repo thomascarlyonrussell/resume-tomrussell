@@ -8,7 +8,7 @@
 
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useReducedMotion } from '@/components/visualizations/hooks';
+import { useReducedMotion, useViewTransition } from '@/components/visualizations/hooks';
 import { FibonacciSpiral, TimelineArea, VisualizationToggle } from '@/components/visualizations';
 import type { VisualizationView } from '@/components/visualizations/VisualizationToggle';
 import { Container } from '@/components/ui/Container';
@@ -40,6 +40,14 @@ export function SkillsSection({
   const isInView = useIntersectionObserver(sectionRef, { threshold: 0.1 });
   const [activeView, setActiveView] = useState<VisualizationView>('fibonacci');
 
+  // Manage focus and transition state
+  const {
+    containerRef,
+    isTransitioning,
+    onTransitionStart,
+    onTransitionComplete,
+  } = useViewTransition(activeView);
+
   const variants = reducedMotion ? reducedMotionVariants : fadeUpVariants;
   const { title, subtitle } = VIEW_CONFIG[activeView];
 
@@ -69,6 +77,7 @@ export function SkillsSection({
             <VisualizationToggle
               activeView={activeView}
               onChange={setActiveView}
+              disabled={isTransitioning}
             />
 
             {/* Subtitle */}
@@ -78,35 +87,45 @@ export function SkillsSection({
           </div>
 
           {/* Visualization Panel */}
-          <AnimatePresence mode="wait">
-            {activeView === 'fibonacci' ? (
-              <motion.div
-                key="fibonacci"
-                id="fibonacci-panel"
-                role="tabpanel"
-                aria-labelledby="fibonacci-tab"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: reducedMotion ? 0.01 : 0.3 }}
-              >
-                <FibonacciSpiral showLegend={true} />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="timeline"
-                id="timeline-panel"
-                role="tabpanel"
-                aria-labelledby="timeline-tab"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: reducedMotion ? 0.01 : 0.3 }}
-              >
-                <TimelineArea />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div ref={containerRef}>
+            <AnimatePresence mode="wait" onExitComplete={onTransitionComplete}>
+              {activeView === 'fibonacci' ? (
+                <motion.div
+                  key="fibonacci"
+                  id="fibonacci-panel"
+                  role="tabpanel"
+                  aria-labelledby="fibonacci-tab"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{
+                    duration: reducedMotion ? 0.01 : 0.3,
+                    exit: { duration: reducedMotion ? 0.01 : 0.2 },
+                  }}
+                  onAnimationStart={onTransitionStart}
+                >
+                  <FibonacciSpiral showLegend={true} />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="timeline"
+                  id="timeline-panel"
+                  role="tabpanel"
+                  aria-labelledby="timeline-tab"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{
+                    duration: reducedMotion ? 0.01 : 0.3,
+                    exit: { duration: reducedMotion ? 0.01 : 0.2 },
+                  }}
+                  onAnimationStart={onTransitionStart}
+                >
+                  <TimelineArea />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </motion.div>
       </Container>
     </section>
