@@ -1,9 +1,41 @@
-import type { Experience } from './types';
+import type { Experience, ExperienceSkill } from './types';
 
 /**
  * Work experience entries in reverse chronological order
  */
 export const experience: Experience[] = [
+  {
+    id: 'personal-development',
+    company: 'Personal Development',
+    title: 'Self-Study & Continuous Learning',
+    startDate: '2023-01',
+    endDate: null,
+    location: 'Remote',
+    description:
+      'Continuous learning and skill development through personal projects, online courses, and hands-on experimentation with emerging technologies.',
+    highlights: [
+      'Explored modern AI tools and development practices',
+      'Built personal projects to learn new frameworks and languages',
+      'Stayed current with industry trends and best practices',
+    ],
+    skills: [
+      { skillId: 'csharp', proficiency: 5 },
+      { skillId: 'powershell', proficiency: 3 },
+      { skillId: 'azure-devops', proficiency: 5 },
+      { skillId: 'github-copilot', proficiency: 5 },
+      { skillId: 'claude-ai', proficiency: 8 },
+      { skillId: 'openai-codex', proficiency: 5 },
+      { skillId: 'ai-agent-development', proficiency: 5 },
+      { skillId: 'mcp-protocol', proficiency: 5 },
+      { skillId: 'v0-vibes', proficiency: 5 },
+      { skillId: 'openspec', proficiency: 5 },
+      { skillId: 'playwright-mcp', proficiency: 3 },
+      { skillId: 'public-speaking', proficiency: 5 },
+      { skillId: 'stakeholder-management', proficiency: 8 },
+      { skillId: 'regulatory-engagement', proficiency: 5 },
+      { skillId: 'cross-functional-collaboration', proficiency: 8 }
+    ] as ExperienceSkill[],
+  } as Experience,
   {
     id: 'integral-analytics-vp',
     company: 'Integral Analytics',
@@ -20,18 +52,18 @@ export const experience: Experience[] = [
       "Developed support tooling for LoadSEER's backend using Python, Azure Pipelines, SQL, and GitHub",
       'Modeled graph database schemas to coordinate electric connectivity models using Neo4j and Cypher',
     ],
-    skillIds: [
-      'productboard',
-      'jira',
-      'python',
-      'sql',
-      'neo4j',
-      'cypher',
-      'azure-pipelines',
-      'github',
-      'product-management',
-      'technical-training',
-    ],
+    skills: [
+      { skillId: 'azure-pipelines', proficiency: 3 },
+      { skillId: 'cypher', proficiency: 5 },
+      { skillId: 'github', proficiency: 5 },
+      { skillId: 'jira', proficiency: 8 },
+      { skillId: 'neo4j', proficiency: 5 },
+      { skillId: 'product-management', proficiency: 8 },
+      { skillId: 'productboard', proficiency: 8 },
+      { skillId: 'python', proficiency: 8 },
+      { skillId: 'sql', proficiency: 5 },
+      { skillId: 'technical-training', proficiency: 5 }
+    ] as ExperienceSkill[],
   },
   {
     id: 'integral-analytics-pm',
@@ -48,13 +80,13 @@ export const experience: Experience[] = [
       'Explored R&D for new feature development and data analytics',
       'Led product training, customer support, and sales demos',
     ],
-    skillIds: [
-      'product-management',
-      'neo4j',
-      'python',
-      'technical-training',
-      'requirements-gathering',
-    ],
+    skills: [
+      { skillId: 'neo4j', proficiency: 2 },
+      { skillId: 'product-management', proficiency: 5 },
+      { skillId: 'python', proficiency: 8 },
+      { skillId: 'requirements-gathering', proficiency: 8 },
+      { skillId: 'technical-training', proficiency: 2 }
+    ] as ExperienceSkill[],
   },
   {
     id: 'pge-expert-engineer',
@@ -70,7 +102,14 @@ export const experience: Experience[] = [
       'Coordinated change management and processes for planning department to provide information for new regulatory filings',
       'Represented PG&E at regulatory and external stakeholder workshops and events',
     ],
-    skillIds: ['loadseer', 'cymdist', 'python', 'sql', 'distribution-planning', 'hosting-capacity'],
+    skills: [
+      { skillId: 'cymdist', proficiency: 5 },
+      { skillId: 'distribution-planning', proficiency: 8 },
+      { skillId: 'hosting-capacity', proficiency: 8 },
+      { skillId: 'loadseer', proficiency: 8 },
+      { skillId: 'python', proficiency: 8 },
+      { skillId: 'sql', proficiency: 2 }
+    ] as ExperienceSkill[],
   },
   {
     id: 'pge-senior-engineer',
@@ -86,13 +125,13 @@ export const experience: Experience[] = [
       'Facilitated collaboration of cross-functional team across many business lines',
       'Coached and mentored entry-level engineers',
     ],
-    skillIds: [
-      'distribution-planning',
-      'hosting-capacity',
-      'python',
-      'loadseer',
-      'technical-leadership',
-    ],
+    skills: [
+      { skillId: 'distribution-planning', proficiency: 5 },
+      { skillId: 'hosting-capacity', proficiency: 5 },
+      { skillId: 'loadseer', proficiency: 5 },
+      { skillId: 'python', proficiency: 5 },
+      { skillId: 'technical-leadership', proficiency: 5 }
+    ] as ExperienceSkill[],
   },
   {
     id: 'pge-engineer-dg',
@@ -109,7 +148,11 @@ export const experience: Experience[] = [
       'Performed research on generation topics related to PV voltage issues, battery mitigation schemes, and smart inverter operations',
       'Developed Access database app to track projects and record technical data for analysis',
     ],
-    skillIds: ['power-systems-analysis', 'protection-and-control', 'microsoft-access'],
+    skills: [
+      { skillId: 'microsoft-access', proficiency: 3 },
+      { skillId: 'power-systems-analysis', proficiency: 8 },
+      { skillId: 'protection-and-control', proficiency: 5 }
+    ] as ExperienceSkill[],
   },
   {
     id: 'ppl-engineer-standards',
@@ -126,7 +169,10 @@ export const experience: Experience[] = [
       'Developed new specifications for automated distribution protection devices',
       'Reviewed and updated PPL distribution engineering and construction standard documents',
     ],
-    skillIds: ['power-systems-analysis', 'protection-and-control'],
+    skills: [
+      { skillId: 'power-systems-analysis', proficiency: 8 },
+      { skillId: 'protection-and-control', proficiency: 2 }
+    ] as ExperienceSkill[],
   },
   {
     id: 'ppl-coop-automation',
@@ -142,7 +188,9 @@ export const experience: Experience[] = [
       "Wired and programmed the company's first distribution smart grid switch controller",
       'Researched and specified simulation equipment for troubleshooting and validation',
     ],
-    skillIds: ['scada'],
+    skills: [
+      { skillId: 'scada', proficiency: 3 }
+    ] as ExperienceSkill[],
   },
   {
     id: 'ppl-coop-reliability',
@@ -158,7 +206,9 @@ export const experience: Experience[] = [
       'Performed load flow and short circuit studies on local circuits to ensure proper operating conditions',
       'Assessed distribution lines in the field to identify possible operational problems',
     ],
-    skillIds: ['power-systems-analysis'],
+    skills: [
+      { skillId: 'power-systems-analysis', proficiency: 5 }
+    ] as ExperienceSkill[],
   },
 ];
 
