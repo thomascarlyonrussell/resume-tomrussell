@@ -1,0 +1,125 @@
+import type { Milestone } from './types';
+
+/**
+ * Career milestones representing key achievements and transitions
+ */
+export const milestones: Milestone[] = [
+  {
+    id: 'pennstate-graduation',
+    title: 'Penn State Graduation - BS Electrical Engineering',
+    date: '2011-05',
+    description:
+      'Graduated from Penn State University with BS in Electrical Engineering, focus in Power Systems',
+    skillIds: ['power-systems-analysis'],
+  },
+  {
+    id: 'first-engineering-role',
+    title: 'First Full-Time Engineering Role at PPL Electric',
+    date: '2011-07',
+    description:
+      'Started career as Engineer in Distribution Standards at PPL Electric Utilities',
+    skillIds: ['power-systems-analysis', 'protection-and-control'],
+  },
+  {
+    id: 'joined-pge',
+    title: 'Joined PG&E',
+    date: '2012-09',
+    description:
+      'Transitioned to Pacific Gas and Electric Company as Engineer in Distributed Generation Interconnection',
+    skillIds: ['power-systems-analysis', 'protection-and-control'],
+  },
+  {
+    id: 'hosting-capacity-standards',
+    title: 'Set California/U.S. Hosting Capacity Standards',
+    date: '2015-12',
+    description:
+      'Led efforts that set new 2015 standards for hosting capacity analysis across California and the United States',
+    skillIds: ['hosting-capacity', 'distribution-planning', 'loadseer', 'cymdist'],
+  },
+  {
+    id: 'first-distribution-resource-plan',
+    title: "PG&E's First Electric Distribution Resource Plan",
+    date: '2016-06',
+    description:
+      "Technical expert for developing PG&E's first Electric Distribution Resource Plan",
+    skillIds: ['distribution-planning', 'hosting-capacity', 'loadseer'],
+  },
+  {
+    id: 'expert-engineer-promotion',
+    title: 'Promoted to Expert Engineer at PG&E',
+    date: '2018-06',
+    description:
+      'Promoted to Expert Engineer, Grid Innovation - technical lead for advancing integrated distribution planning processes',
+    skillIds: ['distribution-planning', 'hosting-capacity', 'technical-leadership'],
+  },
+  {
+    id: 'transition-to-product',
+    title: 'Career Transition: Engineering to Product Management',
+    date: '2019-01',
+    description:
+      'Joined Integral Analytics as Product Manager, transitioning from utility engineering to software product management',
+    skillIds: ['product-management', 'requirements-gathering', 'loadseer'],
+  },
+  {
+    id: 'neo4j-certification',
+    title: 'Neo4j Database Certification',
+    date: '2019-06',
+    description: 'Completed Database Clinic: Neo4J certification course',
+    skillIds: ['neo4j', 'cypher'],
+  },
+  {
+    id: 'promotion-to-vp',
+    title: 'Promoted to VP, Product Manager',
+    date: '2020-04',
+    description:
+      'Promoted to Product Manager, VP at Integral Analytics - leading strategic roadmaps and product backlog',
+    skillIds: ['product-management', 'productboard', 'jira', 'technical-leadership'],
+  },
+  {
+    id: 'graph-database-implementation',
+    title: 'Graph Database Schema Implementation',
+    date: '2021-03',
+    description:
+      'Successfully modeled and implemented graph database schemas for electric connectivity models using Neo4j',
+    skillIds: ['neo4j', 'cypher', 'distribution-planning'],
+  },
+  {
+    id: 'support-tooling-development',
+    title: 'LoadSEER Support Tooling Development',
+    date: '2022-01',
+    description:
+      "Developed comprehensive support tooling for LoadSEER's backend using Python, Azure Pipelines, and SQL",
+    skillIds: ['python', 'azure-pipelines', 'sql', 'github', 'loadseer'],
+  },
+];
+
+/**
+ * Get milestone by ID
+ */
+export function getMilestone(id: string): Milestone | undefined {
+  return milestones.find((m) => m.id === id);
+}
+
+/**
+ * Get milestones by skill ID
+ */
+export function getMilestonesBySkill(skillId: string): Milestone[] {
+  return milestones.filter((m) => m.skillIds?.includes(skillId));
+}
+
+/**
+ * Get milestones within date range
+ */
+export function getMilestonesInRange(startDate: string, endDate: string): Milestone[] {
+  return milestones.filter((m) => m.date >= startDate && m.date <= endDate);
+}
+
+/**
+ * Get milestones sorted by date
+ */
+export function getMilestonesSorted(ascending = true): Milestone[] {
+  return [...milestones].sort((a, b) => {
+    const comparison = a.date.localeCompare(b.date);
+    return ascending ? comparison : -comparison;
+  });
+}
