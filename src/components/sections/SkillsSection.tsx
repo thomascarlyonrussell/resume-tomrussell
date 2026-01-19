@@ -16,7 +16,7 @@ import {
   SkillDetailModal,
 } from '@/components/visualizations';
 import type { VisualizationView } from '@/components/visualizations/VisualizationToggle';
-import type { ComputedSkill } from '@/data/types';
+import type { ComputedSkill, CategoryId } from '@/data/types';
 import { Container } from '@/components/ui/Container';
 import { fadeUpVariants, reducedMotionVariants } from '@/lib/animations';
 import { useIntersectionObserver } from '@/hooks';
@@ -45,6 +45,7 @@ export function SkillsSection({ id = 'skills', className = '' }: SkillsSectionPr
   const isInView = useIntersectionObserver(sectionRef, { threshold: 0.1 });
   const [activeView, setActiveView] = useState<VisualizationView>('fibonacci');
   const [selectedSkill, setSelectedSkill] = useState<ComputedSkill | null>(null);
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<CategoryId | null>(null);
 
   // Manage focus and transition state
   const { containerRef, isTransitioning, onTransitionStart, onTransitionComplete } =
@@ -61,6 +62,11 @@ export function SkillsSection({ id = 'skills', className = '' }: SkillsSectionPr
   // Handle modal close
   const handleCloseModal = () => {
     setSelectedSkill(null);
+  };
+
+  // Handle category filter toggle
+  const handleCategoryToggle = (categoryId: CategoryId) => {
+    setSelectedCategoryFilter((prev) => (prev === categoryId ? null : categoryId));
   };
 
   return (
@@ -109,7 +115,12 @@ export function SkillsSection({ id = 'skills', className = '' }: SkillsSectionPr
                   onAnimationStart={onTransitionStart}
                   onAnimationComplete={onTransitionComplete}
                 >
-                  <FibonacciSpiral showLegend={true} onSkillClick={handleSkillClick} />
+                  <FibonacciSpiral
+                    showLegend={true}
+                    onSkillClick={handleSkillClick}
+                    selectedCategoryFilter={selectedCategoryFilter}
+                    onCategoryToggle={handleCategoryToggle}
+                  />
                 </motion.div>
               ) : (
                 <motion.div

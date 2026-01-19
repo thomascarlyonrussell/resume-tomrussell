@@ -7,15 +7,19 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { categories } from '@/data/categories';
+import type { CategoryId } from '@/data/types';
 
 export interface LegendProps {
   showSizeScale?: boolean;
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   className?: string;
   reducedMotion?: boolean;
+  selectedCategoryFilter?: CategoryId | null;
+  onCategoryToggle?: (categoryId: CategoryId) => void;
+  skillCounts?: Record<CategoryId, number>;
 }
 
 // Position styles mapping
@@ -31,8 +35,82 @@ export function Legend({
   position = 'bottom-left',
   className = '',
   reducedMotion = false,
+  selectedCategoryFilter,
+  onCategoryToggle,
+  skillCounts,
 }: LegendProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const liveRegionRef = useRef<HTMLDivElement>(null);
+
+  // Handle category click
+  const handleCategoryClick = useCallback(
+    (categoryId: CategoryId) => {
+      onCategoryToggle?.(categoryId);
+    },
+    [onCategoryToggle]
+  );
+
+  // Keyboard navigation
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent, currentIndex: number) => {
+      const maxIndex = categories.length - 1;
+      let nextIndex = currentIndex;
+
+      switch (e.key) {
+        case 'ArrowDown':
+        case 'ArrowRight':
+          e.preventDefault();
+          nextIndex = currentIndex < maxIndex ? currentIndex + 1 : 0;
+          break;
+
+        case 'ArrowUp':
+        case 'ArrowLeft':
+          e.preventDefault();
+          nextIndex = currentIndex > 0 ? currentIndex - 1 : maxIndex;
+          break;
+
+        case 'Home':
+          e.preventDefault();
+          nextIndex = 0;
+          break;
+
+        case 'End':
+          e.preventDefault();
+          nextIndex = maxIndex;
+          break;
+
+        case 'Escape':
+          e.preventDefault();
+          if (selectedCategoryFilter) {
+            onCategoryToggle?.(selectedCategoryFilter);
+          }
+          return;
+
+        default:
+          return;
+      }
+
+      setFocusedIndex(nextIndex);
+      const nextCategory = categories[nextIndex];
+      buttonRefs.current.get(nextCategory.id)?.focus();
+    },
+    [selectedCategoryFilter, onCategoryToggle]
+  );
+
+  // Announce filter changes to screen readers
+  useEffect(() => {
+    if (!liveRegionRef.current) return;
+
+    if (selectedCategoryFilter) {
+      const category = categories.find((c) => c.id === selectedCategoryFilter);
+      const count = skillCounts?.[selectedCategoryFilter] || 0;
+      liveRegionRef.current.textContent = `Filtered to ${category?.name}, showing ${count} skills`;
+    } else {
+      liveRegionRef.current.textContent = 'Showing all skills';
+    }
+  }, [selectedCategoryFilter, skillCounts]);
 
   return (
     <div
@@ -66,19 +144,56 @@ export function Legend({
               className="overflow-hidden"
             >
               {/* Category colors */}
-              <div className="mt-2 space-y-1.5">
-                {categories.map((category) => (
-                  <div key={category.id} className="flex items-center gap-2">
-                    <div
-                      className="h-3 w-3 flex-shrink-0 rounded-full"
-                      style={{ backgroundColor: category.color }}
-                      aria-hidden="true"
-                    />
-                    <span className="truncate text-xs text-gray-600 dark:text-gray-400">
-                      {category.name}
-                    </span>
-                  </div>
-                ))}
+              <div
+                className="mt-2 space-y-1.5"
+                role="radiogroup"
+                aria-label="Category filters"
+              >
+                {categories.map((category, index) => {
+                  const isSelected = selectedCategoryFilter === category.id;
+                  const isOtherSelected =
+                    selectedCategoryFilter && selectedCategoryFilter !== category.id;
+                  const count = skillCounts?.[category.id] || 0;
+
+                  return (
+                    <button
+                      key={category.id}
+                      ref={(el) => {
+                        if (el) {
+                          buttonRefs.current.set(category.id, el);
+                        } else {
+                          buttonRefs.current.delete(category.id);
+                        }
+                      }}
+                      role="radio"
+                      aria-checked={isSelected}
+                      aria-label={`Filter by ${category.name}, ${count} skills`}
+                      className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left transition-all ${
+                        isSelected
+                          ? 'bg-gray-100 font-semibold dark:bg-gray-800'
+                          : isOtherSelected
+                            ? 'opacity-50 grayscale'
+                            : ''
+                      } ${
+                        reducedMotion
+                          ? ''
+                          : 'hover:scale-105 hover:brightness-110 active:scale-95'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-blue-400`}
+                      onClick={() => handleCategoryClick(category.id)}
+                      onKeyDown={(e) => handleKeyDown(e, index)}
+                      tabIndex={index === 0 || isSelected ? 0 : -1}
+                    >
+                      <div
+                        className="h-3 w-3 flex-shrink-0 rounded-full"
+                        style={{ backgroundColor: category.color }}
+                        aria-hidden="true"
+                      />
+                      <span className="truncate text-xs text-gray-600 dark:text-gray-400">
+                        {category.name} ({count})
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Size scale explanation */}
@@ -109,6 +224,14 @@ export function Legend({
           )}
         </AnimatePresence>
       </div>
+
+      {/* Screen reader live region for filter announcements */}
+      <div
+        ref={liveRegionRef}
+        className="sr-only"
+        aria-live="polite"
+        aria-atomic="true"
+      />
     </div>
   );
 }

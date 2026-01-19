@@ -38,11 +38,19 @@ const labelVariants = {
       delay: delay * 0.03 + 0.1, // Slightly after circle appears
     },
   }),
+  exit: {
+    opacity: 0,
+    scale: 0.8,
+    transition: {
+      duration: 0.2,
+    },
+  },
 };
 
 const reducedMotionLabelVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.01 } },
+  exit: { opacity: 0, transition: { duration: 0.01 } },
 };
 
 export function SkillLabelOutside({
@@ -80,17 +88,20 @@ export function SkillLabelOutside({
       custom={animationDelay}
       initial="hidden"
       animate="visible"
+      exit="exit"
+      layout={!reducedMotion}
+      layoutId={`label-${skill.id}`}
       aria-hidden="true"
     >
-      {/* Connector line from circle to label */}
+      {/* Connector line from circle edge to label */}
       <line
-        x1={x}
-        y1={y}
-        x2={labelPos.lineEndX}
-        y2={labelPos.lineEndY}
+        x1={labelPos.lineEndX}
+        y1={labelPos.lineEndY}
+        x2={labelPos.labelX}
+        y2={labelPos.labelY}
         stroke="var(--color-foreground)"
-        strokeWidth={1}
-        opacity={0.4}
+        strokeWidth={1.5}
+        opacity={0.65}
         strokeDasharray="2,2"
         className="pointer-events-none"
       />
@@ -105,7 +116,7 @@ export function SkillLabelOutside({
         fill="var(--color-background)"
         fillOpacity={0.95}
         stroke="var(--color-foreground)"
-        strokeWidth={0.5}
+        strokeWidth={0.75}
         className="pointer-events-none"
       />
 
@@ -115,7 +126,7 @@ export function SkillLabelOutside({
         y={labelPos.labelY}
         textAnchor="middle"
         dominantBaseline="middle"
-        fontSize={9}
+        fontSize={10}
         fill="var(--color-foreground)"
         className="pointer-events-none font-medium select-none"
       >

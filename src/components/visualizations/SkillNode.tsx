@@ -43,12 +43,23 @@ const nodeVariants = {
       delay: delay * 0.03,
     },
   }),
+  exit: {
+    scale: 0.8,
+    opacity: 0,
+    transition: {
+      duration: 0.2,
+    },
+  },
 };
 
 const reducedMotionVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
+    transition: { duration: 0.01 },
+  },
+  exit: {
+    opacity: 0,
     transition: { duration: 0.01 },
   },
 };
@@ -117,6 +128,9 @@ export const SkillNode = forwardRef<SVGCircleElement, SkillNodeProps>(function S
       custom={animationDelay}
       initial="hidden"
       animate="visible"
+      exit="exit"
+      layout={!reducedMotion}
+      layoutId={skill.id}
       style={{
         cursor: 'pointer',
         outline: 'none',

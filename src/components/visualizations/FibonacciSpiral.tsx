@@ -8,11 +8,11 @@
 'use client';
 
 import { useState, useCallback, useRef, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ParentSize } from '@visx/responsive';
 import { Group } from '@visx/group';
-import type { ComputedSkill } from '@/data/types';
-import { getAllComputedSkills } from '@/data';
+import type { ComputedSkill, CategoryId } from '@/data/types';
+import { getAllComputedSkills, getCategorySkillCounts } from '@/data';
 
 import { SkillNode, SkillNodeFocusRing } from './SkillNode';
 import { SkillTooltip } from './SkillTooltip';
@@ -25,6 +25,8 @@ export interface FibonacciSpiralProps {
   className?: string;
   showLegend?: boolean;
   onSkillClick?: (skill: ComputedSkill) => void;
+  selectedCategoryFilter?: CategoryId | null;
+  onCategoryToggle?: (categoryId: CategoryId) => void;
 }
 
 // Size multiplier for converting Fibonacci values to pixels
@@ -41,6 +43,8 @@ function SpiralContent({
   height,
   showLegend = true,
   onSkillClick,
+  selectedCategoryFilter,
+  onCategoryToggle,
 }: SpiralContentProps) {
   const containerRef = useRef<SVGSVGElement>(null);
   const skillRefs = useRef<Map<string, SVGCircleElement>>(new Map());
@@ -49,9 +53,18 @@ function SpiralContent({
   // Get skills data
   const skills = useMemo(() => skillsProp ?? getAllComputedSkills(), [skillsProp]);
 
+  // Filter skills by category if a filter is active
+  const filteredSkills = useMemo(
+    () =>
+      selectedCategoryFilter
+        ? skills.filter((skill) => skill.category === selectedCategoryFilter)
+        : skills,
+    [skills, selectedCategoryFilter]
+  );
+
   // Calculate layout
   const { positions, sortedSkills, center } = useFibonacciLayout({
-    skills,
+    skills: filteredSkills,
     width,
     height,
     padding: 60,
@@ -68,6 +81,9 @@ function SpiralContent({
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
 
   const focusedId = focusedIndex >= 0 ? sortedSkills[focusedIndex]?.id : null;
+
+  // Calculate skill counts per category
+  const skillCounts = useMemo(() => getCategorySkillCounts(), []);
 
   // Event handlers
   const handleSkillHover = useCallback(
@@ -168,8 +184,11 @@ function SpiralContent({
   // Generate description for screen readers
   const description = useMemo(() => {
     const topSkills = sortedSkills.slice(0, 3).map((s) => s.name);
-    return `A visualization of ${skills.length} professional skills arranged in a Fibonacci spiral pattern, sized by proficiency and years of experience. The largest skills include ${topSkills.join(', ')}. Use arrow keys to navigate between skills.`;
-  }, [skills.length, sortedSkills]);
+    const filterText = selectedCategoryFilter
+      ? ` Filtered to ${selectedCategoryFilter} category, showing ${filteredSkills.length} skills.`
+      : '';
+    return `A visualization of ${skills.length} professional skills arranged in a Fibonacci spiral pattern, sized by proficiency and years of experience.${filterText} The largest skills include ${topSkills.join(', ')}. Use arrow keys to navigate between skills.`;
+  }, [skills.length, sortedSkills, selectedCategoryFilter, filteredSkills.length]);
 
   if (width <= 0 || height <= 0) return null;
 
@@ -275,57 +294,61 @@ function SpiralContent({
           })}
 
           {/* Render skill nodes */}
-          {sortedSkills.map((skill, index) => {
-            const pos = positions.get(skill.id);
-            if (!pos) return null;
+          <AnimatePresence mode="popLayout">
+            {sortedSkills.map((skill, index) => {
+              const pos = positions.get(skill.id);
+              if (!pos) return null;
 
-            return (
-              <SkillNode
-                key={skill.id}
-                ref={(el) => {
-                  if (el) {
-                    skillRefs.current.set(skill.id, el);
-                  } else {
-                    skillRefs.current.delete(skill.id);
-                  }
-                }}
-                skill={skill}
-                x={pos.x}
-                y={pos.y}
-                size={skill.fibonacciSize * SIZE_MULTIPLIER}
-                isHovered={hoveredId === skill.id}
-                animationDelay={index}
-                reducedMotion={reducedMotion}
-                tabIndex={focusedIndex === index || (focusedIndex === -1 && index === 0) ? 0 : -1}
-                onHover={(hovering) => handleSkillHover(skill, hovering)}
-                onFocus={(focused) => handleSkillFocus(skill, focused)}
-                onClick={() => handleSkillClick(skill)}
-              />
-            );
-          })}
+              return (
+                <SkillNode
+                  key={skill.id}
+                  ref={(el) => {
+                    if (el) {
+                      skillRefs.current.set(skill.id, el);
+                    } else {
+                      skillRefs.current.delete(skill.id);
+                    }
+                  }}
+                  skill={skill}
+                  x={pos.x}
+                  y={pos.y}
+                  size={skill.fibonacciSize * SIZE_MULTIPLIER}
+                  isHovered={hoveredId === skill.id}
+                  animationDelay={index}
+                  reducedMotion={reducedMotion}
+                  tabIndex={focusedIndex === index || (focusedIndex === -1 && index === 0) ? 0 : -1}
+                  onHover={(hovering) => handleSkillHover(skill, hovering)}
+                  onFocus={(focused) => handleSkillFocus(skill, focused)}
+                  onClick={() => handleSkillClick(skill)}
+                />
+              );
+            })}
+          </AnimatePresence>
 
           {/* Render skill labels */}
-          {sortedSkills.map((skill, index) => {
-            const pos = positions.get(skill.id);
-            if (!pos) return null;
+          <AnimatePresence mode="popLayout">
+            {sortedSkills.map((skill, index) => {
+              const pos = positions.get(skill.id);
+              if (!pos) return null;
 
-            const radius = (skill.fibonacciSize * SIZE_MULTIPLIER) / 2;
+              const radius = (skill.fibonacciSize * SIZE_MULTIPLIER) / 2;
 
-            return (
-              <SkillLabel
-                key={`label-${skill.id}`}
-                skill={skill}
-                x={pos.x}
-                y={pos.y}
-                radius={radius}
-                skillIndex={index}
-                totalSmallSkills={sortedSkills.length}
-                viewportCenter={center}
-                animationDelay={index}
-                reducedMotion={reducedMotion}
-              />
-            );
-          })}
+              return (
+                <SkillLabel
+                  key={`label-${skill.id}`}
+                  skill={skill}
+                  x={pos.x}
+                  y={pos.y}
+                  radius={radius}
+                  skillIndex={index}
+                  totalSmallSkills={sortedSkills.length}
+                  viewportCenter={center}
+                  animationDelay={index}
+                  reducedMotion={reducedMotion}
+                />
+              );
+            })}
+          </AnimatePresence>
         </Group>
       </motion.svg>
 
@@ -338,7 +361,15 @@ function SpiralContent({
       />
 
       {/* Legend */}
-      {showLegend && <Legend position="bottom-left" reducedMotion={reducedMotion} />}
+      {showLegend && (
+        <Legend
+          position="bottom-left"
+          reducedMotion={reducedMotion}
+          selectedCategoryFilter={selectedCategoryFilter}
+          onCategoryToggle={onCategoryToggle}
+          skillCounts={skillCounts}
+        />
+      )}
     </div>
   );
 }

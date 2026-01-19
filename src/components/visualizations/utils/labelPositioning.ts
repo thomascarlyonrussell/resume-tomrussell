@@ -6,7 +6,7 @@
 
 // Label size thresholds (diameter in pixels)
 export const INSIDE_THRESHOLD = 40; // Labels inside circles >= 40px diameter
-export const OUTSIDE_THRESHOLD = 20; // Labels outside circles between 20-40px diameter
+export const OUTSIDE_THRESHOLD = 12; // Labels outside circles between 12-40px diameter (lowered for better visibility when filtered)
 
 // Font size range for inside labels
 export const MIN_FONT_SIZE = 8;

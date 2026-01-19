@@ -37,11 +37,19 @@ const labelVariants = {
       delay: delay * 0.03 + 0.1, // Slightly after circle appears
     },
   }),
+  exit: {
+    opacity: 0,
+    scale: 0.8,
+    transition: {
+      duration: 0.2,
+    },
+  },
 };
 
 const reducedMotionLabelVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.01 } },
+  exit: { opacity: 0, transition: { duration: 0.01 } },
 };
 
 export function SkillLabelInside({
@@ -76,6 +84,9 @@ export function SkillLabelInside({
       custom={animationDelay}
       initial="hidden"
       animate="visible"
+      exit="exit"
+      layout={!reducedMotion}
+      layoutId={`label-${skill.id}`}
       aria-hidden="true"
     >
       {displayText}
