@@ -59,7 +59,7 @@ export function SkillTooltip({ skill, position, isVisible, reducedMotion = false
           initial={reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.95, y: 4 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 4 }}
-          transition={reducedMotion ? { duration: 0 } : { duration: 0.15, ease: 'easeOut' }}
+          transition={reducedMotion ? { duration: 0 } : { duration: 0.15, ease: 'easeOut' as const }}
           className="absolute z-50 pointer-events-none"
           style={{
             left: position.x,

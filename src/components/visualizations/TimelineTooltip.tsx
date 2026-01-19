@@ -8,18 +8,29 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import type { TooltipProps } from 'recharts';
 import { getSkillsAtDate, getMilestonesNearDate } from '@/data';
 import { categories, categoryMap } from '@/data/categories';
 import { useReducedMotion } from './hooks';
 
-type ValueType = number;
-type NameType = string;
+interface TimelineTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    payload: {
+      date: string;
+      year: number;
+      [key: string]: unknown;
+    };
+    value?: number;
+    dataKey?: string;
+    color?: string;
+  }>;
+  label?: string;
+}
 
 export function TimelineTooltip({
   active,
   payload,
-}: TooltipProps<ValueType, NameType>) {
+}: TimelineTooltipProps) {
   const reducedMotion = useReducedMotion();
 
   if (!active || !payload || payload.length === 0) {

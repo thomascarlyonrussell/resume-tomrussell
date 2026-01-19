@@ -112,7 +112,6 @@ export function SkillsSection({
                   exit={{ opacity: 0, y: -10 }}
                   transition={{
                     duration: reducedMotion ? 0.01 : 0.3,
-                    exit: { duration: reducedMotion ? 0.01 : 0.2 },
                   }}
                   onAnimationStart={onTransitionStart}
                 >
@@ -129,7 +128,6 @@ export function SkillsSection({
                   exit={{ opacity: 0, y: -10 }}
                   transition={{
                     duration: reducedMotion ? 0.01 : 0.3,
-                    exit: { duration: reducedMotion ? 0.01 : 0.2 },
                   }}
                   onAnimationStart={onTransitionStart}
                 >

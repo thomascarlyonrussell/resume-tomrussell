@@ -4,7 +4,7 @@
  * Framer Motion animation variants used across components.
  */
 
-import type { Variants } from 'framer-motion';
+import type { Variants, TargetAndTransition } from 'framer-motion';
 
 /**
  * Fade up entrance animation
@@ -19,7 +19,7 @@ export const fadeUpVariants: Variants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: 'easeOut',
+      ease: 'easeOut' as const,
     },
   },
 };
@@ -35,7 +35,7 @@ export const fadeInVariants: Variants = {
     opacity: 1,
     transition: {
       duration: 0.5,
-      ease: 'easeOut',
+      ease: 'easeOut' as const,
     },
   },
 };
@@ -69,7 +69,7 @@ export const scaleUpVariants: Variants = {
     scale: 1,
     transition: {
       duration: 0.5,
-      ease: 'easeOut',
+      ease: 'easeOut' as const,
     },
   },
 };
@@ -87,7 +87,7 @@ export const slideInLeftVariants: Variants = {
     x: 0,
     transition: {
       duration: 0.5,
-      ease: 'easeOut',
+      ease: 'easeOut' as const,
     },
   },
 };
@@ -105,7 +105,7 @@ export const slideInRightVariants: Variants = {
     x: 0,
     transition: {
       duration: 0.5,
-      ease: 'easeOut',
+      ease: 'easeOut' as const,
     },
   },
 };
@@ -128,24 +128,24 @@ export const reducedMotionVariants: Variants = {
 /**
  * Bounce animation for scroll cue
  */
-export const bounceAnimation = {
+export const bounceAnimation: TargetAndTransition = {
   y: [0, 8, 0],
   transition: {
     duration: 1.5,
     repeat: Infinity,
-    ease: 'easeInOut',
+    ease: 'easeInOut' as const,
   },
 };
 
 /**
  * Pulse animation for current position indicator
  */
-export const pulseAnimation = {
+export const pulseAnimation: TargetAndTransition = {
   scale: [1, 1.2, 1],
   opacity: [1, 0.8, 1],
   transition: {
     duration: 2,
     repeat: Infinity,
-    ease: 'easeInOut',
+    ease: 'easeInOut' as const,
   },
 };
