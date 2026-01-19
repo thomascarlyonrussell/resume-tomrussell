@@ -8,10 +8,7 @@
 
 import { motion } from 'framer-motion';
 import type { ComputedSkill } from '@/data/types';
-import {
-  calculateOutsideLabelPosition,
-  truncateOutsideLabel,
-} from './utils/labelPositioning';
+import { calculateOutsideLabelPosition, truncateOutsideLabel } from './utils/labelPositioning';
 
 export interface SkillLabelOutsideProps {
   skill: ComputedSkill;
@@ -120,7 +117,7 @@ export function SkillLabelOutside({
         dominantBaseline="middle"
         fontSize={9}
         fill="var(--color-foreground)"
-        className="pointer-events-none select-none font-medium"
+        className="pointer-events-none font-medium select-none"
       >
         {displayText}
       </text>

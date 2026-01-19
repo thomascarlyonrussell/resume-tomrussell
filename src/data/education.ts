@@ -60,7 +60,5 @@ export function getHighestDegree(): Education | undefined {
  */
 export function getActiveCertifications(): Certification[] {
   const now = new Date().toISOString().slice(0, 7); // YYYY-MM
-  return certifications.filter(
-    (c) => !c.expirationDate || c.expirationDate >= now
-  );
+  return certifications.filter((c) => !c.expirationDate || c.expirationDate >= now);
 }

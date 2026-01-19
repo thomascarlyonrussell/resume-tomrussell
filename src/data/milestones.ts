@@ -16,8 +16,7 @@ export const milestones: Milestone[] = [
     id: 'first-engineering-role',
     title: 'First Full-Time Engineering Role at PPL Electric',
     date: '2011-07',
-    description:
-      'Started career as Engineer in Distribution Standards at PPL Electric Utilities',
+    description: 'Started career as Engineer in Distribution Standards at PPL Electric Utilities',
     skillIds: ['power-systems-analysis', 'protection-and-control'],
   },
   {
@@ -40,8 +39,7 @@ export const milestones: Milestone[] = [
     id: 'first-distribution-resource-plan',
     title: "PG&E's First Electric Distribution Resource Plan",
     date: '2016-06',
-    description:
-      "Technical expert for developing PG&E's first Electric Distribution Resource Plan",
+    description: "Technical expert for developing PG&E's first Electric Distribution Resource Plan",
     skillIds: ['distribution-planning', 'hosting-capacity', 'loadseer'],
   },
   {

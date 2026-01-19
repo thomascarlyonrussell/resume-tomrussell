@@ -20,8 +20,18 @@ function formatDateRange(startDate: string, endDate?: string | null): string {
   const formatDate = (date: string) => {
     const [year, month] = date.split('-');
     const monthNames = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return `${monthNames[parseInt(month, 10) - 1]} ${year}`;
   };
@@ -35,7 +45,8 @@ function calculateDuration(startDate: string, endDate?: string | null): string {
   const start = new Date(startDate + '-01');
   const end = endDate ? new Date(endDate + '-01') : new Date();
 
-  const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+  const months =
+    (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
   const years = Math.floor(months / 12);
   const remainingMonths = months % 12;
 
@@ -56,7 +67,7 @@ export function ExperienceCard({ experience, animationDelay = 0 }: ExperienceCar
 
   return (
     <motion.article
-      className="relative pl-8 pb-8 last:pb-0"
+      className="relative pb-8 pl-8 last:pb-0"
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{
@@ -66,13 +77,13 @@ export function ExperienceCard({ experience, animationDelay = 0 }: ExperienceCar
     >
       {/* Timeline line */}
       <div
-        className="absolute left-[5px] top-3 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700"
+        className="absolute top-3 bottom-0 left-[5px] w-0.5 bg-gray-200 dark:bg-gray-700"
         aria-hidden="true"
       />
 
       {/* Timeline dot */}
       <div
-        className={`absolute left-0 top-2 h-3 w-3 rounded-full border-2 ${
+        className={`absolute top-2 left-0 h-3 w-3 rounded-full border-2 ${
           isCurrent
             ? 'border-[var(--color-engineering)] bg-[var(--color-engineering)]'
             : 'border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-900'
@@ -123,10 +134,12 @@ export function ExperienceCard({ experience, animationDelay = 0 }: ExperienceCar
           <div className="mt-3">
             <button
               onClick={() => setShowHighlights(!showHighlights)}
-              className="text-sm font-medium text-[var(--color-engineering)] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-engineering)] focus-visible:ring-offset-2 rounded"
+              className="rounded text-sm font-medium text-[var(--color-engineering)] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-engineering)] focus-visible:ring-offset-2"
               aria-expanded={showHighlights}
             >
-              {showHighlights ? 'Hide highlights' : `Show ${experience.highlights!.length} highlights`}
+              {showHighlights
+                ? 'Hide highlights'
+                : `Show ${experience.highlights!.length} highlights`}
             </button>
 
             <AnimatePresence>
@@ -139,8 +152,14 @@ export function ExperienceCard({ experience, animationDelay = 0 }: ExperienceCar
                   className="mt-2 space-y-1 overflow-hidden"
                 >
                   {experience.highlights!.map((highlight, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm text-[var(--color-muted)]">
-                      <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--color-ai-automation)]" aria-hidden="true" />
+                    <li
+                      key={index}
+                      className="flex items-start gap-2 text-sm text-[var(--color-muted)]"
+                    >
+                      <span
+                        className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--color-ai-automation)]"
+                        aria-hidden="true"
+                      />
                       {highlight}
                     </li>
                   ))}

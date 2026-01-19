@@ -8,8 +8,20 @@
 export * from './types';
 
 // Re-export data
-export { categories, categoryMap, getCategory, getCategoryColor, getCategoryIds } from './categories';
-export { skills, getSkill, getSkillsByCategory, getSkillsBySubcategory, getSubcategories } from './skills';
+export {
+  categories,
+  categoryMap,
+  getCategory,
+  getCategoryColor,
+  getCategoryIds,
+} from './categories';
+export {
+  skills,
+  getSkill,
+  getSkillsByCategory,
+  getSkillsBySubcategory,
+  getSubcategories,
+} from './skills';
 export {
   experience,
   getExperience,
@@ -24,7 +36,12 @@ export {
   getMilestonesInRange,
   getMilestonesSorted,
 } from './milestones';
-export { publications, getPublication, getPublicationsByType, getDatedPublications } from './publications';
+export {
+  publications,
+  getPublication,
+  getPublicationsByType,
+  getDatedPublications,
+} from './publications';
 export {
   education,
   certifications,
@@ -38,7 +55,13 @@ export {
 import { skills } from './skills';
 import { categories, categoryMap } from './categories';
 import { milestones } from './milestones';
-import type { Skill, ComputedSkill, CategoryId, TimelineDataPoint, TimelineSkillInfo } from './types';
+import type {
+  Skill,
+  ComputedSkill,
+  CategoryId,
+  TimelineDataPoint,
+  TimelineSkillInfo,
+} from './types';
 import { calculateFibonacciSize, isSkillActive } from '@/lib/calculations';
 
 // ============================================================================

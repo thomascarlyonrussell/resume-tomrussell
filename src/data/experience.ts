@@ -70,14 +70,7 @@ export const experience: Experience[] = [
       'Coordinated change management and processes for planning department to provide information for new regulatory filings',
       'Represented PG&E at regulatory and external stakeholder workshops and events',
     ],
-    skillIds: [
-      'loadseer',
-      'cymdist',
-      'python',
-      'sql',
-      'distribution-planning',
-      'hosting-capacity',
-    ],
+    skillIds: ['loadseer', 'cymdist', 'python', 'sql', 'distribution-planning', 'hosting-capacity'],
   },
   {
     id: 'pge-senior-engineer',

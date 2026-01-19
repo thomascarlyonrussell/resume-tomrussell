@@ -45,7 +45,12 @@ function ProficiencyStars({ level }: { level: number }) {
   );
 }
 
-export function SkillTooltip({ skill, position, isVisible, reducedMotion = false }: SkillTooltipProps) {
+export function SkillTooltip({
+  skill,
+  position,
+  isVisible,
+  reducedMotion = false,
+}: SkillTooltipProps) {
   if (!skill || !position) return null;
 
   const category = getCategory(skill.category);
@@ -59,8 +64,10 @@ export function SkillTooltip({ skill, position, isVisible, reducedMotion = false
           initial={reducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.95, y: 4 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={reducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95, y: 4 }}
-          transition={reducedMotion ? { duration: 0 } : { duration: 0.15, ease: 'easeOut' as const }}
-          className="absolute z-50 pointer-events-none"
+          transition={
+            reducedMotion ? { duration: 0 } : { duration: 0.15, ease: 'easeOut' as const }
+          }
+          className="pointer-events-none absolute z-50"
           style={{
             left: position.x,
             top: position.y,
@@ -68,20 +75,17 @@ export function SkillTooltip({ skill, position, isVisible, reducedMotion = false
           role="tooltip"
           aria-live="polite"
         >
-          <div
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700
-                       rounded-lg shadow-lg p-3 min-w-[220px] max-w-[280px]"
-          >
+          <div className="max-w-[280px] min-w-[220px] rounded-lg border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-900">
             {/* Header: Name and Proficiency */}
-            <div className="flex items-center justify-between gap-2 mb-1">
-              <span className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+            <div className="mb-1 flex items-center justify-between gap-2">
+              <span className="truncate font-semibold text-gray-900 dark:text-gray-100">
                 {skill.name}
               </span>
               <ProficiencyStars level={skill.proficiency} />
             </div>
 
             {/* Category breadcrumb */}
-            <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            <div className="mb-2 text-xs text-gray-500 dark:text-gray-400">
               <span style={{ color: category?.color }} className="font-medium">
                 {category?.name}
               </span>
@@ -91,13 +95,13 @@ export function SkillTooltip({ skill, position, isVisible, reducedMotion = false
 
             {/* Description */}
             {skill.description && (
-              <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 line-clamp-2">
+              <p className="mb-2 line-clamp-2 text-sm text-gray-600 dark:text-gray-300">
                 {skill.description}
               </p>
             )}
 
             {/* Divider */}
-            <div className="border-t border-gray-200 dark:border-gray-700 my-2" />
+            <div className="my-2 border-t border-gray-200 dark:border-gray-700" />
 
             {/* Stats bar */}
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
@@ -108,7 +112,7 @@ export function SkillTooltip({ skill, position, isVisible, reducedMotion = false
               <span
                 className={
                   skill.isActive
-                    ? 'text-green-600 dark:text-green-400 font-medium'
+                    ? 'font-medium text-green-600 dark:text-green-400'
                     : 'text-gray-400 dark:text-gray-500'
                 }
               >

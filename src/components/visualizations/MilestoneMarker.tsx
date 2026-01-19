@@ -19,13 +19,7 @@ export interface MilestoneMarkerProps {
   onHover?: (milestone: Milestone | null) => void;
 }
 
-export function MilestoneMarker({
-  milestone,
-  x,
-  y,
-  index,
-  onHover,
-}: MilestoneMarkerProps) {
+export function MilestoneMarker({ milestone, x, y, index, onHover }: MilestoneMarkerProps) {
   const reducedMotion = useReducedMotion();
 
   return (
@@ -104,9 +98,7 @@ export function MilestoneLabel({ milestone, x, y }: MilestoneLabelProps) {
         fill="var(--color-foreground)"
         className="font-medium"
       >
-        {milestone.title.length > 20
-          ? milestone.title.substring(0, 18) + '...'
-          : milestone.title}
+        {milestone.title.length > 20 ? milestone.title.substring(0, 18) + '...' : milestone.title}
       </text>
     </motion.g>
   );

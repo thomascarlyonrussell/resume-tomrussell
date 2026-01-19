@@ -21,5 +21,9 @@ const sizeClasses = {
 };
 
 export function Container({ size = 'lg', className = '', children }: ContainerProps) {
-  return <div className={`mx-auto w-full px-4 sm:px-6 lg:px-8 ${sizeClasses[size]} ${className}`}>{children}</div>;
+  return (
+    <div className={`mx-auto w-full px-4 sm:px-6 lg:px-8 ${sizeClasses[size]} ${className}`}>
+      {children}
+    </div>
+  );
 }

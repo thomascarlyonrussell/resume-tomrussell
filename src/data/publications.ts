@@ -6,7 +6,8 @@ import type { Publication } from './types';
 export const publications: Publication[] = [
   {
     id: 'ev-reactive-power',
-    title: 'Electric Vehicle Impact on Distribution Grid: Reactive Power Compensation and Voltage Support',
+    title:
+      'Electric Vehicle Impact on Distribution Grid: Reactive Power Compensation and Voltage Support',
     type: 'Research Paper',
     date: null,
     description:

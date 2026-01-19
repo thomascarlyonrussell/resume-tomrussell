@@ -65,7 +65,7 @@ export function ChatInput({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         disabled={disabled}
-        className="flex-1 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-900 placeholder-gray-500 transition-colors focus:border-[var(--color-engineering)] focus:outline-none focus:ring-1 focus:ring-[var(--color-engineering)] disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-400"
+        className="flex-1 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-900 placeholder-gray-500 transition-colors focus:border-[var(--color-engineering)] focus:ring-1 focus:ring-[var(--color-engineering)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder-gray-400"
       />
       <button
         type="submit"

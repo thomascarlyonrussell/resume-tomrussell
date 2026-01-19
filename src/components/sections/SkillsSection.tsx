@@ -9,7 +9,12 @@
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useReducedMotion, useViewTransition } from '@/components/visualizations/hooks';
-import { FibonacciSpiral, TimelineArea, VisualizationToggle, SkillDetailModal } from '@/components/visualizations';
+import {
+  FibonacciSpiral,
+  TimelineArea,
+  VisualizationToggle,
+  SkillDetailModal,
+} from '@/components/visualizations';
 import type { VisualizationView } from '@/components/visualizations/VisualizationToggle';
 import type { ComputedSkill } from '@/data/types';
 import { Container } from '@/components/ui/Container';
@@ -24,18 +29,17 @@ export interface SkillsSectionProps {
 const VIEW_CONFIG: Record<VisualizationView, { title: string; subtitle: string }> = {
   fibonacci: {
     title: 'Skills & Experience',
-    subtitle: 'Hover for quick info or click to see full details. Size reflects proficiency and years of experience.',
+    subtitle:
+      'Hover for quick info or click to see full details. Size reflects proficiency and years of experience.',
   },
   timeline: {
     title: 'Career Progression',
-    subtitle: 'See how skills have grown over time. Hover to explore skills, click milestones for details.',
+    subtitle:
+      'See how skills have grown over time. Hover to explore skills, click milestones for details.',
   },
 };
 
-export function SkillsSection({
-  id = 'skills',
-  className = '',
-}: SkillsSectionProps) {
+export function SkillsSection({ id = 'skills', className = '' }: SkillsSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
   const isInView = useIntersectionObserver(sectionRef, { threshold: 0.1 });
@@ -43,12 +47,8 @@ export function SkillsSection({
   const [selectedSkill, setSelectedSkill] = useState<ComputedSkill | null>(null);
 
   // Manage focus and transition state
-  const {
-    containerRef,
-    isTransitioning,
-    onTransitionStart,
-    onTransitionComplete,
-  } = useViewTransition(activeView);
+  const { containerRef, isTransitioning, onTransitionStart, onTransitionComplete } =
+    useViewTransition(activeView);
 
   const variants = reducedMotion ? reducedMotionVariants : fadeUpVariants;
   const { title, subtitle } = VIEW_CONFIG[activeView];
@@ -71,17 +71,10 @@ export function SkillsSection({
       className={`py-20 md:py-32 ${className}`}
     >
       <Container size="xl">
-        <motion.div
-          variants={variants}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-        >
+        <motion.div variants={variants} initial="hidden" animate={isInView ? 'visible' : 'hidden'}>
           {/* Section Heading */}
           <div className="mb-8 flex flex-col items-center gap-4">
-            <h2
-              id={`${id}-heading`}
-              className="text-center text-3xl font-bold md:text-4xl"
-            >
+            <h2 id={`${id}-heading`} className="text-center text-3xl font-bold md:text-4xl">
               {title}
             </h2>
 

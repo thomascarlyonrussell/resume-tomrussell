@@ -76,7 +76,7 @@ function SocialLinkItem({ link, iconOnly }: { link: SocialLink; iconOnly: boolea
       href={href}
       target={isEmail ? undefined : '_blank'}
       rel={isEmail ? undefined : 'noopener noreferrer'}
-      className="flex items-center gap-2 text-[var(--color-muted)] transition-colors hover:text-[var(--color-foreground)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-foreground)] focus-visible:ring-offset-2 rounded-md p-1"
+      className="flex items-center gap-2 rounded-md p-1 text-[var(--color-muted)] transition-colors hover:text-[var(--color-foreground)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-foreground)] focus-visible:ring-offset-2"
       aria-label={link.label}
     >
       <span aria-hidden="true">{icons[link.icon]}</span>

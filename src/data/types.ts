@@ -106,7 +106,11 @@ export interface Experience {
 /**
  * Publication type identifiers
  */
-export type PublicationType = 'Research Paper' | 'Technical Report' | 'Regulatory Filing' | 'Article';
+export type PublicationType =
+  | 'Research Paper'
+  | 'Technical Report'
+  | 'Regulatory Filing'
+  | 'Article';
 
 /**
  * Publication entry for research papers, reports, and articles

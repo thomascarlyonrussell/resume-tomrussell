@@ -12,7 +12,11 @@ import { publications } from './publications';
 import { education, certifications } from './education';
 import { categories, categoryMap } from './categories';
 import { getActiveSkills, getTotalYearsOfExperience } from './index';
-import { getProficiencyLabel, formatYearsOfExperience, calculateYearsOfExperience } from '@/lib/calculations';
+import {
+  getProficiencyLabel,
+  formatYearsOfExperience,
+  calculateYearsOfExperience,
+} from '@/lib/calculations';
 import type { CategoryId, ProficiencyLevel } from './types';
 
 /**

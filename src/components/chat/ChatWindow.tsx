@@ -26,13 +26,7 @@ export function ChatWindow({ onClose }: ChatWindowProps) {
   const reducedMotion = useReducedMotion();
   const [input, setInput] = useState('');
 
-  const {
-    messages,
-    sendMessage,
-    status,
-    error,
-    regenerate,
-  } = useChat({
+  const { messages, sendMessage, status, error, regenerate } = useChat({
     transport: new DefaultChatTransport({
       api: '/api/chat',
     }),
@@ -42,14 +36,17 @@ export function ChatWindow({ onClose }: ChatWindowProps) {
   const hasMessages = messages.length > 0;
 
   // Handle starter prompt selection
-  const handleStarterPrompt = useCallback((prompt: string) => {
-    setInput(prompt);
-    // Send the message immediately
-    setTimeout(() => {
-      sendMessage({ text: prompt });
-      setInput('');
-    }, 0);
-  }, [sendMessage]);
+  const handleStarterPrompt = useCallback(
+    (prompt: string) => {
+      setInput(prompt);
+      // Send the message immediately
+      setTimeout(() => {
+        sendMessage({ text: prompt });
+        setInput('');
+      }, 0);
+    },
+    [sendMessage]
+  );
 
   // Handle escape key to close
   useEffect(() => {
@@ -95,16 +92,9 @@ export function ChatWindow({ onClose }: ChatWindowProps) {
       <ChatMessages messages={messages} isLoading={isLoading} />
 
       {/* Starter prompts - only show when no messages */}
-      {!hasMessages && !isLoading && (
-        <StarterPrompts onSelect={handleStarterPrompt} />
-      )}
+      {!hasMessages && !isLoading && <StarterPrompts onSelect={handleStarterPrompt} />}
 
-      <ChatInput
-        value={input}
-        onChange={setInput}
-        onSubmit={onSubmit}
-        disabled={isLoading}
-      />
+      <ChatInput value={input} onChange={setInput} onSubmit={onSubmit} disabled={isLoading} />
     </motion.div>
   );
 }

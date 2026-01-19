@@ -65,7 +65,7 @@ export function SkillLabelInside({
       dominantBaseline="middle"
       fontSize={fontSize}
       fill={textColor}
-      className="pointer-events-none select-none font-medium"
+      className="pointer-events-none font-medium select-none"
       style={{
         paintOrder: 'stroke fill',
         stroke: 'rgba(0, 0, 0, 0.3)',

@@ -59,10 +59,7 @@ export function AboutSection({ id = 'about', className = '' }: AboutSectionProps
           </motion.h2>
 
           {/* Stats Badges */}
-          <motion.div
-            variants={itemVariants}
-            className="mb-8 flex flex-wrap justify-center gap-4"
-          >
+          <motion.div variants={itemVariants} className="mb-8 flex flex-wrap justify-center gap-4">
             <span className="rounded-full bg-[var(--color-engineering)] px-4 py-2 text-sm font-medium text-white">
               {totalYears}+ Years Experience
             </span>

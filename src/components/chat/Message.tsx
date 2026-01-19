@@ -27,7 +27,7 @@ export function Message({ role, parts }: MessageProps) {
     return parts.map((part, index) => {
       if (part.type === 'text') {
         return (
-          <p key={index} className="whitespace-pre-wrap text-sm leading-relaxed">
+          <p key={index} className="text-sm leading-relaxed whitespace-pre-wrap">
             {part.text}
           </p>
         );

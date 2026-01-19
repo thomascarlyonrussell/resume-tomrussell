@@ -40,27 +40,16 @@ export function ExperienceSection({
       className={`py-20 md:py-32 ${className}`}
     >
       <Container size="md">
-        <motion.div
-          variants={variants}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-        >
+        <motion.div variants={variants} initial="hidden" animate={isInView ? 'visible' : 'hidden'}>
           {/* Section Heading */}
-          <h2
-            id={`${id}-heading`}
-            className="mb-8 text-center text-3xl font-bold md:text-4xl"
-          >
+          <h2 id={`${id}-heading`} className="mb-8 text-center text-3xl font-bold md:text-4xl">
             {title}
           </h2>
 
           {/* Timeline */}
           <div className="relative">
             {experience.map((exp, index) => (
-              <ExperienceCard
-                key={exp.id}
-                experience={exp}
-                animationDelay={index}
-              />
+              <ExperienceCard key={exp.id} experience={exp} animationDelay={index} />
             ))}
           </div>
         </motion.div>

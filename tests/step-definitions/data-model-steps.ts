@@ -17,13 +17,16 @@ When('it is added to the data', async function (this: CustomWorld) {
   await this.page!.waitForLoadState('domcontentloaded');
 });
 
-Then('it includes id, name, category, subcategory, proficiency, and startDate', async function (this: CustomWorld) {
-  // Verify the skill is rendered in the visualization
-  await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
-  const skillNodes = this.page!.locator('[data-testid="skill-node"]');
-  const count = await skillNodes.count();
-  expect(count).toBeGreaterThan(0);
-});
+Then(
+  'it includes id, name, category, subcategory, proficiency, and startDate',
+  async function (this: CustomWorld) {
+    // Verify the skill is rendered in the visualization
+    await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
+    const skillNodes = this.page!.locator('[data-testid="skill-node"]');
+    const count = await skillNodes.count();
+    expect(count).toBeGreaterThan(0);
+  }
+);
 
 Given('a skill the user no longer actively uses', async function (this: CustomWorld) {
   await this.page!.goto(this.baseUrl);
@@ -41,10 +44,13 @@ Then('visualizations can distinguish current from past skills', async function (
 });
 
 // Milestone structure
-Given('a major project delivery {string}', async function (this: CustomWorld, milestoneName: string) {
-  await this.page!.goto(this.baseUrl);
-  (this as any).milestoneName = milestoneName;
-});
+Given(
+  'a major project delivery {string}',
+  async function (this: CustomWorld, milestoneName: string) {
+    await this.page!.goto(this.baseUrl);
+    (this as any).milestoneName = milestoneName;
+  }
+);
 
 When('added as a milestone', async function (this: CustomWorld) {
   await this.page!.waitForLoadState('domcontentloaded');
@@ -83,19 +89,22 @@ Then('has a consistent color for visualization', async function (this: CustomWor
 });
 
 // Experience structure
-Given('Tom\'s current position', async function (this: CustomWorld) {
+Given("Tom's current position", async function (this: CustomWorld) {
   await this.page!.goto(this.baseUrl);
   await this.page!.locator('[data-testid="about-section"]').scrollIntoViewIfNeeded();
 });
 
-Then('it displays as {string} on timeline', async function (this: CustomWorld, displayText: string) {
-  await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
-  const timelineToggle = this.page!.locator('[data-testid="view-toggle-timeline"]');
-  await timelineToggle.click();
-  await this.page!.waitForTimeout(500);
-  const timelineView = this.page!.locator('[data-testid="timeline-view"]');
-  await expect(timelineView).toBeVisible();
-});
+Then(
+  'it displays as {string} on timeline',
+  async function (this: CustomWorld, displayText: string) {
+    await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
+    const timelineToggle = this.page!.locator('[data-testid="view-toggle-timeline"]');
+    await timelineToggle.click();
+    await this.page!.waitForTimeout(500);
+    const timelineView = this.page!.locator('[data-testid="timeline-view"]');
+    await expect(timelineView).toBeVisible();
+  }
+);
 
 // Computed properties
 Given('a skill started {string}', async function (this: CustomWorld, startDate: string) {
@@ -115,18 +124,24 @@ Then('it returns approximately {int} years', async function (this: CustomWorld, 
 });
 
 // Fibonacci sizing
-Given('a skill with proficiency {int} and {int} years of experience \\(current)', async function (this: CustomWorld, proficiency: number, years: number) {
-  await this.page!.goto(this.baseUrl);
-  (this as any).proficiency = proficiency;
-  (this as any).years = years;
-});
+Given(
+  'a skill with proficiency {int} and {int} years of experience \\(current)',
+  async function (this: CustomWorld, proficiency: number, years: number) {
+    await this.page!.goto(this.baseUrl);
+    (this as any).proficiency = proficiency;
+    (this as any).years = years;
+  }
+);
 
-Given('a skill with proficiency {int}, {int} years experience, ended {int} years ago', async function (this: CustomWorld, proficiency: number, years: number, endedYears: number) {
-  await this.page!.goto(this.baseUrl);
-  (this as any).proficiency = proficiency;
-  (this as any).years = years;
-  (this as any).endedYears = endedYears;
-});
+Given(
+  'a skill with proficiency {int}, {int} years experience, ended {int} years ago',
+  async function (this: CustomWorld, proficiency: number, years: number, endedYears: number) {
+    await this.page!.goto(this.baseUrl);
+    (this as any).proficiency = proficiency;
+    (this as any).years = years;
+    (this as any).endedYears = endedYears;
+  }
+);
 
 When('rendered in Fibonacci view', async function (this: CustomWorld) {
   await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
@@ -134,10 +149,13 @@ When('rendered in Fibonacci view', async function (this: CustomWorld) {
   await expect(fibonacciView).toBeVisible();
 });
 
-Then('calculated size is large \\(mapped to {int} in Fibonacci sequence)', async function (this: CustomWorld, size: number) {
-  const skillNodes = this.page!.locator('[data-testid="skill-node"]');
-  await expect(skillNodes.first()).toBeVisible();
-});
+Then(
+  'calculated size is large \\(mapped to {int} in Fibonacci sequence)',
+  async function (this: CustomWorld, size: number) {
+    const skillNodes = this.page!.locator('[data-testid="skill-node"]');
+    await expect(skillNodes.first()).toBeVisible();
+  }
+);
 
 Then('it appears much larger than lower proficiency skills', async function (this: CustomWorld) {
   const skillNodes = this.page!.locator('[data-testid="skill-node"]');
@@ -162,12 +180,15 @@ Given('multiple skills in {string} category', async function (this: CustomWorld,
   (this as any).category = category;
 });
 
-When('viewed on timeline from {int}-{int}', async function (this: CustomWorld, startYear: number, endYear: number) {
-  await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
-  const timelineToggle = this.page!.locator('[data-testid="view-toggle-timeline"]');
-  await timelineToggle.click();
-  await this.page!.waitForTimeout(500);
-});
+When(
+  'viewed on timeline from {int}-{int}',
+  async function (this: CustomWorld, startYear: number, endYear: number) {
+    await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
+    const timelineToggle = this.page!.locator('[data-testid="view-toggle-timeline"]');
+    await timelineToggle.click();
+    await this.page!.waitForTimeout(500);
+  }
+);
 
 Then('the area shows growth as skills were added over time', async function (this: CustomWorld) {
   const timelineArea = this.page!.locator('[data-testid="timeline-area"]');
@@ -180,17 +201,26 @@ When('it queries the knowledge base', async function (this: CustomWorld) {
 });
 
 Then('it can find all skills in the programming subcategory', async function (this: CustomWorld) {
-  const aiMessage = this.page!.locator('[data-testid="chat-message"][data-role="assistant"]').last();
+  const aiMessage = this.page!.locator(
+    '[data-testid="chat-message"][data-role="assistant"]'
+  ).last();
   await expect(aiMessage).toBeVisible({ timeout: 10000 });
 });
 
-Then('it can list all publications with titles and descriptions', async function (this: CustomWorld) {
-  const aiMessage = this.page!.locator('[data-testid="chat-message"][data-role="assistant"]').last();
-  await expect(aiMessage).toBeVisible({ timeout: 10000 });
-});
+Then(
+  'it can list all publications with titles and descriptions',
+  async function (this: CustomWorld) {
+    const aiMessage = this.page!.locator(
+      '[data-testid="chat-message"][data-role="assistant"]'
+    ).last();
+    await expect(aiMessage).toBeVisible({ timeout: 10000 });
+  }
+);
 
 Then('it can provide education details', async function (this: CustomWorld) {
-  const aiMessage = this.page!.locator('[data-testid="chat-message"][data-role="assistant"]').last();
+  const aiMessage = this.page!.locator(
+    '[data-testid="chat-message"][data-role="assistant"]'
+  ).last();
   await expect(aiMessage).toBeVisible({ timeout: 10000 });
 });
 

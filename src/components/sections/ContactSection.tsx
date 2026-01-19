@@ -74,10 +74,7 @@ export function ContactSection({
           </motion.h2>
 
           {/* Subtitle */}
-          <motion.p
-            variants={itemVariants}
-            className="mb-8 text-[var(--color-muted)]"
-          >
+          <motion.p variants={itemVariants} className="mb-8 text-[var(--color-muted)]">
             I&apos;m always open to discussing new opportunities and ideas.
           </motion.p>
 
@@ -93,10 +90,7 @@ export function ContactSection({
           />
 
           {/* Copyright */}
-          <motion.p
-            variants={itemVariants}
-            className="text-sm text-[var(--color-muted)]"
-          >
+          <motion.p variants={itemVariants} className="text-sm text-[var(--color-muted)]">
             &copy; {currentYear} Tom Russell. All rights reserved.
           </motion.p>
         </motion.div>

@@ -68,17 +68,14 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
     <div className={`w-full ${className}`}>
       {/* Screen Reader Description */}
       <div className="sr-only" role="note">
-        Timeline chart showing skill growth over time from {data[0]?.year} to {data[data.length - 1]?.year}.
-        Use the milestone buttons below to explore key career events.
+        Timeline chart showing skill growth over time from {data[0]?.year} to{' '}
+        {data[data.length - 1]?.year}. Use the milestone buttons below to explore key career events.
       </div>
 
       {/* Chart Container */}
       <div className="h-[300px] w-full sm:h-[400px] lg:h-[500px]">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={data}
-            margin={{ top: 20, right: 20, left: 0, bottom: 20 }}
-          >
+          <AreaChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 20 }}>
             <defs>
               {categories.map((category) => (
                 <linearGradient
@@ -95,11 +92,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
               ))}
             </defs>
 
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="var(--color-muted)"
-              opacity={0.2}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-muted)" opacity={0.2} />
 
             <XAxis
               dataKey="year"
@@ -168,9 +161,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
 
       {/* Milestone Legend */}
       <div className="mt-4 px-4">
-        <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">
-          ★ Career Milestones
-        </p>
+        <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">★ Career Milestones</p>
         <div className="flex flex-wrap gap-2">
           {milestones.slice(0, 6).map((milestone) => (
             <button
@@ -185,9 +176,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
             </button>
           ))}
           {milestones.length > 6 && (
-            <span className="px-2 py-1 text-xs text-gray-500">
-              +{milestones.length - 6} more
-            </span>
+            <span className="px-2 py-1 text-xs text-gray-500">+{milestones.length - 6} more</span>
           )}
         </div>
 
@@ -205,7 +194,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
               <p className="text-xs text-[var(--color-muted)]">
                 {hoveredMilestone.date} • {hoveredMilestone.description}
               </p>
-              <p className="text-xs text-[var(--color-engineering)] mt-1">
+              <p className="mt-1 text-xs text-[var(--color-engineering)]">
                 Click to see more details
               </p>
             </motion.div>
@@ -214,18 +203,13 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
       </div>
 
       {/* Category Legend - with separator */}
-      <div className="mt-6 border-t border-gray-200 pt-4 px-4 dark:border-gray-700">
+      <div className="mt-6 border-t border-gray-200 px-4 pt-4 dark:border-gray-700">
         <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">Categories</p>
         <div className="flex flex-wrap gap-3">
           {categories.map((category) => (
             <div key={category.id} className="flex items-center gap-1.5">
-              <span
-                className="h-3 w-3 rounded-full"
-                style={{ backgroundColor: category.color }}
-              />
-              <span className="text-xs text-gray-600 dark:text-gray-400">
-                {category.name}
-              </span>
+              <span className="h-3 w-3 rounded-full" style={{ backgroundColor: category.color }} />
+              <span className="text-xs text-gray-600 dark:text-gray-400">{category.name}</span>
             </div>
           ))}
         </div>

@@ -89,7 +89,8 @@ function calculateAngleIncrement(
     if (!prevPos) continue;
 
     // Only check if radii are close (within 50% difference)
-    const radiusRatio = Math.abs(prevPos.radius - currentRadius) / Math.max(prevPos.radius, currentRadius);
+    const radiusRatio =
+      Math.abs(prevPos.radius - currentRadius) / Math.max(prevPos.radius, currentRadius);
     if (radiusRatio > 0.5) continue;
 
     // Calculate distance needed to avoid collision

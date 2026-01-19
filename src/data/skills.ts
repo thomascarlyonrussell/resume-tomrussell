@@ -323,8 +323,7 @@ export const skills: Skill[] = [
     proficiency: 5,
     startDate: '2025-01',
     endDate: null,
-    description:
-      'Spec-driven development with AI-powered context building and validation',
+    description: 'Spec-driven development with AI-powered context building and validation',
   },
   {
     id: 'playwright-mcp',
@@ -348,8 +347,7 @@ export const skills: Skill[] = [
     proficiency: 5,
     startDate: '2014-09',
     endDate: null,
-    description:
-      'Client demos, sales presentations, product training, and conference speaking',
+    description: 'Client demos, sales presentations, product training, and conference speaking',
   },
   {
     id: 'stakeholder-management',

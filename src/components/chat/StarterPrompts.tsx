@@ -14,10 +14,10 @@ export interface StarterPromptsProps {
 }
 
 const STARTER_PROMPTS = [
-  "What projects has Tom worked on?",
+  'What projects has Tom worked on?',
   "What's Tom's technical background?",
   "What are Tom's key strengths?",
-  "How does Tom approach problem-solving?",
+  'How does Tom approach problem-solving?',
 ];
 
 export function StarterPrompts({ onSelect }: StarterPromptsProps) {

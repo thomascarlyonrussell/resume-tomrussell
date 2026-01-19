@@ -40,10 +40,13 @@ When('they scroll down', async function (this: CustomWorld) {
   await this.page!.waitForTimeout(500);
 });
 
-Given('a visitor scrolls to the {word} section', async function (this: CustomWorld, sectionName: string) {
-  const sectionId = sectionName.toLowerCase().replace(/\s+/g, '-');
-  await this.page!.locator(`[data-testid="${sectionId}-section"]`).scrollIntoViewIfNeeded();
-});
+Given(
+  'a visitor scrolls to the {word} section',
+  async function (this: CustomWorld, sectionName: string) {
+    const sectionId = sectionName.toLowerCase().replace(/\s+/g, '-');
+    await this.page!.locator(`[data-testid="${sectionId}-section"]`).scrollIntoViewIfNeeded();
+  }
+);
 
 Given('the user scrolls to the visualization section', async function (this: CustomWorld) {
   await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();

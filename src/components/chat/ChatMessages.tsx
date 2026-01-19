@@ -39,7 +39,8 @@ export function ChatMessages({ messages, isLoading = false }: ChatMessagesProps)
       {!hasMessages && !isLoading && (
         <div className="flex h-full items-center justify-center">
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-            Hi! I&apos;m an AI assistant that can answer questions about Tom&apos;s professional background.
+            Hi! I&apos;m an AI assistant that can answer questions about Tom&apos;s professional
+            background.
           </p>
         </div>
       )}

@@ -18,7 +18,7 @@ export function ThemeToggle() {
         className="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-gray-800"
         aria-label="Toggle theme"
       >
-        <span className="h-5 w-5 block" />
+        <span className="block h-5 w-5" />
       </button>
     );
   }
@@ -26,7 +26,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="rounded-md p-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+      className="rounded-md p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
       aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
     >
       {theme === 'dark' ? (

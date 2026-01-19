@@ -27,10 +27,7 @@ interface TimelineTooltipProps {
   label?: string;
 }
 
-export function TimelineTooltip({
-  active,
-  payload,
-}: TimelineTooltipProps) {
+export function TimelineTooltip({ active, payload }: TimelineTooltipProps) {
   const reducedMotion = useReducedMotion();
 
   if (!active || !payload || payload.length === 0) {
@@ -61,9 +58,7 @@ export function TimelineTooltip({
       {/* Date Header */}
       <div className="mb-2 border-b border-gray-200 pb-2 dark:border-gray-700">
         <p className="text-sm font-semibold">{year}</p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          {total} active skills
-        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">{total} active skills</p>
       </div>
 
       {/* Category Breakdown */}
@@ -90,9 +85,7 @@ export function TimelineTooltip({
       {/* Skills Preview (show top 5) */}
       {activeSkills.length > 0 && (
         <div className="mb-2 border-t border-gray-200 pt-2 dark:border-gray-700">
-          <p className="mb-1 text-xs font-medium text-gray-600 dark:text-gray-400">
-            Top Skills:
-          </p>
+          <p className="mb-1 text-xs font-medium text-gray-600 dark:text-gray-400">Top Skills:</p>
           <div className="flex flex-wrap gap-1">
             {activeSkills.slice(0, 5).map((skill) => (
               <span
@@ -118,9 +111,7 @@ export function TimelineTooltip({
       {/* Nearby Milestones */}
       {nearbyMilestones.length > 0 && (
         <div className="border-t border-gray-200 pt-2 dark:border-gray-700">
-          <p className="mb-1 text-xs font-medium text-gray-600 dark:text-gray-400">
-            Milestones:
-          </p>
+          <p className="mb-1 text-xs font-medium text-gray-600 dark:text-gray-400">Milestones:</p>
           {nearbyMilestones.map((milestone) => (
             <div key={milestone.id} className="flex items-start gap-1.5 text-xs">
               <span className="mt-1 text-[var(--color-engineering)]">★</span>

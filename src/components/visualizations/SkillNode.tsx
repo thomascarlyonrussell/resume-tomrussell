@@ -126,7 +126,9 @@ export const SkillNode = forwardRef<SVGCircleElement, SkillNodeProps>(function S
       }}
       whileHover={reducedMotion ? undefined : { scale: 1.15, zIndex: 100 }}
       whileFocus={reducedMotion ? undefined : { scale: 1.15, zIndex: 100 }}
-      transition={reducedMotion ? undefined : { type: 'spring' as const, stiffness: 400, damping: 25 }}
+      transition={
+        reducedMotion ? undefined : { type: 'spring' as const, stiffness: 400, damping: 25 }
+      }
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onFocus={handleFocus}

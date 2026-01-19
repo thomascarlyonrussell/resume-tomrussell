@@ -31,27 +31,36 @@ Then('the toggle updates to show Timeline as active', async function (this: Cust
   await expect(timelineToggle).toHaveAttribute('aria-pressed', 'true');
 });
 
-Then('the view smoothly transitions to the alternate visualization', async function (this: CustomWorld) {
-  await this.page!.waitForTimeout(500); // Wait for transition
-  // Either Fibonacci or Timeline should be visible
-  const fibonacci = this.page!.locator('[data-testid="fibonacci-view"]');
-  const timeline = this.page!.locator('[data-testid="timeline-view"]');
-  const fibonacciVisible = await fibonacci.isVisible();
-  const timelineVisible = await timeline.isVisible();
-  expect(fibonacciVisible || timelineVisible).toBeTruthy();
-});
+Then(
+  'the view smoothly transitions to the alternate visualization',
+  async function (this: CustomWorld) {
+    await this.page!.waitForTimeout(500); // Wait for transition
+    // Either Fibonacci or Timeline should be visible
+    const fibonacci = this.page!.locator('[data-testid="fibonacci-view"]');
+    const timeline = this.page!.locator('[data-testid="timeline-view"]');
+    const fibonacciVisible = await fibonacci.isVisible();
+    const timelineVisible = await timeline.isVisible();
+    expect(fibonacciVisible || timelineVisible).toBeTruthy();
+  }
+);
 
 // Fibonacci layout steps
-Given('an active skill with proficiency {int} and {int} years experience', async function (this: CustomWorld, proficiency: number, years: number) {
-  await this.page!.goto(this.baseUrl);
-  await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
-  // Skill data is pre-loaded in the app
-});
+Given(
+  'an active skill with proficiency {int} and {int} years experience',
+  async function (this: CustomWorld, proficiency: number, years: number) {
+    await this.page!.goto(this.baseUrl);
+    await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
+    // Skill data is pre-loaded in the app
+  }
+);
 
-Given('an inactive skill ended {int} years ago with proficiency {int} and {int} years experience', async function (this: CustomWorld, endedYears: number, proficiency: number, years: number) {
-  await this.page!.goto(this.baseUrl);
-  await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
-});
+Given(
+  'an inactive skill ended {int} years ago with proficiency {int} and {int} years experience',
+  async function (this: CustomWorld, endedYears: number, proficiency: number, years: number) {
+    await this.page!.goto(this.baseUrl);
+    await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
+  }
+);
 
 Given('skills from different categories', async function (this: CustomWorld) {
   await this.page!.goto(this.baseUrl);
@@ -69,12 +78,15 @@ Then('calculated size is mapped to Fibonacci sequence', async function (this: Cu
   expect(count).toBeGreaterThan(0);
 });
 
-Then('appears much larger than a proficiency {int} skill with {int} years', async function (this: CustomWorld, proficiency: number, years: number) {
-  // Visual verification - ensure skills exist
-  const skillNodes = this.page!.locator('[data-testid="skill-node"]');
-  const count = await skillNodes.count();
-  expect(count).toBeGreaterThan(1);
-});
+Then(
+  'appears much larger than a proficiency {int} skill with {int} years',
+  async function (this: CustomWorld, proficiency: number, years: number) {
+    // Visual verification - ensure skills exist
+    const skillNodes = this.page!.locator('[data-testid="skill-node"]');
+    const count = await skillNodes.count();
+    expect(count).toBeGreaterThan(1);
+  }
+);
 
 Then('calculated size accounts for time degradation', async function (this: CustomWorld) {
   const skillNodes = this.page!.locator('[data-testid="skill-node"]');
@@ -116,7 +128,9 @@ Given('a mobile user', async function (this: CustomWorld) {
 });
 
 When('the cursor is over {string}', async function (this: CustomWorld, skillName: string) {
-  const skillNode = this.page!.locator('[data-testid="skill-node"]', { hasText: skillName }).first();
+  const skillNode = this.page!.locator('[data-testid="skill-node"]', {
+    hasText: skillName,
+  }).first();
   await skillNode.hover();
 });
 
@@ -125,7 +139,7 @@ When('they tap a skill element', async function (this: CustomWorld) {
   await skillNode.tap();
 });
 
-Then('a tooltip appears with Python\'s details', async function (this: CustomWorld) {
+Then("a tooltip appears with Python's details", async function (this: CustomWorld) {
   const tooltip = this.page!.locator('[data-testid="skill-tooltip"]');
   await expect(tooltip).toBeVisible({ timeout: 2000 });
 });
@@ -158,7 +172,7 @@ Then('skills animate into the spiral formation', async function (this: CustomWor
   await expect(skillNodes.first()).toBeVisible();
 });
 
-Then('animation respects user\'s motion preferences', async function (this: CustomWorld) {
+Then("animation respects user's motion preferences", async function (this: CustomWorld) {
   // This would require checking prefers-reduced-motion setting
   const skillNodes = this.page!.locator('[data-testid="skill-node"]');
   await expect(skillNodes.first()).toBeVisible();
@@ -175,10 +189,13 @@ When('viewing the Fibonacci spiral', async function (this: CustomWorld) {
   await expect(fibonacciView).toBeVisible();
 });
 
-Then('they can reference the legend to understand what they\'re seeing', async function (this: CustomWorld) {
-  const legend = this.page!.locator('[data-testid="legend"]');
-  await expect(legend).toBeVisible();
-});
+Then(
+  "they can reference the legend to understand what they're seeing",
+  async function (this: CustomWorld) {
+    const legend = this.page!.locator('[data-testid="legend"]');
+    await expect(legend).toBeVisible();
+  }
+);
 
 Then('see category colors and their meanings', async function (this: CustomWorld) {
   const legendItems = this.page!.locator('[data-testid="legend-item"]');
@@ -193,7 +210,7 @@ Then('see size scale explanation', async function (this: CustomWorld) {
 });
 
 // Timeline steps
-Given('Tom\'s career spans multiple years', async function (this: CustomWorld) {
+Given("Tom's career spans multiple years", async function (this: CustomWorld) {
   await this.page!.goto(this.baseUrl);
   await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
   const timelineToggle = this.page!.locator('[data-testid="view-toggle-timeline"]');
@@ -210,7 +227,10 @@ Given('the user hovers at a specific year on the timeline', async function (this
   const timelineArea = this.page!.locator('[data-testid="timeline-area"]');
   const boundingBox = await timelineArea.boundingBox();
   if (boundingBox) {
-    await this.page!.mouse.move(boundingBox.x + boundingBox.width / 2, boundingBox.y + boundingBox.height / 2);
+    await this.page!.mouse.move(
+      boundingBox.x + boundingBox.width / 2,
+      boundingBox.y + boundingBox.height / 2
+    );
   }
 });
 
@@ -287,7 +307,9 @@ Then('the effect suggests career growth over time', async function (this: Custom
 // Responsive and accessibility
 When('viewing either visualization', async function (this: CustomWorld) {
   await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
-  const visualization = this.page!.locator('[data-testid="fibonacci-view"],[data-testid="timeline-view"]');
+  const visualization = this.page!.locator(
+    '[data-testid="fibonacci-view"],[data-testid="timeline-view"]'
+  );
   await expect(visualization.first()).toBeVisible();
 });
 
@@ -322,7 +344,9 @@ Then('can access individual skill information', async function (this: CustomWorl
 
 Then('they can navigate between skill elements', async function (this: CustomWorld) {
   await this.page!.keyboard.press('Tab');
-  const focusedElement = await this.page!.evaluate(() => document.activeElement?.getAttribute('data-testid'));
+  const focusedElement = await this.page!.evaluate(() =>
+    document.activeElement?.getAttribute('data-testid')
+  );
   expect(focusedElement).toBeTruthy();
 });
 
@@ -339,7 +363,9 @@ Given('{int}+ skills in the dataset', async function (this: CustomWorld, count: 
 });
 
 When('rendering either visualization', async function (this: CustomWorld) {
-  const visualization = this.page!.locator('[data-testid="fibonacci-view"],[data-testid="timeline-view"]');
+  const visualization = this.page!.locator(
+    '[data-testid="fibonacci-view"],[data-testid="timeline-view"]'
+  );
   await expect(visualization.first()).toBeVisible();
 });
 
@@ -349,7 +375,7 @@ Then('performance remains smooth', async function (this: CustomWorld) {
   await expect(skillNodes.first()).toBeVisible();
 });
 
-Then('animations don\'t stutter', async function (this: CustomWorld) {
+Then("animations don't stutter", async function (this: CustomWorld) {
   // If animations complete without error, test passes
   await this.page!.waitForTimeout(1000);
 });
@@ -383,7 +409,10 @@ When('viewing the Timeline', async function (this: CustomWorld) {
   await expect(timelineView).toBeVisible();
 });
 
-Then('they can reference the legend to understand category colors', async function (this: CustomWorld) {
-  const legend = this.page!.locator('[data-testid="legend"]');
-  await expect(legend).toBeVisible();
-});
+Then(
+  'they can reference the legend to understand category colors',
+  async function (this: CustomWorld) {
+    const legend = this.page!.locator('[data-testid="legend"]');
+    await expect(legend).toBeVisible();
+  }
+);

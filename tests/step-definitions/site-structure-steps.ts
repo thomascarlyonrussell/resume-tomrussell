@@ -54,17 +54,20 @@ When('the Hero section loads', async function (this: CustomWorld) {
   await expect(heroSection).toBeVisible();
 });
 
-Then('Tom\'s name is immediately visible', async function (this: CustomWorld) {
+Then("Tom's name is immediately visible", async function (this: CustomWorld) {
   const nameElement = this.page!.locator('h1').first();
   const nameText = await nameElement.textContent();
   expect(nameText?.toLowerCase()).toContain('tom');
 });
 
-Then('the visitor understands this is a professional portfolio', async function (this: CustomWorld) {
-  const heroSection = this.page!.locator('[data-testid="hero-section"]');
-  const heroText = await heroSection.textContent();
-  expect(heroText).toBeTruthy();
-});
+Then(
+  'the visitor understands this is a professional portfolio',
+  async function (this: CustomWorld) {
+    const heroSection = this.page!.locator('[data-testid="hero-section"]');
+    const heroText = await heroSection.textContent();
+    expect(heroText).toBeTruthy();
+  }
+);
 
 // About section
 Given('a visitor wants to contact Tom', async function (this: CustomWorld) {
@@ -81,11 +84,14 @@ When('they scroll to the Contact section', async function (this: CustomWorld) {
   await contactSection.scrollIntoViewIfNeeded();
 });
 
-Then('they understand Tom\'s professional background and focus areas', async function (this: CustomWorld) {
-  const aboutSection = this.page!.locator('[data-testid="about-section"]');
-  const aboutText = await aboutSection.textContent();
-  expect(aboutText?.length).toBeGreaterThan(100);
-});
+Then(
+  "they understand Tom's professional background and focus areas",
+  async function (this: CustomWorld) {
+    const aboutSection = this.page!.locator('[data-testid="about-section"]');
+    const aboutText = await aboutSection.textContent();
+    expect(aboutText?.length).toBeGreaterThan(100);
+  }
+);
 
 // Contact section
 Then('they can find email link', async function (this: CustomWorld) {
@@ -148,7 +154,9 @@ Then('all content is readable and accessible', async function (this: CustomWorld
 
 Then('visualizations adapt to smaller screens', async function (this: CustomWorld) {
   await this.page!.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
-  const visualization = this.page!.locator('[data-testid="fibonacci-view"],[data-testid="timeline-view"]');
+  const visualization = this.page!.locator(
+    '[data-testid="fibonacci-view"],[data-testid="timeline-view"]'
+  );
   await expect(visualization.first()).toBeVisible();
 });
 
