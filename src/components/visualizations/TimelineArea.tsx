@@ -22,6 +22,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTimelineData } from './hooks/useTimelineData';
 import { useReducedMotion } from './hooks';
 import { TimelineTooltip } from './TimelineTooltip';
+import { MilestoneDetailModal } from './MilestoneDetailModal';
 import { milestones } from '@/data/milestones';
 import type { Milestone } from '@/data/types';
 
@@ -33,6 +34,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
   const reducedMotion = useReducedMotion();
   const { data, categories } = useTimelineData({ sampleRate: 3 });
   const [hoveredMilestone, setHoveredMilestone] = useState<Milestone | null>(null);
+  const [selectedMilestone, setSelectedMilestone] = useState<Milestone | null>(null);
 
   // Get year ticks for X-axis
   const yearTicks = useMemo(() => {
@@ -175,7 +177,9 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
               key={milestone.id}
               onMouseEnter={() => setHoveredMilestone(milestone)}
               onMouseLeave={() => setHoveredMilestone(null)}
+              onClick={() => setSelectedMilestone(milestone)}
               className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700 transition-colors hover:bg-[var(--color-engineering)] hover:text-white dark:bg-gray-800 dark:text-gray-300"
+              aria-label={`View details for ${milestone.title}`}
             >
               {milestone.date.split('-')[0]}
             </button>
@@ -187,9 +191,9 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
           )}
         </div>
 
-        {/* Hovered Milestone Detail */}
+        {/* Hovered Milestone Detail - Hidden when modal is open */}
         <AnimatePresence>
-          {hoveredMilestone && (
+          {hoveredMilestone && !selectedMilestone && (
             <motion.div
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
@@ -200,6 +204,9 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
               <p className="text-sm font-medium">{hoveredMilestone.title}</p>
               <p className="text-xs text-[var(--color-muted)]">
                 {hoveredMilestone.date} • {hoveredMilestone.description}
+              </p>
+              <p className="text-xs text-[var(--color-engineering)] mt-1">
+                Click to see more details
               </p>
             </motion.div>
           )}
@@ -223,6 +230,12 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
           ))}
         </div>
       </div>
+
+      {/* Milestone Detail Modal */}
+      <MilestoneDetailModal
+        milestone={selectedMilestone}
+        onClose={() => setSelectedMilestone(null)}
+      />
     </div>
   );
 }

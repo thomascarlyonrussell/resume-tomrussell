@@ -27,5 +27,11 @@ export type { MilestoneMarkerProps, MilestoneLabelProps } from './MilestoneMarke
 export { VisualizationToggle } from './VisualizationToggle';
 export type { VisualizationView, VisualizationToggleProps } from './VisualizationToggle';
 
+export { SkillDetailModal } from './SkillDetailModal';
+export type { SkillDetailModalProps } from './SkillDetailModal';
+
+export { MilestoneDetailModal } from './MilestoneDetailModal';
+export type { MilestoneDetailModalProps } from './MilestoneDetailModal';
+
 // Re-export hooks
 export * from './hooks';
