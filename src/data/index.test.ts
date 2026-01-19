@@ -2,7 +2,6 @@
  * Unit tests for data helper functions
  */
 
-import { describe, it, expect } from 'vitest';
 import { getCategorySkillCounts, getAllComputedSkills } from './index';
 import { categories } from './categories';
 import type { CategoryId } from './types';
@@ -37,7 +36,7 @@ describe('getCategorySkillCounts', () => {
       'product-management',
       'data-analytics',
       'professional-skills',
-      'tools-platforms',
+      'content-creation',
     ];
 
     expectedIds.forEach((id) => {

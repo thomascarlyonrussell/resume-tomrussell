@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -13,12 +13,16 @@
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:e2e": "cucumber-js",
-    "test:e2e:chatbot": "cucumber-js tests/features/chatbot/**/*.feature",
-    "test:e2e:visualizations": "cucumber-js tests/features/visualizations/**/*.feature",
-    "test:e2e:site-structure": "cucumber-js tests/features/site-structure/**/*.feature",
-    "test:e2e:data-model": "cucumber-js tests/features/data-model/**/*.feature",
-    "test:all": "npm run test:run && npm run test:e2e"
+    "test:bdd": "playwright test",
+    "test:bdd:ui": "playwright test --ui",
+    "test:bdd:debug": "playwright test --debug",
+    "test:bdd:headed": "playwright test --headed",
+    "test:bdd:chatbot": "playwright test chatbot",
+    "test:bdd:visualizations": "playwright test visualizations",
+    "test:bdd:site-structure": "playwright test site-structure",
+    "test:bdd:data-model": "playwright test data-model",
+    "bddgen": "bddgen",
+    "test:all": "npm run test:run && npm run test:bdd"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.12",
@@ -45,7 +49,6 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
-    "@cucumber/cucumber": "^12.5.0",
     "@eslint/eslintrc": "^3.3.3",
     "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4.0.0",
@@ -56,14 +59,17 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.2",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "^16.1.3",
     "jsdom": "^27.4.0",
     "playwright": "^1.57.0",
+    "playwright-bdd": "^8.4.2",
     "prettier": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "^4.0.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.0.17"
   }

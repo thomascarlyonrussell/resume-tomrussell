@@ -52,6 +52,7 @@ export function ContactSection({
     <section
       ref={sectionRef}
       id={id}
+      data-testid={`${id}-section`}
       aria-labelledby={`${id}-heading`}
       className={`bg-gray-50 py-20 dark:bg-gray-900/50 ${className}`}
     >

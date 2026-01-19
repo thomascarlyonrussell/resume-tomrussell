@@ -36,6 +36,7 @@ export function ExperienceSection({
     <section
       ref={sectionRef}
       id={id}
+      data-testid={`${id}-section`}
       aria-labelledby={`${id}-heading`}
       className={`py-20 md:py-32 ${className}`}
     >

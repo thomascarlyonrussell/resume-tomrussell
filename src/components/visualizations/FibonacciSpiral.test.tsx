@@ -2,7 +2,6 @@
  * Unit tests for FibonacciSpiral filtering logic
  */
 
-import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
 import { FibonacciSpiral } from './FibonacciSpiral';
 import type { ComputedSkill, CategoryId } from '@/data/types';
@@ -13,8 +12,9 @@ const mockSkills: ComputedSkill[] = [
     id: 'skill-1',
     name: 'TypeScript',
     category: 'software-development',
+    subcategory: 'Programming Languages',
     proficiency: 5,
-    experienceYears: 4,
+    yearsOfExperience: 4,
     startDate: '2020-01-01',
     isActive: true,
     fibonacciSize: 21,
@@ -23,8 +23,9 @@ const mockSkills: ComputedSkill[] = [
     id: 'skill-2',
     name: 'Power Systems',
     category: 'engineering',
-    proficiency: 4,
-    experienceYears: 8,
+    subcategory: 'Electrical Engineering',
+    proficiency: 5,
+    yearsOfExperience: 8,
     startDate: '2016-01-01',
     isActive: true,
     fibonacciSize: 21,
@@ -33,8 +34,9 @@ const mockSkills: ComputedSkill[] = [
     id: 'skill-3',
     name: 'React',
     category: 'software-development',
+    subcategory: 'Frontend Frameworks',
     proficiency: 5,
-    experienceYears: 3,
+    yearsOfExperience: 3,
     startDate: '2021-01-01',
     isActive: true,
     fibonacciSize: 13,
@@ -43,8 +45,9 @@ const mockSkills: ComputedSkill[] = [
     id: 'skill-4',
     name: 'Product Strategy',
     category: 'product-management',
-    proficiency: 4,
-    experienceYears: 5,
+    subcategory: 'Strategy',
+    proficiency: 5,
+    yearsOfExperience: 5,
     startDate: '2019-01-01',
     isActive: true,
     fibonacciSize: 13,
@@ -203,7 +206,7 @@ describe('FibonacciSpiral Filter Logic (Isolated)', () => {
     expect(skill).toHaveProperty('name');
     expect(skill).toHaveProperty('category');
     expect(skill).toHaveProperty('proficiency');
-    expect(skill).toHaveProperty('experienceYears');
+    expect(skill).toHaveProperty('yearsOfExperience');
     expect(skill).toHaveProperty('fibonacciSize');
   });
 

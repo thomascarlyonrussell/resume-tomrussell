@@ -73,6 +73,7 @@ export function SkillsSection({ id = 'skills', className = '' }: SkillsSectionPr
     <section
       ref={sectionRef}
       id={id}
+      data-testid={`${id}-section`}
       aria-labelledby={`${id}-heading`}
       className={`py-20 md:py-32 ${className}`}
     >

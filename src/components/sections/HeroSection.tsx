@@ -41,6 +41,7 @@ export function HeroSection({
     <section
       ref={sectionRef}
       id={id}
+      data-testid={`${id}-section`}
       aria-labelledby={`${id}-heading`}
       className={`relative flex min-h-screen flex-col items-center justify-center px-4 py-20 ${className}`}
     >
