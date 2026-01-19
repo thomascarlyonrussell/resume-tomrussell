@@ -1,37 +1,47 @@
 /**
  * SkillsSection Component
  *
- * Wrapper for the Fibonacci spiral visualization.
+ * Wrapper for both visualizations with toggle to switch between them.
  */
 
 'use client';
 
-import { useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useReducedMotion } from '@/components/visualizations/hooks';
-import { FibonacciSpiral } from '@/components/visualizations';
+import { FibonacciSpiral, TimelineArea, VisualizationToggle } from '@/components/visualizations';
+import type { VisualizationView } from '@/components/visualizations/VisualizationToggle';
 import { Container } from '@/components/ui/Container';
 import { fadeUpVariants, reducedMotionVariants } from '@/lib/animations';
 import { useIntersectionObserver } from '@/hooks';
 
 export interface SkillsSectionProps {
   id?: string;
-  title?: string;
-  subtitle?: string;
   className?: string;
 }
 
+const VIEW_CONFIG: Record<VisualizationView, { title: string; subtitle: string }> = {
+  fibonacci: {
+    title: 'Skills & Experience',
+    subtitle: 'Hover or tap on skills to learn more. Size reflects proficiency and years of experience.',
+  },
+  timeline: {
+    title: 'Career Progression',
+    subtitle: 'See how skills have grown over time. Hover to explore skills active at each point.',
+  },
+};
+
 export function SkillsSection({
   id = 'skills',
-  title = 'Skills & Experience',
-  subtitle = 'Hover or tap on skills to learn more. Size reflects proficiency and years of experience.',
   className = '',
 }: SkillsSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const reducedMotion = useReducedMotion();
   const isInView = useIntersectionObserver(sectionRef, { threshold: 0.1 });
+  const [activeView, setActiveView] = useState<VisualizationView>('fibonacci');
 
   const variants = reducedMotion ? reducedMotionVariants : fadeUpVariants;
+  const { title, subtitle } = VIEW_CONFIG[activeView];
 
   return (
     <section
@@ -47,20 +57,56 @@ export function SkillsSection({
           animate={isInView ? 'visible' : 'hidden'}
         >
           {/* Section Heading */}
-          <h2
-            id={`${id}-heading`}
-            className="mb-4 text-center text-3xl font-bold md:text-4xl"
-          >
-            {title}
-          </h2>
+          <div className="mb-8 flex flex-col items-center gap-4">
+            <h2
+              id={`${id}-heading`}
+              className="text-center text-3xl font-bold md:text-4xl"
+            >
+              {title}
+            </h2>
 
-          {/* Subtitle */}
-          <p className="mb-8 text-center text-sm text-[var(--color-muted)] md:text-base">
-            {subtitle}
-          </p>
+            {/* Toggle */}
+            <VisualizationToggle
+              activeView={activeView}
+              onChange={setActiveView}
+            />
 
-          {/* Fibonacci Spiral Visualization */}
-          <FibonacciSpiral showLegend={true} />
+            {/* Subtitle */}
+            <p className="max-w-lg text-center text-sm text-[var(--color-muted)] md:text-base">
+              {subtitle}
+            </p>
+          </div>
+
+          {/* Visualization Panel */}
+          <AnimatePresence mode="wait">
+            {activeView === 'fibonacci' ? (
+              <motion.div
+                key="fibonacci"
+                id="fibonacci-panel"
+                role="tabpanel"
+                aria-labelledby="fibonacci-tab"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: reducedMotion ? 0.01 : 0.3 }}
+              >
+                <FibonacciSpiral showLegend={true} />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="timeline"
+                id="timeline-panel"
+                role="tabpanel"
+                aria-labelledby="timeline-tab"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: reducedMotion ? 0.01 : 0.3 }}
+              >
+                <TimelineArea />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </Container>
     </section>
