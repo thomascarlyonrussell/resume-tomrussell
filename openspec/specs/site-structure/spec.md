@@ -9,9 +9,7 @@ Define the overall page layout, navigation, and section organization for Tom Rus
 The site is a single-page application with distinct sections that visitors scroll through. The design balances creative visual impact with professional presentation.
 
 ---
-
 ## Requirements
-
 ### Requirement: Single Page Layout
 
 The site SHALL be a single scrolling page with distinct sections.
@@ -41,7 +39,9 @@ The page SHALL contain sections in this order:
 #### Scenario: Complete page scroll
 - **GIVEN** a visitor at the top of the page
 - **WHEN** they scroll through the entire page
-- **THEN** they encounter: Hero -> Skills -> Experience -> About -> Contact
+- **THEN** they encounter: Hero → Skills → Experience → About → Contact
+
+**Rationale**: Moving the About section after Experience creates a more logical narrative flow. Visitors first see what Tom knows (Skills) and where he's worked (Experience), then learn about who he is (About) before reaching out (Contact).
 
 ---
 
@@ -185,7 +185,7 @@ The navigation SHALL:
 - **WHEN** they hover over any navigation dot
 - **THEN** a tooltip appears showing the section label
 
----
+**Rationale**: Working hover tooltips improve discoverability and usability of the navigation system.
 
 ## Visual Hierarchy
 
