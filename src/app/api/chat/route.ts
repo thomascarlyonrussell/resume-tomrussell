@@ -99,6 +99,19 @@ export async function POST(req: Request) {
       );
     }
 
+    // Transform UIMessage format (with parts) to CoreMessage format (with content)
+    const transformedMessages = messages.map((msg: any) => {
+      if (msg.parts) {
+        // Convert parts array to content string
+        const content = msg.parts
+          .filter((part: any) => part.type === 'text')
+          .map((part: any) => part.text)
+          .join('');
+        return { role: msg.role, content };
+      }
+      return msg;
+    });
+
     // Get model from env or use default free model
     const modelId = process.env.CHAT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free';
 
@@ -106,7 +119,7 @@ export async function POST(req: Request) {
     const result = await streamText({
       model: openrouter(modelId),
       system: generateSystemPrompt(),
-      messages,
+      messages: transformedMessages,
     });
 
     return result.toUIMessageStreamResponse();

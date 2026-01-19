@@ -1,12 +1,14 @@
 /**
  * Message Component
  *
- * Displays a single chat message with role-based styling.
+ * Displays a single chat message with role-based styling and markdown rendering.
  */
 
 'use client';
 
 import { motion } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useReducedMotion } from '@/components/visualizations/hooks';
 import type { UIMessage } from '@ai-sdk/react';
 
@@ -27,9 +29,11 @@ export function Message({ role, parts }: MessageProps) {
     return parts.map((part, index) => {
       if (part.type === 'text') {
         return (
-          <p key={index} className="text-sm leading-relaxed whitespace-pre-wrap">
-            {part.text}
-          </p>
+          <div key={index} className="text-sm leading-relaxed prose prose-sm max-w-none dark:prose-invert">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {part.text}
+            </ReactMarkdown>
+          </div>
         );
       }
       // Handle other part types if needed in the future
