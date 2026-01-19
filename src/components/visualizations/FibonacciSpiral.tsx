@@ -1,0 +1,268 @@
+/**
+ * FibonacciSpiral Component
+ *
+ * Main visualization component that displays skills in a Fibonacci spiral pattern.
+ * Skills are sized by proficiency and experience, color-coded by category.
+ */
+
+'use client';
+
+import { useState, useCallback, useRef, useMemo } from 'react';
+import { motion } from 'framer-motion';
+import { ParentSize } from '@visx/responsive';
+import { Group } from '@visx/group';
+import type { ComputedSkill } from '@/data/types';
+import { getAllComputedSkills } from '@/data';
+
+import { SkillNode, SkillNodeFocusRing } from './SkillNode';
+import { SkillTooltip } from './SkillTooltip';
+import { Legend } from './Legend';
+import { useFibonacciLayout, useSkillTooltip, useReducedMotion } from './hooks';
+
+export interface FibonacciSpiralProps {
+  skills?: ComputedSkill[];
+  className?: string;
+  showLegend?: boolean;
+  onSkillClick?: (skill: ComputedSkill) => void;
+}
+
+// Size multiplier for converting Fibonacci values to pixels
+const SIZE_MULTIPLIER = 3;
+
+interface SpiralContentProps extends FibonacciSpiralProps {
+  width: number;
+  height: number;
+}
+
+function SpiralContent({
+  skills: skillsProp,
+  width,
+  height,
+  showLegend = true,
+  onSkillClick,
+}: SpiralContentProps) {
+  const containerRef = useRef<SVGSVGElement>(null);
+  const skillRefs = useRef<Map<string, SVGCircleElement>>(new Map());
+  const reducedMotion = useReducedMotion();
+
+  // Get skills data
+  const skills = useMemo(() => skillsProp ?? getAllComputedSkills(), [skillsProp]);
+
+  // Calculate layout
+  const { positions, sortedSkills } = useFibonacciLayout({
+    skills,
+    width,
+    height,
+    padding: 60,
+    sizeMultiplier: SIZE_MULTIPLIER,
+  });
+
+  // Tooltip state
+  const tooltip = useSkillTooltip({
+    containerRef,
+  });
+
+  // Hover and focus state
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+
+  const focusedId = focusedIndex >= 0 ? sortedSkills[focusedIndex]?.id : null;
+
+  // Event handlers
+  const handleSkillHover = useCallback(
+    (skill: ComputedSkill, hovering: boolean) => {
+      setHoveredId(hovering ? skill.id : null);
+
+      if (hovering) {
+        const pos = positions.get(skill.id);
+        if (pos) {
+          tooltip.showTooltip(skill, pos.x, pos.y, (skill.fibonacciSize * SIZE_MULTIPLIER) / 2);
+        }
+      } else {
+        tooltip.hideTooltip();
+      }
+    },
+    [positions, tooltip]
+  );
+
+  const handleSkillFocus = useCallback(
+    (skill: ComputedSkill, focused: boolean) => {
+      if (focused) {
+        const index = sortedSkills.findIndex((s) => s.id === skill.id);
+        setFocusedIndex(index);
+
+        const pos = positions.get(skill.id);
+        if (pos) {
+          tooltip.showTooltip(skill, pos.x, pos.y, (skill.fibonacciSize * SIZE_MULTIPLIER) / 2);
+        }
+      } else {
+        setFocusedIndex(-1);
+        tooltip.hideTooltip();
+      }
+    },
+    [sortedSkills, positions, tooltip]
+  );
+
+  const handleSkillClick = useCallback(
+    (skill: ComputedSkill) => {
+      onSkillClick?.(skill);
+    },
+    [onSkillClick]
+  );
+
+  // Keyboard navigation
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      const maxIndex = sortedSkills.length - 1;
+
+      switch (e.key) {
+        case 'ArrowRight':
+        case 'ArrowDown':
+          e.preventDefault();
+          setFocusedIndex((prev) => {
+            const next = prev < maxIndex ? prev + 1 : 0;
+            const skill = sortedSkills[next];
+            const ref = skillRefs.current.get(skill.id);
+            ref?.focus();
+            return next;
+          });
+          break;
+
+        case 'ArrowLeft':
+        case 'ArrowUp':
+          e.preventDefault();
+          setFocusedIndex((prev) => {
+            const next = prev > 0 ? prev - 1 : maxIndex;
+            const skill = sortedSkills[next];
+            const ref = skillRefs.current.get(skill.id);
+            ref?.focus();
+            return next;
+          });
+          break;
+
+        case 'Home':
+          e.preventDefault();
+          setFocusedIndex(0);
+          if (sortedSkills.length > 0) {
+            const skill = sortedSkills[0];
+            const ref = skillRefs.current.get(skill.id);
+            ref?.focus();
+          }
+          break;
+
+        case 'End':
+          e.preventDefault();
+          setFocusedIndex(maxIndex);
+          if (sortedSkills.length > 0) {
+            const skill = sortedSkills[maxIndex];
+            const ref = skillRefs.current.get(skill.id);
+            ref?.focus();
+          }
+          break;
+      }
+    },
+    [sortedSkills]
+  );
+
+  // Generate description for screen readers
+  const description = useMemo(() => {
+    const topSkills = sortedSkills.slice(0, 3).map((s) => s.name);
+    return `A visualization of ${skills.length} professional skills arranged in a Fibonacci spiral pattern, sized by proficiency and years of experience. The largest skills include ${topSkills.join(', ')}. Use arrow keys to navigate between skills.`;
+  }, [skills.length, sortedSkills]);
+
+  if (width <= 0 || height <= 0) return null;
+
+  return (
+    <div className="relative w-full h-full">
+      <motion.svg
+        ref={containerRef}
+        width={width}
+        height={height}
+        role="img"
+        aria-label="Skills Fibonacci Spiral Visualization"
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+        className="outline-none"
+        initial="hidden"
+        animate="visible"
+      >
+        <title>Skills Fibonacci Spiral Visualization</title>
+        <desc>{description}</desc>
+
+        <Group>
+          {/* Render focus rings first (behind nodes) */}
+          {sortedSkills.map((skill) => {
+            const pos = positions.get(skill.id);
+            if (!pos) return null;
+
+            return (
+              <SkillNodeFocusRing
+                key={`focus-${skill.id}`}
+                x={pos.x}
+                y={pos.y}
+                size={skill.fibonacciSize * SIZE_MULTIPLIER}
+                isVisible={focusedId === skill.id}
+              />
+            );
+          })}
+
+          {/* Render skill nodes */}
+          {sortedSkills.map((skill, index) => {
+            const pos = positions.get(skill.id);
+            if (!pos) return null;
+
+            return (
+              <SkillNode
+                key={skill.id}
+                ref={(el) => {
+                  if (el) {
+                    skillRefs.current.set(skill.id, el);
+                  } else {
+                    skillRefs.current.delete(skill.id);
+                  }
+                }}
+                skill={skill}
+                x={pos.x}
+                y={pos.y}
+                size={skill.fibonacciSize * SIZE_MULTIPLIER}
+                isHovered={hoveredId === skill.id}
+                animationDelay={index}
+                reducedMotion={reducedMotion}
+                tabIndex={focusedIndex === index || (focusedIndex === -1 && index === 0) ? 0 : -1}
+                onHover={(hovering) => handleSkillHover(skill, hovering)}
+                onFocus={(focused) => handleSkillFocus(skill, focused)}
+                onClick={() => handleSkillClick(skill)}
+              />
+            );
+          })}
+        </Group>
+      </motion.svg>
+
+      {/* Tooltip */}
+      <SkillTooltip
+        skill={tooltip.skill}
+        position={tooltip.position}
+        isVisible={tooltip.isVisible}
+        reducedMotion={reducedMotion}
+      />
+
+      {/* Legend */}
+      {showLegend && <Legend position="bottom-left" reducedMotion={reducedMotion} />}
+    </div>
+  );
+}
+
+/**
+ * Responsive wrapper for the Fibonacci spiral
+ */
+export function FibonacciSpiral(props: FibonacciSpiralProps) {
+  const { className = '' } = props;
+
+  return (
+    <div className={`w-full h-[500px] md:h-[600px] lg:h-[700px] ${className}`}>
+      <ParentSize>
+        {({ width, height }) => <SpiralContent {...props} width={width} height={height} />}
+      </ParentSize>
+    </div>
+  );
+}
