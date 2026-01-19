@@ -23,7 +23,7 @@ export function ChatButton({ onClick }: ChatButtonProps) {
       className="flex items-center gap-2 rounded-full bg-[var(--color-engineering)] px-4 py-3 text-white shadow-lg transition-colors hover:bg-[var(--color-engineering)]/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-engineering)] focus-visible:ring-offset-2"
       whileHover={reducedMotion ? {} : { scale: 1.05 }}
       whileTap={reducedMotion ? {} : { scale: 0.95 }}
-      aria-label="Open chat with Tom's AI assistant"
+      aria-label="Open chat with Tom's resume assistant"
     >
       {/* Chat Icon */}
       <svg

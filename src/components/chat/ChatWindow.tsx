@@ -76,7 +76,7 @@ export function ChatWindow({ onClose }: ChatWindowProps) {
       exit={{ opacity: 0, y: 20, scale: 0.95 }}
       transition={{ duration: reducedMotion ? 0.01 : 0.2 }}
       role="dialog"
-      aria-label="Chat with Tom's AI assistant"
+      aria-label="Chat with Tom's Resume Assistant"
       aria-modal="true"
     >
       <ChatHeader onClose={onClose} />

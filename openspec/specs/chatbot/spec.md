@@ -49,7 +49,7 @@ The widget SHALL:
 
 The expanded chat interface SHALL include:
 
-- Header with title (e.g., "Chat with Tom's AI")
+- Header with title (e.g., "Chat with Tom's Resume Assistant")
 - Close/minimize button
 - Message display area (scrollable)
 - Text input field
