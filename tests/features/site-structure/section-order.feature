@@ -7,6 +7,7 @@ Feature: Section Order
     Given a visitor at the top of the page
     When they scroll through the entire page
     Then they encounter Hero section first
+    And then Skills section
+    And then Experience section
     And then About section
-    And then Visualizations section
     And finally Contact section

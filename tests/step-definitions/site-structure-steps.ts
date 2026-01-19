@@ -30,15 +30,21 @@ Then('they encounter Hero section first', async function (this: CustomWorld) {
   await expect(heroSection).toBeInViewport();
 });
 
-Then('then About section', async function (this: CustomWorld) {
-  const aboutSection = this.page!.locator('[data-testid="about-section"]');
-  const isVisible = await aboutSection.isVisible();
+Then('then Skills section', async function (this: CustomWorld) {
+  const skillsSection = this.page!.locator('[data-testid="skills-section"]');
+  const isVisible = await skillsSection.isVisible();
   expect(isVisible).toBeTruthy();
 });
 
-Then('then Visualizations section', async function (this: CustomWorld) {
-  const visualizationsSection = this.page!.locator('[data-testid="visualizations-section"]');
-  const isVisible = await visualizationsSection.isVisible();
+Then('then Experience section', async function (this: CustomWorld) {
+  const experienceSection = this.page!.locator('[data-testid="experience-section"]');
+  const isVisible = await experienceSection.isVisible();
+  expect(isVisible).toBeTruthy();
+});
+
+Then('then About section', async function (this: CustomWorld) {
+  const aboutSection = this.page!.locator('[data-testid="about-section"]');
+  const isVisible = await aboutSection.isVisible();
   expect(isVisible).toBeTruthy();
 });
 

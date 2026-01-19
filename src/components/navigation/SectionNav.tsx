@@ -48,12 +48,12 @@ export function SectionNav({ sections, className = '' }: SectionNavProps) {
             <li key={section.id}>
               <button
                 onClick={() => handleClick(section.id)}
-                className="group relative flex items-center justify-end focus:outline-none"
+                className="nav-button relative flex items-center justify-end focus:outline-none"
                 aria-label={`Go to ${section.label} section`}
                 aria-current={isActive ? 'true' : undefined}
               >
                 {/* Label (shown on hover) */}
-                <span className="absolute right-6 rounded bg-gray-900 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 dark:bg-gray-100 dark:text-gray-900">
+                <span className="nav-label pointer-events-none absolute right-6 z-50 rounded bg-gray-900 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity dark:bg-gray-100 dark:text-gray-900">
                   {section.label}
                 </span>
 
@@ -74,7 +74,19 @@ export function SectionNav({ sections, className = '' }: SectionNavProps) {
                 />
 
                 {/* Focus ring */}
-                <span className="absolute inset-0 -m-1 rounded-full ring-2 ring-transparent group-focus-visible:ring-[var(--color-engineering)]" />
+                <span className="nav-focus-ring absolute inset-0 -m-1 rounded-full ring-2 ring-transparent" />
+
+                <style jsx>{`
+                  .nav-button:hover .nav-label,
+                  .nav-button:focus-visible .nav-label {
+                    opacity: 1;
+                  }
+                  .nav-button:focus-visible .nav-focus-ring {
+                    --tw-ring-color: var(--color-engineering);
+                    border-color: var(--color-engineering);
+                    outline: 2px solid var(--color-engineering);
+                  }
+                `}</style>
               </button>
             </li>
           );
