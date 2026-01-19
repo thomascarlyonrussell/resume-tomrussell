@@ -100,7 +100,7 @@ export function SkillsSection({
 
           {/* Visualization Panel */}
           <div ref={containerRef}>
-            <AnimatePresence mode="wait" onExitComplete={onTransitionComplete}>
+            <AnimatePresence mode="wait">
               {activeView === 'fibonacci' ? (
                 <motion.div
                   key="fibonacci"
@@ -114,6 +114,7 @@ export function SkillsSection({
                     duration: reducedMotion ? 0.01 : 0.3,
                   }}
                   onAnimationStart={onTransitionStart}
+                  onAnimationComplete={onTransitionComplete}
                 >
                   <FibonacciSpiral showLegend={true} onSkillClick={handleSkillClick} />
                 </motion.div>
@@ -130,6 +131,7 @@ export function SkillsSection({
                     duration: reducedMotion ? 0.01 : 0.3,
                   }}
                   onAnimationStart={onTransitionStart}
+                  onAnimationComplete={onTransitionComplete}
                 >
                   <TimelineArea />
                 </motion.div>
