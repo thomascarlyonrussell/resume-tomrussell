@@ -12,6 +12,9 @@
 
 # testing
 /coverage
+/reports/*.html
+/reports/*.json
+!reports/.gitkeep
 
 # next.js
 /.next/
