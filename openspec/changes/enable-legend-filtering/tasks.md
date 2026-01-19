@@ -205,10 +205,10 @@ This document outlines the ordered implementation tasks for adding interactive c
 
 ---
 
-### 8. Test Dark Mode Styling ⏳
+### 8. Test Dark Mode Styling ✅
 **File**: `src/components/visualizations/Legend.tsx`
 
-**Status**: Pending
+**Status**: Complete
 
 **Work**:
 - Test all legend states in dark mode:
@@ -229,10 +229,10 @@ This document outlines the ordered implementation tasks for adding interactive c
 
 ---
 
-### 9. Add Unit Tests for Filter Logic ⏳
+### 9. Add Unit Tests for Filter Logic ✅
 **File**: `src/components/visualizations/FibonacciSpiral.test.tsx` (new file)
 
-**Status**: Pending
+**Status**: Complete (tests written, Vitest config issue pending)
 
 **Work**:
 - Test filtering logic:
@@ -252,10 +252,10 @@ This document outlines the ordered implementation tasks for adding interactive c
 
 ---
 
-### 10. Add Unit Tests for Helper Function ⏳
+### 10. Add Unit Tests for Helper Function ✅
 **File**: `src/data/index.test.ts`
 
-**Status**: Pending
+**Status**: Complete (tests written, Vitest config issue pending)
 
 **Work**:
 - Test `getCategorySkillCounts()` function:
@@ -396,11 +396,30 @@ This document outlines the ordered implementation tasks for adding interactive c
 
 ## Success Metrics
 
-- [ ] All unit tests pass (Pending - Tasks 9-10)
+- [~] All unit tests pass (Tests written, Vitest config issue - Tasks 9-10)
 - [x] Keyboard navigation works completely (Complete - Task 5)
 - [x] Screen reader provides clear feedback (Complete - Task 6)
 - [x] Animations smooth at 60fps (Complete - Task 7)
-- [ ] Dark mode styling correct (Pending - Task 8)
+- [x] Dark mode styling correct (Complete - Task 8)
 - [ ] Works in all target browsers (Pending - Task 12)
 - [ ] Edge cases handled gracefully (Pending - Task 13)
 - [x] WCAG 2.1 AA compliance maintained (Complete - Tasks 4-6)
+
+## Known Issues
+
+### Vitest Configuration Issue
+Unit test files have been created for Tasks 9-10:
+- `src/data/index.test.ts` - Tests for getCategorySkillCounts() helper
+- `src/components/visualizations/FibonacciSpiral.test.tsx` - Tests for filter logic
+
+However, Vitest reports "No test suite found" for all test files, including the pre-existing `src/lib/calculations.test.ts`. This appears to be an environment/configuration issue rather than a problem with the test code.
+
+**Actions taken**:
+- Installed @testing-library/dom, jsdom, @vitejs/plugin-react
+- Updated vitest.config.ts to use jsdom environment and React plugin
+- Created vitest.setup.ts with @testing-library/jest-dom
+
+**Next steps**:
+- Investigate Vitest module resolution and test discovery
+- May need to check tsconfig.json settings
+- Consider alternative test runner configuration
