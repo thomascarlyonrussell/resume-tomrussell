@@ -6,12 +6,11 @@
  */
 
 import { streamText } from 'ai';
-import { createOpenAI } from '@ai-sdk/openai';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { generateSystemPrompt } from '@/data/chatbot-knowledge';
 
-// Configure OpenRouter as custom OpenAI-compatible provider
-const openrouter = createOpenAI({
-  baseURL: 'https://openrouter.ai/api/v1',
+// Configure OpenRouter provider with official provider package
+const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY || '',
 });
 
@@ -103,16 +102,14 @@ export async function POST(req: Request) {
     // Get model from env or use default free model
     const modelId = process.env.CHAT_MODEL || 'meta-llama/llama-3.3-70b-instruct:free';
 
-    // Stream the response
-    // Note: Type cast needed due to SDK version mismatch (LanguageModelV3 vs V1)
+    // Stream the response using official OpenRouter provider
     const result = await streamText({
-      // @ts-expect-error SDK version mismatch - LanguageModelV3 vs V1
       model: openrouter(modelId),
       system: generateSystemPrompt(),
       messages,
     });
 
-    return result.toDataStreamResponse();
+    return result.toUIMessageStreamResponse();
   } catch (error) {
     console.error('Chat API error:', error);
 

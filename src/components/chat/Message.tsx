@@ -8,15 +8,34 @@
 
 import { motion } from 'framer-motion';
 import { useReducedMotion } from '@/components/visualizations/hooks';
+import type { UIMessage } from '@ai-sdk/react';
+
+// Extract the parts type from UIMessage
+type UIMessagePart = UIMessage['parts'][number];
 
 export interface MessageProps {
-  role: 'user' | 'assistant';
-  content: string;
+  role: 'user' | 'assistant' | 'system';
+  parts: UIMessagePart[];
 }
 
-export function Message({ role, content }: MessageProps) {
+export function Message({ role, parts }: MessageProps) {
   const reducedMotion = useReducedMotion();
   const isUser = role === 'user';
+
+  // Render text content from parts
+  const renderContent = () => {
+    return parts.map((part, index) => {
+      if (part.type === 'text') {
+        return (
+          <p key={index} className="whitespace-pre-wrap text-sm leading-relaxed">
+            {part.text}
+          </p>
+        );
+      }
+      // Handle other part types if needed in the future
+      return null;
+    });
+  };
 
   return (
     <motion.div
@@ -32,7 +51,7 @@ export function Message({ role, content }: MessageProps) {
             : 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
         }`}
       >
-        <p className="whitespace-pre-wrap text-sm leading-relaxed">{content}</p>
+        {renderContent()}
       </div>
     </motion.div>
   );

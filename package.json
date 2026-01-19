@@ -22,7 +22,11 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.12",
+    "@ai-sdk/provider": "^3.0.4",
+    "@ai-sdk/react": "^3.0.41",
     "@assistant-ui/react": "^0.7.0",
+    "@heroicons/react": "^2.2.0",
+    "@openrouter/ai-sdk-provider": "^1.5.4",
     "@visx/curve": "^3.0.0",
     "@visx/gradient": "^3.0.0",
     "@visx/group": "^3.0.0",

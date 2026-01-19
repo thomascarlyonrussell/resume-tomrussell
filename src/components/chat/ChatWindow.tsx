@@ -7,8 +7,9 @@
 
 'use client';
 
-import { useEffect, useCallback } from 'react';
-import { useChat } from 'ai/react';
+import { useEffect, useCallback, useState } from 'react';
+import { useChat } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from '@/components/visualizations/hooks';
 import { ChatHeader } from './ChatHeader';
@@ -23,32 +24,32 @@ export interface ChatWindowProps {
 
 export function ChatWindow({ onClose }: ChatWindowProps) {
   const reducedMotion = useReducedMotion();
+  const [input, setInput] = useState('');
 
   const {
     messages,
-    input,
-    setInput,
-    handleSubmit,
-    isLoading,
+    sendMessage,
+    status,
     error,
-    reload,
+    regenerate,
   } = useChat({
-    api: '/api/chat',
+    transport: new DefaultChatTransport({
+      api: '/api/chat',
+    }),
   });
 
+  const isLoading = status === 'streaming' || status === 'submitted';
   const hasMessages = messages.length > 0;
 
   // Handle starter prompt selection
   const handleStarterPrompt = useCallback((prompt: string) => {
     setInput(prompt);
-    // Submit after setting input
+    // Send the message immediately
     setTimeout(() => {
-      const form = document.querySelector('form');
-      if (form) {
-        form.requestSubmit();
-      }
+      sendMessage({ text: prompt });
+      setInput('');
     }, 0);
-  }, [setInput]);
+  }, [sendMessage]);
 
   // Handle escape key to close
   useEffect(() => {
@@ -65,9 +66,10 @@ export function ChatWindow({ onClose }: ChatWindowProps) {
   // Custom submit handler
   const onSubmit = useCallback(() => {
     if (input.trim()) {
-      handleSubmit(new Event('submit') as unknown as React.FormEvent);
+      sendMessage({ text: input });
+      setInput('');
     }
-  }, [input, handleSubmit]);
+  }, [input, sendMessage]);
 
   return (
     <motion.div
@@ -86,7 +88,7 @@ export function ChatWindow({ onClose }: ChatWindowProps) {
       {error && (
         <ErrorMessage
           message={error.message || 'Something went wrong. Please try again.'}
-          onRetry={reload}
+          onRetry={regenerate}
         />
       )}
 

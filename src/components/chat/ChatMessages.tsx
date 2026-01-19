@@ -7,12 +7,12 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-import type { Message as MessageType } from 'ai';
+import type { UIMessage } from '@ai-sdk/react';
 import { Message } from './Message';
 import { LoadingIndicator } from './LoadingIndicator';
 
 export interface ChatMessagesProps {
-  messages: MessageType[];
+  messages: UIMessage[];
   isLoading?: boolean;
 }
 
@@ -49,8 +49,8 @@ export function ChatMessages({ messages, isLoading = false }: ChatMessagesProps)
           {messages.map((message) => (
             <Message
               key={message.id}
-              role={message.role as 'user' | 'assistant'}
-              content={message.content}
+              role={message.role as 'user' | 'assistant' | 'system'}
+              parts={message.parts}
             />
           ))}
         </div>
