@@ -41,7 +41,7 @@ A personal portfolio and resume website for Tom Russell that serves as a profess
 - **UI Library**: assistant-ui (production-ready chat interface)
 - **LLM Gateway**: OpenRouter (supports 200+ models)
 - **Initial Model**: Llama 3.3 70B Instruct (free tier, rate-limited)
-- **Upgrade Path**: GPT-4o-mini or Claude 3.5 Sonnet (via LLM_MODEL env var)
+- **Upgrade Path**: GPT-4o-mini or Claude 3.5 Sonnet (via CHAT_MODEL env var)
 - **Knowledge Base**: System prompt injection with structured resume data
 - **Future Enhancement**: RAG with Supabase pgvector (optional upgrade)
 
@@ -205,9 +205,9 @@ NEXT_PUBLIC_SITE_URL=   # Public site URL
 - Single API supports 200+ models for easy experimentation
 - **One environment variable** to upgrade (no code changes):
   ```bash
-  LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free  # Free tier
-  LLM_MODEL=openai/gpt-4o-mini                      # Paid upgrade
-  LLM_MODEL=anthropic/claude-3.5-sonnet             # Premium upgrade
+  CHAT_MODEL=meta-llama/llama-3.3-70b-instruct:free  # Free tier
+  CHAT_MODEL=openai/gpt-4o-mini                      # Paid upgrade
+  CHAT_MODEL=anthropic/claude-3.5-sonnet             # Premium upgrade
   ```
 - Flexible model selection based on needs and budget
 

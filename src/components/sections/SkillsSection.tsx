@@ -9,8 +9,9 @@
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useReducedMotion, useViewTransition } from '@/components/visualizations/hooks';
-import { FibonacciSpiral, TimelineArea, VisualizationToggle } from '@/components/visualizations';
+import { FibonacciSpiral, TimelineArea, VisualizationToggle, SkillDetailModal } from '@/components/visualizations';
 import type { VisualizationView } from '@/components/visualizations/VisualizationToggle';
+import type { ComputedSkill } from '@/data/types';
 import { Container } from '@/components/ui/Container';
 import { fadeUpVariants, reducedMotionVariants } from '@/lib/animations';
 import { useIntersectionObserver } from '@/hooks';
@@ -23,11 +24,11 @@ export interface SkillsSectionProps {
 const VIEW_CONFIG: Record<VisualizationView, { title: string; subtitle: string }> = {
   fibonacci: {
     title: 'Skills & Experience',
-    subtitle: 'Hover or tap on skills to learn more. Size reflects proficiency and years of experience.',
+    subtitle: 'Hover for quick info or click to see full details. Size reflects proficiency and years of experience.',
   },
   timeline: {
     title: 'Career Progression',
-    subtitle: 'See how skills have grown over time. Hover to explore skills active at each point.',
+    subtitle: 'See how skills have grown over time. Hover to explore skills, click milestones for details.',
   },
 };
 
@@ -39,6 +40,7 @@ export function SkillsSection({
   const reducedMotion = useReducedMotion();
   const isInView = useIntersectionObserver(sectionRef, { threshold: 0.1 });
   const [activeView, setActiveView] = useState<VisualizationView>('fibonacci');
+  const [selectedSkill, setSelectedSkill] = useState<ComputedSkill | null>(null);
 
   // Manage focus and transition state
   const {
@@ -50,6 +52,16 @@ export function SkillsSection({
 
   const variants = reducedMotion ? reducedMotionVariants : fadeUpVariants;
   const { title, subtitle } = VIEW_CONFIG[activeView];
+
+  // Handle skill click to open detail modal
+  const handleSkillClick = (skill: ComputedSkill) => {
+    setSelectedSkill(skill);
+  };
+
+  // Handle modal close
+  const handleCloseModal = () => {
+    setSelectedSkill(null);
+  };
 
   return (
     <section
@@ -104,7 +116,7 @@ export function SkillsSection({
                   }}
                   onAnimationStart={onTransitionStart}
                 >
-                  <FibonacciSpiral showLegend={true} />
+                  <FibonacciSpiral showLegend={true} onSkillClick={handleSkillClick} />
                 </motion.div>
               ) : (
                 <motion.div
@@ -128,6 +140,9 @@ export function SkillsSection({
           </div>
         </motion.div>
       </Container>
+
+      {/* Skill Detail Modal */}
+      <SkillDetailModal skill={selectedSkill} onClose={handleCloseModal} />
     </section>
   );
 }
