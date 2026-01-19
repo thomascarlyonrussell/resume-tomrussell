@@ -64,6 +64,12 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
 
   return (
     <div className={`w-full ${className}`}>
+      {/* Screen Reader Description */}
+      <div className="sr-only" role="note">
+        Timeline chart showing skill growth over time from {data[0]?.year} to {data[data.length - 1]?.year}.
+        Use the milestone buttons below to explore key career events.
+      </div>
+
       {/* Chart Container */}
       <div className="h-[300px] w-full sm:h-[400px] lg:h-[500px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -200,8 +206,8 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
         </AnimatePresence>
       </div>
 
-      {/* Category Legend - inline version */}
-      <div className="mt-4 px-4">
+      {/* Category Legend - with separator */}
+      <div className="mt-6 border-t border-gray-200 pt-4 px-4 dark:border-gray-700">
         <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">Categories</p>
         <div className="flex flex-wrap gap-3">
           {categories.map((category) => (

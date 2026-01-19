@@ -15,6 +15,8 @@ export type VisualizationView = 'fibonacci' | 'timeline';
 export interface VisualizationToggleProps {
   activeView: VisualizationView;
   onChange: (view: VisualizationView) => void;
+  /** Disable toggle during transitions */
+  disabled?: boolean;
   className?: string;
 }
 
@@ -34,11 +36,14 @@ const VIEWS: { id: VisualizationView; label: string; description: string }[] = [
 export function VisualizationToggle({
   activeView,
   onChange,
+  disabled = false,
   className = '',
 }: VisualizationToggleProps) {
   const reducedMotion = useReducedMotion();
 
   const handleKeyDown = (e: React.KeyboardEvent, currentIndex: number) => {
+    if (disabled) return;
+
     if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
       e.preventDefault();
       const prevIndex = currentIndex === 0 ? VIEWS.length - 1 : currentIndex - 1;
@@ -47,6 +52,12 @@ export function VisualizationToggle({
       e.preventDefault();
       const nextIndex = currentIndex === VIEWS.length - 1 ? 0 : currentIndex + 1;
       onChange(VIEWS[nextIndex].id);
+    }
+  };
+
+  const handleClick = (viewId: VisualizationView) => {
+    if (!disabled) {
+      onChange(viewId);
     }
   };
 
@@ -65,14 +76,15 @@ export function VisualizationToggle({
             role="tab"
             aria-selected={isActive}
             aria-controls={`${view.id}-panel`}
+            aria-disabled={disabled}
             tabIndex={isActive ? 0 : -1}
-            onClick={() => onChange(view.id)}
+            onClick={() => handleClick(view.id)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             className={`relative rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-engineering)] focus-visible:ring-offset-2 ${
               isActive
                 ? 'text-white'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
-            }`}
+            } ${disabled ? 'cursor-not-allowed opacity-70' : ''}`}
             title={view.description}
           >
             {/* Active Background */}
@@ -82,8 +94,8 @@ export function VisualizationToggle({
                 className="absolute inset-0 rounded-md bg-[var(--color-engineering)]"
                 transition={{
                   type: 'spring',
-                  bounce: 0.2,
-                  duration: reducedMotion ? 0.01 : 0.4,
+                  bounce: 0.15,
+                  duration: reducedMotion ? 0.01 : 0.3,
                 }}
               />
             )}

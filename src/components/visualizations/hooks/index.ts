@@ -9,3 +9,5 @@ export { useSkillTooltip } from './useSkillTooltip';
 export type { TooltipPosition, TooltipState, UseSkillTooltipOptions, UseSkillTooltipResult } from './useSkillTooltip';
 export { useTimelineData } from './useTimelineData';
 export type { TimelineChartData, UseTimelineDataOptions, UseTimelineDataResult } from './useTimelineData';
+export { useViewTransition } from './useViewTransition';
+export type { UseViewTransitionResult } from './useViewTransition';
