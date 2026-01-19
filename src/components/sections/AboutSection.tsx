@@ -14,9 +14,7 @@ import { fadeUpVariants, staggerContainerVariants, reducedMotionVariants } from 
 import { useIntersectionObserver } from '@/hooks';
 import { getTotalYearsOfExperience } from '@/data';
 import { getHighestDegree } from '@/data/education';
-
-// Import professional summary data
-import professionalSummary from '@/../resources/professional-summary.json';
+import { professionalSummary, careerHighlights } from '@/data/professional-summary';
 
 export interface AboutSectionProps {
   id?: string;
@@ -32,7 +30,7 @@ export function AboutSection({ id = 'about', className = '' }: AboutSectionProps
   const itemVariants = reducedMotion ? reducedMotionVariants : fadeUpVariants;
 
   // Split bio into paragraphs
-  const bioParagraphs = professionalSummary.summary.bio.split('\n\n');
+  const bioParagraphs = professionalSummary.bio.split('\n\n');
   const totalYears = Math.round(getTotalYearsOfExperience());
   const degree = getHighestDegree();
 
@@ -64,7 +62,7 @@ export function AboutSection({ id = 'about', className = '' }: AboutSectionProps
               {totalYears}+ Years Experience
             </span>
             <span className="rounded-full bg-[var(--color-software-development)] px-4 py-2 text-sm font-medium text-white">
-              {professionalSummary.summary.location}
+              {professionalSummary.location}
             </span>
             {degree && (
               <span className="rounded-full bg-[var(--color-product-management)] px-4 py-2 text-sm font-medium text-white">
@@ -89,7 +87,7 @@ export function AboutSection({ id = 'about', className = '' }: AboutSectionProps
           <motion.div variants={itemVariants} className="mx-auto mt-12 max-w-3xl">
             <h3 className="mb-4 text-xl font-semibold md:text-2xl">Career Highlights</h3>
             <ul className="space-y-3">
-              {professionalSummary.careerHighlights.map((highlight, index) => (
+              {careerHighlights.map((highlight, index) => (
                 <li key={index} className="flex items-start gap-3">
                   <span
                     className="mt-1.5 h-2 w-2 flex-shrink-0 rounded-full bg-[var(--color-ai-automation)]"

@@ -13,9 +13,7 @@ import { Container } from '@/components/ui/Container';
 import { SocialLinks, type SocialLink } from '@/components/ui/SocialLinks';
 import { fadeUpVariants, staggerContainerVariants, reducedMotionVariants } from '@/lib/animations';
 import { useIntersectionObserver } from '@/hooks';
-
-// Import contact info from professional summary
-import professionalSummary from '@/../resources/professional-summary.json';
+import { professionalSummary } from '@/data/professional-summary';
 
 export interface ContactSectionProps {
   id?: string;
@@ -37,12 +35,12 @@ export function ContactSection({
 
   const socialLinks: SocialLink[] = [
     {
-      href: professionalSummary.summary.email,
+      href: professionalSummary.email,
       icon: 'email',
       label: 'Email',
     },
     {
-      href: professionalSummary.summary.linkedin,
+      href: professionalSummary.linkedin,
       icon: 'linkedin',
       label: 'LinkedIn',
     },

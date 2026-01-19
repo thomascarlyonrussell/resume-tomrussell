@@ -50,7 +50,8 @@ export {
   getHighestDegree,
   getActiveCertifications,
 } from './education';
-
+export { professionalSummary, careerHighlights, workPhilosophy } from './professional-summary';
+export type { ProfessionalSummary, CareerHighlights, WorkPhilosophy } from './professional-summary';
 // Import for computed helpers
 import { skills } from './skills';
 import { categories, categoryMap } from './categories';
