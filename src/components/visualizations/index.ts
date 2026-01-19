@@ -16,5 +16,16 @@ export type { SkillTooltipProps } from './SkillTooltip';
 export { Legend } from './Legend';
 export type { LegendProps } from './Legend';
 
+export { TimelineArea } from './TimelineArea';
+export type { TimelineAreaProps } from './TimelineArea';
+
+export { TimelineTooltip } from './TimelineTooltip';
+
+export { MilestoneMarker, MilestoneLabel } from './MilestoneMarker';
+export type { MilestoneMarkerProps, MilestoneLabelProps } from './MilestoneMarker';
+
+export { VisualizationToggle } from './VisualizationToggle';
+export type { VisualizationView, VisualizationToggleProps } from './VisualizationToggle';
+
 // Re-export hooks
 export * from './hooks';
