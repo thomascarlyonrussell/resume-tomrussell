@@ -17,6 +17,7 @@ import { getAllComputedSkills } from '@/data';
 import { SkillNode, SkillNodeFocusRing } from './SkillNode';
 import { SkillTooltip } from './SkillTooltip';
 import { Legend } from './Legend';
+import { SkillLabel } from './SkillLabel';
 import { useFibonacciLayout, useSkillTooltip, useReducedMotion } from './hooks';
 
 export interface FibonacciSpiralProps {
@@ -27,7 +28,7 @@ export interface FibonacciSpiralProps {
 }
 
 // Size multiplier for converting Fibonacci values to pixels
-const SIZE_MULTIPLIER = 3;
+const SIZE_MULTIPLIER = 1.5;
 
 interface SpiralContentProps extends FibonacciSpiralProps {
   width: number;
@@ -49,7 +50,7 @@ function SpiralContent({
   const skills = useMemo(() => skillsProp ?? getAllComputedSkills(), [skillsProp]);
 
   // Calculate layout
-  const { positions, sortedSkills } = useFibonacciLayout({
+  const { positions, sortedSkills, center } = useFibonacciLayout({
     skills,
     width,
     height,
@@ -190,6 +191,71 @@ function SpiralContent({
         <desc>{description}</desc>
 
         <Group>
+          {/* Render smooth spiral curve (behind everything) */}
+          {sortedSkills.length > 1 && (() => {
+            // Generate smooth spiral curve points
+            const firstPos = positions.get(sortedSkills[0].id);
+            const lastPos = positions.get(sortedSkills[sortedSkills.length - 1].id);
+            if (!firstPos || !lastPos) return null;
+
+            // Extract the scale factor from the first position
+            // The radius in the position has been scaled, so we can derive the scale
+            const PHI = (1 + Math.sqrt(5)) / 2;
+            const SPIRAL_B = Math.log(PHI) / (Math.PI / 2);
+
+            // Calculate what the unscaled radius would be at the first position
+            const unscaledInitialRadius = sortedSkills[0].fibonacciSize * SIZE_MULTIPLIER * 0.5;
+            const unscaledFirstRadius = unscaledInitialRadius * Math.exp(SPIRAL_B * firstPos.angle);
+            const scale = firstPos.radius / unscaledFirstRadius;
+
+            // Now calculate offset - the center of the unscaled spiral was at (0, 0)
+            const unscaledFirstX = unscaledFirstRadius * Math.cos(firstPos.angle);
+            const unscaledFirstY = unscaledFirstRadius * Math.sin(firstPos.angle);
+            const scaledFirstX = unscaledFirstX * scale;
+            const scaledFirstY = unscaledFirstY * scale;
+            const offsetX = firstPos.x - scaledFirstX;
+            const offsetY = firstPos.y - scaledFirstY;
+
+            // Calculate angles for first and last positions
+            const startAngle = firstPos.angle;
+            const endAngle = lastPos.angle;
+            const angleRange = endAngle - startAngle;
+
+            // Generate smooth curve with many points
+            const numPoints = 150;
+            const spiralPoints = Array.from({ length: numPoints }, (_, i) => {
+              const t = i / (numPoints - 1);
+              const angle = startAngle + angleRange * t;
+
+              // Calculate radius using the same formula
+              const unscaledRadius = unscaledInitialRadius * Math.exp(SPIRAL_B * angle);
+              const scaledRadius = unscaledRadius * scale;
+
+              // Calculate position and apply transformation
+              const x = scaledRadius * Math.cos(angle) + offsetX;
+              const y = scaledRadius * Math.sin(angle) + offsetY;
+
+              return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
+            }).join(' ');
+
+            return (
+              <motion.path
+                d={spiralPoints}
+                stroke="var(--color-foreground)"
+                strokeWidth={1.5}
+                strokeOpacity={0.2}
+                fill="none"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{
+                  pathLength: { duration: reducedMotion ? 0.01 : 2, ease: 'easeInOut' },
+                  opacity: { duration: reducedMotion ? 0.01 : 0.5 },
+                }}
+                style={{ pointerEvents: 'none' }}
+              />
+            );
+          })()}
+
           {/* Render focus rings first (behind nodes) */}
           {sortedSkills.map((skill) => {
             const pos = positions.get(skill.id);
@@ -232,6 +298,29 @@ function SpiralContent({
                 onHover={(hovering) => handleSkillHover(skill, hovering)}
                 onFocus={(focused) => handleSkillFocus(skill, focused)}
                 onClick={() => handleSkillClick(skill)}
+              />
+            );
+          })}
+
+          {/* Render skill labels */}
+          {sortedSkills.map((skill, index) => {
+            const pos = positions.get(skill.id);
+            if (!pos) return null;
+
+            const radius = (skill.fibonacciSize * SIZE_MULTIPLIER) / 2;
+
+            return (
+              <SkillLabel
+                key={`label-${skill.id}`}
+                skill={skill}
+                x={pos.x}
+                y={pos.y}
+                radius={radius}
+                skillIndex={index}
+                totalSmallSkills={sortedSkills.length}
+                viewportCenter={center}
+                animationDelay={index}
+                reducedMotion={reducedMotion}
               />
             );
           })}

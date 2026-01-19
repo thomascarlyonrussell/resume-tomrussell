@@ -90,8 +90,15 @@ export const SkillNode = forwardRef<SVGCircleElement, SkillNodeProps>(function S
     [onClick]
   );
 
-  // Calculate brightness for hover effect
+  // Calculate visual effects
   const brightness = isHovered ? 1.15 : 1;
+  const opacity = skill.isActive ? 1 : 0.75;
+  const strokeWidth = isHovered ? 3 : 2;
+  const dropShadow = isHovered ? 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))' : 'none';
+
+  // Calculate static z-index based on size and activity (larger, active skills on top)
+  const baseZIndex = Math.round((size / 133.5) * 50) + (skill.isActive ? 10 : 0);
+  const zIndex = isHovered ? 100 : baseZIndex;
 
   return (
     <motion.circle
@@ -100,6 +107,9 @@ export const SkillNode = forwardRef<SVGCircleElement, SkillNodeProps>(function S
       cy={y}
       r={radius}
       fill={categoryColor}
+      stroke="rgba(0, 0, 0, 0.4)"
+      strokeWidth={strokeWidth}
+      opacity={opacity}
       role="button"
       tabIndex={tabIndex}
       aria-label={ariaLabel}
@@ -110,11 +120,12 @@ export const SkillNode = forwardRef<SVGCircleElement, SkillNodeProps>(function S
       style={{
         cursor: 'pointer',
         outline: 'none',
-        filter: reducedMotion ? undefined : `brightness(${brightness})`,
+        filter: reducedMotion ? undefined : `brightness(${brightness}) ${dropShadow}`,
         transformOrigin: `${x}px ${y}px`,
+        zIndex,
       }}
-      whileHover={reducedMotion ? undefined : { scale: 1.1 }}
-      whileFocus={reducedMotion ? undefined : { scale: 1.1 }}
+      whileHover={reducedMotion ? undefined : { scale: 1.15, zIndex: 100 }}
+      whileFocus={reducedMotion ? undefined : { scale: 1.15, zIndex: 100 }}
       transition={reducedMotion ? undefined : { type: 'spring' as const, stiffness: 400, damping: 25 }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

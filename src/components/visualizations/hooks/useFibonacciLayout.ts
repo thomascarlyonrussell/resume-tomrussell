@@ -36,10 +36,10 @@ export interface FibonacciLayoutResult {
 const PHI = (1 + Math.sqrt(5)) / 2;
 // Spiral growth factor based on golden ratio
 const SPIRAL_B = Math.log(PHI) / (Math.PI / 2);
-// Minimum angle between skills (radians)
-const MIN_ANGLE = Math.PI / 12;
-// Padding between adjacent skills
-const SKILL_PADDING = 4;
+// Minimum angle between skills (radians) - increased for better spacing
+const MIN_ANGLE = Math.PI / 6;
+// Padding between adjacent skills - increased for visual breathing room
+const SKILL_PADDING = 16;
 
 /**
  * Calculate position on a logarithmic spiral
@@ -59,23 +59,55 @@ function calculateSpiralPoint(
 }
 
 /**
- * Calculate angle increment to prevent skill overlap
+ * Calculate angle increment to prevent skill overlap with lookback collision detection
  */
 function calculateAngleIncrement(
+  currentIndex: number,
   currentSize: number,
   nextSize: number,
   currentRadius: number,
+  currentAngle: number,
+  positions: Map<string, SpiralPosition>,
+  sortedSkills: ComputedSkill[],
   sizeMultiplier: number
 ): number {
   // Arc length needed = sum of radii plus padding
   const currentPixelRadius = (currentSize * sizeMultiplier) / 2;
   const nextPixelRadius = (nextSize * sizeMultiplier) / 2;
-  const minArc = currentPixelRadius + nextPixelRadius + SKILL_PADDING;
+  const baseMinArc = currentPixelRadius + nextPixelRadius + SKILL_PADDING;
 
-  // angle = arc / radius (for the arc length formula)
-  // Use a minimum to ensure we don't get stuck
-  const calculatedAngle = minArc / Math.max(currentRadius, 1);
-  return Math.max(MIN_ANGLE, calculatedAngle);
+  // Base angle from adjacent skill
+  let requiredAngle = Math.max(MIN_ANGLE, baseMinArc / Math.max(currentRadius, 1));
+
+  // Look back at recent skills within collision range
+  const LOOKBACK_COUNT = Math.min(8, currentIndex); // Check last 8 skills
+  const COLLISION_BUFFER = 1.3; // 30% safety buffer
+
+  for (let i = currentIndex - 1; i >= currentIndex - LOOKBACK_COUNT; i--) {
+    const prevSkill = sortedSkills[i];
+    const prevPos = positions.get(prevSkill.id);
+    if (!prevPos) continue;
+
+    // Only check if radii are close (within 50% difference)
+    const radiusRatio = Math.abs(prevPos.radius - currentRadius) / Math.max(prevPos.radius, currentRadius);
+    if (radiusRatio > 0.5) continue;
+
+    // Calculate distance needed to avoid collision
+    const prevPixelRadius = (prevSkill.fibonacciSize * sizeMultiplier) / 2;
+    const minDistance = (currentPixelRadius + prevPixelRadius) * COLLISION_BUFFER + SKILL_PADDING;
+
+    // Calculate angular distance needed at current radius
+    const neededAngle = minDistance / currentRadius;
+    const angleDiff = currentAngle + requiredAngle - prevPos.angle;
+
+    // If collision detected, increase angle
+    if (angleDiff < neededAngle) {
+      const angleAdjustment = neededAngle - angleDiff;
+      requiredAngle = Math.max(requiredAngle, requiredAngle + angleAdjustment);
+    }
+  }
+
+  return requiredAngle;
 }
 
 /**
@@ -118,8 +150,8 @@ export function useFibonacciLayout(options: FibonacciLayoutOptions): FibonacciLa
       };
     }
 
-    // Sort skills by fibonacciSize descending (largest at center)
-    const sortedSkills = [...skills].sort((a, b) => b.fibonacciSize - a.fibonacciSize);
+    // Sort skills by fibonacciSize ascending (smallest at center, largest on outskirts)
+    const sortedSkills = [...skills].sort((a, b) => a.fibonacciSize - b.fibonacciSize);
 
     // Initial calculation with a base center
     const centerX = 0;
@@ -147,9 +179,13 @@ export function useFibonacciLayout(options: FibonacciLayoutOptions): FibonacciLa
       if (i < sortedSkills.length - 1) {
         const nextSkill = sortedSkills[i + 1];
         currentAngle += calculateAngleIncrement(
+          i, // current index
           skill.fibonacciSize,
           nextSkill.fibonacciSize,
           point.radius,
+          currentAngle, // current angle
+          positions, // positions map
+          sortedSkills, // sorted skills array
           sizeMultiplier
         );
       }
