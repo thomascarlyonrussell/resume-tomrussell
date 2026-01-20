@@ -112,12 +112,22 @@ export const SkillNode = forwardRef<SVGCircleElement, SkillNodeProps>(function S
   const baseZIndex = Math.round((size / 133.5) * 50) + (skill.isActive ? 10 : 0);
   const zIndex = isHovered ? 100 : baseZIndex;
 
+  // Guard against NaN values
+  const validX = isNaN(x) ? 0 : x;
+  const validY = isNaN(y) ? 0 : y;
+  const validRadius = isNaN(radius) || radius <= 0 ? 0 : radius;
+
+  // Don't render if invalid
+  if (validRadius === 0) {
+    return null;
+  }
+
   return (
     <motion.circle
       ref={ref}
-      cx={x}
-      cy={y}
-      r={radius}
+      cx={validX}
+      cy={validY}
+      r={validRadius}
       fill={categoryColor}
       stroke="rgba(0, 0, 0, 0.4)"
       strokeWidth={strokeWidth}
@@ -166,13 +176,18 @@ export function SkillNodeFocusRing({
   size: number;
   isVisible: boolean;
 }) {
-  if (!isVisible) return null;
+  // Guard against NaN values
+  const validX = isNaN(x) ? 0 : x;
+  const validY = isNaN(y) ? 0 : y;
+  const validSize = isNaN(size) || size <= 0 ? 0 : size;
+
+  if (!isVisible || validSize === 0) return null;
 
   return (
     <circle
-      cx={x}
-      cy={y}
-      r={size / 2 + 3}
+      cx={validX}
+      cy={validY}
+      r={validSize / 2 + 3}
       fill="none"
       stroke="var(--color-foreground)"
       strokeWidth={2}

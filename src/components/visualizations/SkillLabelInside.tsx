@@ -60,15 +60,25 @@ export function SkillLabelInside({
   animationDelay,
   reducedMotion,
 }: SkillLabelInsideProps) {
+  // Guard against NaN values
+  const validX = isNaN(x) ? 0 : x;
+  const validY = isNaN(y) ? 0 : y;
+  const validRadius = isNaN(radius) || radius <= 0 ? 0 : radius;
+
+  // Don't render if position is invalid
+  if (validRadius === 0) {
+    return null;
+  }
+
   const categoryColor = getCategoryColor(skill.category);
   const textColor = getContrastingTextColor(categoryColor);
-  const fontSize = calculateFontSize(radius);
-  const displayText = truncateForCircle(skill.name, radius);
+  const fontSize = calculateFontSize(validRadius);
+  const displayText = truncateForCircle(skill.name, validRadius);
 
   return (
     <motion.text
-      x={x}
-      y={y}
+      x={validX}
+      y={validY}
       textAnchor="middle"
       dominantBaseline="middle"
       fontSize={fontSize}

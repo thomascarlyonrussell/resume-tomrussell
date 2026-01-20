@@ -163,7 +163,9 @@ export function useFibonacciLayout(options: FibonacciLayoutOptions): FibonacciLa
     let currentAngle = 0;
 
     // Initial radius - start small so largest skill is near center
-    const initialRadius = sortedSkills[0].fibonacciSize * sizeMultiplier * 0.5;
+    // Use Math.max to ensure we never have a 0 radius (which would keep everything at origin)
+    const baseInitialRadius = sortedSkills[0].fibonacciSize * sizeMultiplier * 0.5;
+    const initialRadius = Math.max(baseInitialRadius, sizeMultiplier * 2); // Minimum of 2x the size multiplier
 
     for (let i = 0; i < sortedSkills.length; i++) {
       const skill = sortedSkills[i];

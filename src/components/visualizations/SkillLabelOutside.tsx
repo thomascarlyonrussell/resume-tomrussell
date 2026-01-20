@@ -64,16 +64,28 @@ export function SkillLabelOutside({
   animationDelay,
   reducedMotion,
 }: SkillLabelOutsideProps) {
+  // Guard against NaN values
+  const validX = isNaN(x) ? 0 : x;
+  const validY = isNaN(y) ? 0 : y;
+  const validRadius = isNaN(radius) || radius <= 0 ? 0 : radius;
+  const validCenterX = isNaN(viewportCenter.x) ? 0 : viewportCenter.x;
+  const validCenterY = isNaN(viewportCenter.y) ? 0 : viewportCenter.y;
+
+  // Don't render if position is invalid
+  if (validRadius === 0) {
+    return null;
+  }
+
   const displayText = truncateOutsideLabel(skill.name, 12);
 
   // Calculate label position
   const labelPos = calculateOutsideLabelPosition(
-    x,
-    y,
-    radius,
+    validX,
+    validY,
+    validRadius,
     skillIndex,
     totalSmallSkills,
-    viewportCenter
+    { x: validCenterX, y: validCenterY }
   );
 
   // Estimate label box size
@@ -95,10 +107,10 @@ export function SkillLabelOutside({
     >
       {/* Connector line from circle edge to label */}
       <line
-        x1={labelPos.lineEndX}
-        y1={labelPos.lineEndY}
-        x2={labelPos.labelX}
-        y2={labelPos.labelY}
+        x1={isNaN(labelPos.lineEndX) ? 0 : labelPos.lineEndX}
+        y1={isNaN(labelPos.lineEndY) ? 0 : labelPos.lineEndY}
+        x2={isNaN(labelPos.labelX) ? 0 : labelPos.labelX}
+        y2={isNaN(labelPos.labelY) ? 0 : labelPos.labelY}
         stroke="var(--color-foreground)"
         strokeWidth={1.5}
         opacity={0.65}
@@ -108,8 +120,8 @@ export function SkillLabelOutside({
 
       {/* Label background box */}
       <rect
-        x={labelPos.labelX - boxWidth / 2}
-        y={labelPos.labelY - boxHeight / 2}
+        x={isNaN(labelPos.labelX) ? 0 : labelPos.labelX - boxWidth / 2}
+        y={isNaN(labelPos.labelY) ? 0 : labelPos.labelY - boxHeight / 2}
         width={boxWidth}
         height={boxHeight}
         rx={3}
@@ -122,8 +134,8 @@ export function SkillLabelOutside({
 
       {/* Label text */}
       <text
-        x={labelPos.labelX}
-        y={labelPos.labelY}
+        x={isNaN(labelPos.labelX) ? 0 : labelPos.labelX}
+        y={isNaN(labelPos.labelY) ? 0 : labelPos.labelY}
         textAnchor="middle"
         dominantBaseline="middle"
         fontSize={10}

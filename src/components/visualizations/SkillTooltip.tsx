@@ -53,6 +53,13 @@ export function SkillTooltip({
 }: SkillTooltipProps) {
   if (!skill || !position) return null;
 
+  // Validate position coordinates to prevent NaN CSS values
+  const validX = isNaN(position.x) ? 0 : position.x;
+  const validY = isNaN(position.y) ? 0 : position.y;
+
+  // Return null if position is invalid (both coordinates are 0 likely means uninitialized)
+  if (validX === 0 && validY === 0) return null;
+
   const category = getCategory(skill.category);
   const proficiencyLabel = skill.proficiency ? getProficiencyLabel(skill.proficiency) : '';
   const experienceText = formatYearsOfExperience(skill.yearsOfExperience);
@@ -69,8 +76,8 @@ export function SkillTooltip({
           }
           className="pointer-events-none absolute z-50"
           style={{
-            left: position.x,
-            top: position.y,
+            left: validX,
+            top: validY,
           }}
           role="tooltip"
           aria-live="polite"

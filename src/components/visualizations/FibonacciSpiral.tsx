@@ -51,6 +51,11 @@ function SpiralContent({
   const skillRefs = useRef<Map<string, SVGCircleElement>>(new Map());
   const reducedMotion = useReducedMotion();
 
+  // Guard against invalid dimensions
+  const validWidth = Math.max(width || 0, 0);
+  const validHeight = Math.max(height || 0, 0);
+  const hasValidDimensions = validWidth > 0 && validHeight > 0;
+
   // Get skills data - compute from experiences
   const computedSkills = useMemo(
     () => skillsProp ?? skills.map((skill) => computeSkill(skill, experience)),
@@ -69,8 +74,8 @@ function SpiralContent({
   // Calculate layout
   const { positions, sortedSkills, center } = useFibonacciLayout({
     skills: filteredSkills,
-    width,
-    height,
+    width: validWidth,
+    height: validHeight,
     padding: 60,
     sizeMultiplier: SIZE_MULTIPLIER,
   });
@@ -228,7 +233,9 @@ function SpiralContent({
               const SPIRAL_B = Math.log(PHI) / (Math.PI / 2);
 
               // Calculate what the unscaled radius would be at the first position
-              const unscaledInitialRadius = sortedSkills[0].fibonacciSize * SIZE_MULTIPLIER * 0.5;
+              // Use the same minimum radius logic as in useFibonacciLayout
+              const baseUnscaledInitialRadius = sortedSkills[0].fibonacciSize * SIZE_MULTIPLIER * 0.5;
+              const unscaledInitialRadius = Math.max(baseUnscaledInitialRadius, SIZE_MULTIPLIER * 2);
               const unscaledFirstRadius =
                 unscaledInitialRadius * Math.exp(SPIRAL_B * firstPos.angle);
               const scale = firstPos.radius / unscaledFirstRadius;
