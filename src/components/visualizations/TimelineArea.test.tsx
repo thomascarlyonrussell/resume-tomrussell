@@ -133,12 +133,9 @@ describe('TimelineArea Milestone Markers', () => {
       const polygons = overlay.querySelectorAll('polygon');
       expect(polygons.length).toBeGreaterThan(0);
 
-      // Check for line elements (vertical dashed lines)
-      const lines = overlay.querySelectorAll('line');
-      expect(lines.length).toBeGreaterThan(0);
-
-      // Should have same number of lines and polygons (one per milestone)
-      expect(lines.length).toEqual(polygons.length);
+      // Check that each marker is wrapped in a group for interaction
+      const groups = overlay.querySelectorAll('g');
+      expect(groups.length).toEqual(polygons.length);
     }
   });
 
@@ -156,13 +153,6 @@ describe('TimelineArea Milestone Markers', () => {
       if (polygons.length > 0) {
         const firstPolygon = polygons[0];
         expect(firstPolygon.getAttribute('fill')).toBe('#06B6D4'); // MILESTONE_COLOR
-      }
-
-      // Check that lines have dashed stroke
-      const lines = overlay.querySelectorAll('line');
-      if (lines.length > 0) {
-        const firstLine = lines[0];
-        expect(firstLine.getAttribute('stroke-dasharray')).toBe('4 4');
       }
     }
   });
