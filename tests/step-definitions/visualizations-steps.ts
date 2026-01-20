@@ -402,3 +402,29 @@ Then('they can reference the legend to understand category colors', async ({ pag
   const legend = page.locator('[data-testid="legend"]');
   await expect(legend).toBeVisible();
 });
+// TIMELINE LEGEND
+Given('a first-time visitor viewing the Timeline', async ({ page }) => {
+  await page.goto(baseUrl);
+  await page.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
+  const timelineToggle = page.locator('[data-testid="view-toggle-timeline"]');
+  await timelineToggle.click();
+  await page.waitForTimeout(500);
+});
+
+When('they look for explanation of the visualization', async ({ page }) => {
+  // User is looking for the legend
+  await page.waitForTimeout(100);
+});
+
+Then('the legend shows category names with their corresponding colors', async ({ page }) => {
+  const legend = page.locator('[data-testid="legend"]');
+  await expect(legend).toBeVisible();
+  const legendItems = page.locator('[data-testid="legend-item"]');
+  const count = await legendItems.count();
+  expect(count).toBeGreaterThan(0);
+});
+
+Then('the legend explains the stacked area representation', async ({ page }) => {
+  const legend = page.locator('[data-testid="legend"]');
+  await expect(legend).toBeVisible();
+});

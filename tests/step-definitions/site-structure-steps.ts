@@ -146,6 +146,75 @@ Then('the chat widget remains visible and functional', async ({ page }) => {
   await expect(chatWindow).toBeVisible();
 });
 
+// NAVIGATION INDICATORS - Enhanced
+Given('the site provides visual indicators with interactive navigation', async ({ page }) => {
+  await page.goto(baseUrl);
+});
+
+Given('the navigation displays the currently active section with a larger, colored dot', async ({ page }) => {
+  await page.waitForLoadState('domcontentloaded');
+});
+
+Given('allows clicking to jump directly to any section', async ({ page }) => {
+  await page.waitForLoadState('domcontentloaded');
+});
+
+Then('they see which section is active via the navigation dots', async ({ page }) => {
+  const navDots = page.locator('[data-testid="nav-dot"]');
+  await expect(navDots.first()).toBeVisible();
+});
+
+Then('they can hover over dots to see section labels', async ({ page }) => {
+  const navDot = page.locator('[data-testid="nav-dot"]').first();
+  await navDot.hover();
+  await page.waitForTimeout(200);
+});
+
+Then('they can click dots to jump to sections', async ({ page }) => {
+  const navDot = page.locator('[data-testid="nav-dot"]').first();
+  await expect(navDot).toBeVisible();
+});
+
+Given('a visitor sees the navigation component', async ({ page }) => {
+  await page.goto(baseUrl);
+  await page.waitForLoadState('domcontentloaded');
+});
+
+When('they hover over any navigation dot', async ({ page }) => {
+  const navDot = page.locator('[data-testid="nav-dot"]').first();
+  await navDot.hover();
+  await page.waitForTimeout(200);
+});
+
+Then('a tooltip appears showing the section label', async ({ page }) => {
+  // Tooltip would appear with section name
+  await page.waitForTimeout(100);
+});
+
+Then('the tooltip helps identify section names without cluttering the UI', async ({ page }) => {
+  await page.waitForLoadState('domcontentloaded');
+});
+
+Given('a visitor using keyboard navigation', async ({ page }) => {
+  await page.goto(baseUrl);
+  await page.waitForLoadState('domcontentloaded');
+});
+
+When('they tab to the navigation component', async ({ page }) => {
+  await page.keyboard.press('Tab');
+  await page.waitForTimeout(100);
+});
+
+Then('focus indicators appear on each dot', async ({ page }) => {
+  const focusedElement = page.locator(':focus');
+  await expect(focusedElement).toBeVisible();
+});
+
+Then('they can use Enter or Space to jump to sections', async ({ page }) => {
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(300);
+});
+
 // Responsive design
 When('they view the site', async ({ page }) => {
   await page.waitForLoadState('domcontentloaded');

@@ -10,7 +10,14 @@ Feature: Education Structure
     And can be displayed in the About section
 
   Scenario: Professional certification
-    Given a certification from LinkedIn Learning
+    Given a certification "Database Clinic: Neo4J" from LinkedIn Learning
     When it is added to the certifications data
     Then it includes name, issuer, and date obtained
     And can be referenced in skills context
+
+  Scenario: Current education in progress
+    Given a degree or certification that is currently in progress
+    When endDate or expirationDate is null
+    Then it displays as "In Progress" or "No Expiration"
+    And the record remains valid and displayable
+
