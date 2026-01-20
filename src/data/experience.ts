@@ -18,23 +18,7 @@ export const experience: Experience[] = [
       'Built personal projects to learn new frameworks and languages',
       'Stayed current with industry trends and best practices',
     ],
-    skills: [
-      { skillId: 'csharp', proficiency: 5 },
-      { skillId: 'powershell', proficiency: 3 },
-      { skillId: 'azure-devops', proficiency: 5 },
-      { skillId: 'github-copilot', proficiency: 5 },
-      { skillId: 'claude-ai', proficiency: 8 },
-      { skillId: 'openai-codex', proficiency: 5 },
-      { skillId: 'ai-agent-development', proficiency: 5 },
-      { skillId: 'mcp-protocol', proficiency: 5 },
-      { skillId: 'v0-vibes', proficiency: 5 },
-      { skillId: 'openspec', proficiency: 5 },
-      { skillId: 'playwright-mcp', proficiency: 3 },
-      { skillId: 'public-speaking', proficiency: 5 },
-      { skillId: 'stakeholder-management', proficiency: 8 },
-      { skillId: 'regulatory-engagement', proficiency: 5 },
-      { skillId: 'cross-functional-collaboration', proficiency: 8 }
-    ] as ExperienceSkill[],
+    skills: [] as ExperienceSkill[],
   } as Experience,
   {
     id: 'integral-analytics-vp',
@@ -62,7 +46,21 @@ export const experience: Experience[] = [
       { skillId: 'productboard', proficiency: 8 },
       { skillId: 'python', proficiency: 8 },
       { skillId: 'sql', proficiency: 5 },
-      { skillId: 'technical-training', proficiency: 5 }
+      { skillId: 'technical-training', proficiency: 5 },
+      { skillId: 'claude-ai', proficiency: 3 },
+      { skillId: 'github-copilot', proficiency: 3 },
+      { skillId: 'openai-codex', proficiency: 3 },
+      { skillId: 'mcp-protocol', proficiency: 2 },
+      { skillId: 'openspec', proficiency: 2 },
+      { skillId: 'v0-vibes', proficiency: 2 },
+      { skillId: 'ai-agent-development', proficiency: 2 },
+      { skillId: 'playwright-mcp', proficiency: 2 },
+      { skillId: 'csharp', proficiency: 2 },
+      { skillId: 'azure-devops', proficiency: 5 },
+      { skillId: 'stakeholder-management', proficiency: 8 },
+      { skillId: 'cross-functional-collaboration', proficiency: 8 },
+      { skillId: 'public-speaking', proficiency: 5 },
+      { skillId: 'agile-scrum', proficiency: 3 }
     ] as ExperienceSkill[],
   },
   {
@@ -108,7 +106,11 @@ export const experience: Experience[] = [
       { skillId: 'hosting-capacity', proficiency: 8 },
       { skillId: 'loadseer', proficiency: 8 },
       { skillId: 'python', proficiency: 8 },
-      { skillId: 'sql', proficiency: 2 }
+      { skillId: 'sql', proficiency: 2 },
+      { skillId: 'stakeholder-management', proficiency: 5 },
+      { skillId: 'cross-functional-collaboration', proficiency: 5 },
+      { skillId: 'public-speaking', proficiency: 5 },
+      { skillId: 'regulatory-engagement', proficiency: 5 }
     ] as ExperienceSkill[],
   },
   {
@@ -130,7 +132,11 @@ export const experience: Experience[] = [
       { skillId: 'hosting-capacity', proficiency: 5 },
       { skillId: 'loadseer', proficiency: 5 },
       { skillId: 'python', proficiency: 5 },
-      { skillId: 'technical-leadership', proficiency: 5 }
+      { skillId: 'technical-leadership', proficiency: 5 },
+      { skillId: 'stakeholder-management', proficiency: 5 },
+      { skillId: 'cross-functional-collaboration', proficiency: 5 },
+      { skillId: 'public-speaking', proficiency: 3 },
+      { skillId: 'regulatory-engagement', proficiency: 5 }
     ] as ExperienceSkill[],
   },
   {

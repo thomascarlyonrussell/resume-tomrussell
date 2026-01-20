@@ -151,6 +151,14 @@ export const skills: Skill[] = [
     description: 'Sprint management, backlog coordination, and developer feedback',
   },
   {
+    id: 'agile-scrum',
+    name: 'Agile/Scrum Methodology',
+    category: 'product-management',
+    subcategory: 'Project Management',
+    description:
+      'Scrum framework including sprint planning, backlog management, and ceremonies. Certified Product Owner and Scrum Master.',
+  },
+  {
     id: 'product-management',
     name: 'Product Management',
     category: 'product-management',

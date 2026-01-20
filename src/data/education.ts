@@ -21,6 +21,33 @@ export const education: Education[] = [
  */
 export const certifications: Certification[] = [
   {
+    id: 'california-pe',
+    name: 'Professional Engineer (PE)',
+    issuer: 'State of California',
+    date: '2014-12',
+    description: 'Licensed Professional Engineer in the State of California. Credential ID E 21108.',
+    url: 'https://search.dca.ca.gov/details/7500/E/21108/1161d983f72f27f8c60096982fad035d',
+    expirationDate: '2021-03',
+  },
+  {
+    id: 'scrum-product-owner',
+    name: 'Certified Product Owner',
+    issuer: 'Scrum Inc.',
+    date: '2024-06',
+    description: 'Product Owner certification from Scrum Inc.',
+    url: null,
+    expirationDate: null,
+  },
+  {
+    id: 'scrum-master',
+    name: 'Certified Scrum Master',
+    issuer: 'Scrum Inc.',
+    date: '2024-06',
+    description: 'Scrum Master certification from Scrum Inc.',
+    url: null,
+    expirationDate: null,
+  },
+  {
     id: 'neo4j-clinic',
     name: 'Database Clinic: Neo4J',
     issuer: 'LinkedIn Learning / Lynda.com',

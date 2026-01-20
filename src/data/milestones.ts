@@ -28,6 +28,14 @@ export const milestones: Milestone[] = [
     skillIds: ['power-systems-analysis', 'protection-and-control'],
   },
   {
+    id: 'california-pe-license',
+    title: 'Licensed as Professional Engineer in California',
+    date: '2014-12',
+    description:
+      'Obtained Professional Engineer (PE) license from the State of California, demonstrating expertise in electrical engineering',
+    skillIds: ['power-systems-analysis', 'distribution-planning'],
+  },
+  {
     id: 'hosting-capacity-standards',
     title: 'Set California/U.S. Hosting Capacity Standards',
     date: '2015-12',
@@ -88,6 +96,14 @@ export const milestones: Milestone[] = [
     description:
       "Developed comprehensive support tooling for LoadSEER's backend using Python, Azure Pipelines, and SQL",
     skillIds: ['python', 'azure-pipelines', 'sql', 'github', 'loadseer'],
+  },
+  {
+    id: 'scrum-certifications',
+    title: 'Scrum Inc. Product Owner & Scrum Master Certifications',
+    date: '2024-06',
+    description:
+      'Achieved dual Scrum certifications from Scrum Inc., formalizing Agile expertise for product management',
+    skillIds: ['agile-scrum', 'product-management'],
   },
 ];
 
