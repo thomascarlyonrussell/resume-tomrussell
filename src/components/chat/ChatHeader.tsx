@@ -37,6 +37,7 @@ export function ChatHeader({ onClose }: ChatHeaderProps) {
         onClick={onClose}
         className="rounded-full p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-engineering)] dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
         aria-label="Close chat"
+        data-testid="chat-close-button"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

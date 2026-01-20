@@ -24,6 +24,7 @@ export function ChatButton({ onClick }: ChatButtonProps) {
       whileHover={reducedMotion ? {} : { scale: 1.05 }}
       whileTap={reducedMotion ? {} : { scale: 0.95 }}
       aria-label="Open chat with Tom's resume assistant"
+      data-testid="chat-button"
     >
       {/* Chat Icon */}
       <svg

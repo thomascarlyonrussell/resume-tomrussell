@@ -392,7 +392,10 @@ export function FibonacciSpiral(props: FibonacciSpiralProps) {
   const { className = '' } = props;
 
   return (
-    <div className={`h-[400px] w-full sm:h-[500px] md:h-[600px] lg:h-[700px] ${className}`}>
+    <div
+      className={`h-[400px] w-full sm:h-[500px] md:h-[600px] lg:h-[700px] ${className}`}
+      data-testid="fibonacci-view"
+    >
       <ParentSize>
         {({ width, height }) => <SpiralContent {...props} width={width} height={height} />}
       </ParentSize>

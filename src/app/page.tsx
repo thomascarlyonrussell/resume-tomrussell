@@ -11,7 +11,7 @@ import { ChatWidget } from '@/components/chat';
 
 const sections: SectionConfig[] = [
   { id: 'hero', label: 'Home' },
-  { id: 'visualization', label: 'Skills' },
+  { id: 'visualizations', label: 'Skills' },
   { id: 'experience', label: 'Experience' },
   { id: 'about', label: 'About' },
   { id: 'contact', label: 'Contact' },
@@ -39,7 +39,7 @@ export default function Home() {
       {/* Main Content */}
       <main id="main-content">
         <HeroSection id="hero" />
-        <SkillsSection id="visualization" />
+        <SkillsSection id="visualizations" />
         <ExperienceSection id="experience" />
         <AboutSection id="about" />
         <ContactSection id="contact" />

@@ -81,6 +81,7 @@ export function SkillTooltip({
           }}
           role="tooltip"
           aria-live="polite"
+          data-testid="skill-tooltip"
         >
           <div className="max-w-[280px] min-w-[220px] rounded-lg border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-900">
             {/* Header: Name and Proficiency */}

@@ -24,7 +24,11 @@ export function ChatWidget() {
   }, []);
 
   return (
-    <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
+    <div
+      className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2"
+      data-testid="chat-widget"
+      data-state={isOpen ? 'expanded' : 'collapsed'}
+    >
       <AnimatePresence mode="wait">
         {isOpen ? (
           <ChatWindow key="window" onClose={handleClose} />

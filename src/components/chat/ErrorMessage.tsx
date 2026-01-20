@@ -16,6 +16,7 @@ export function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
     <div
       className="mx-3 my-2 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950"
       role="alert"
+      data-testid="error-message"
     >
       <div className="flex items-start gap-2">
         {/* Error Icon */}
@@ -38,6 +39,7 @@ export function ErrorMessage({ message, onRetry }: ErrorMessageProps) {
             <button
               onClick={onRetry}
               className="mt-2 text-sm font-medium text-red-600 hover:text-red-700 hover:underline focus:outline-none focus-visible:underline dark:text-red-400 dark:hover:text-red-300"
+              data-testid="retry-button"
             >
               Try again
             </button>

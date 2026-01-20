@@ -35,7 +35,7 @@ Then('they encounter Hero section first', async ({ page }) => {
 });
 
 Then('then Skills section', async ({ page }) => {
-  const skillsSection = page.locator('[data-testid="skills-section"]');
+  const skillsSection = page.locator('[data-testid="visualizations-section"]');
   const isVisible = await skillsSection.isVisible();
   expect(isVisible).toBeTruthy();
 });

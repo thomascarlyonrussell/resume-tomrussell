@@ -78,6 +78,7 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
           role="dialog"
           aria-modal="true"
           aria-labelledby="skill-detail-title"
+          data-testid="skill-detail-modal"
         >
           <motion.div
             initial={{ scale: 0.95, opacity: 0, y: 20 }}

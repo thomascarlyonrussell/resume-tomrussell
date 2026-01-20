@@ -47,6 +47,8 @@ export function Message({ role, parts }: MessageProps) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reducedMotion ? 0.01 : 0.2 }}
+      data-testid="chat-message"
+      data-role={role}
     >
       <div
         className={`max-w-[85%] rounded-2xl px-4 py-2 ${

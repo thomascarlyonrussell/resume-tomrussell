@@ -35,6 +35,7 @@ export function ChatMessages({ messages, isLoading = false }: ChatMessagesProps)
       role="log"
       aria-live="polite"
       aria-label="Chat messages"
+      data-testid="chat-messages"
     >
       {!hasMessages && !isLoading && (
         <div className="flex h-full items-center justify-center">

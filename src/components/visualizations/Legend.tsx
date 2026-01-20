@@ -117,6 +117,7 @@ export function Legend({
       className={`absolute ${positionStyles[position]} z-40 ${className}`}
       role="region"
       aria-label="Visualization legend"
+      data-testid="legend"
     >
       <div className="max-w-[200px] rounded-lg border border-gray-200 bg-white/95 p-3 shadow-md backdrop-blur-sm dark:border-gray-700 dark:bg-gray-900/95">
         {/* Header with collapse toggle */}
@@ -182,6 +183,7 @@ export function Legend({
                       onClick={() => handleCategoryClick(category.id)}
                       onKeyDown={(e) => handleKeyDown(e, index)}
                       tabIndex={index === 0 || isSelected ? 0 : -1}
+                      data-testid="legend-item"
                     >
                       <div
                         className="h-3 w-3 flex-shrink-0 rounded-full"
