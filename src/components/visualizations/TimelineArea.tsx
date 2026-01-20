@@ -35,11 +35,12 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
   const { data, categories } = useTimelineData({ sampleRate: 3 });
   const [hoveredMilestone, setHoveredMilestone] = useState<Milestone | null>(null);
   const [selectedMilestone, setSelectedMilestone] = useState<Milestone | null>(null);
+  const [highlightedCategory, setHighlightedCategory] = useState<string | null>(null);
 
   // Get year ticks for X-axis
   const yearTicks = useMemo(() => {
     const years = new Set(data.map((d) => d.year));
-    return Array.from(years).filter((year) => year % 2 === 1); // Show odd years
+    return Array.from(years); // Show all years
   }, [data]);
 
   // Calculate milestone positions (X positions based on year)
@@ -60,6 +61,30 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
       };
     });
   }, [data]);
+
+  // Sort categories by first appearance in timeline (earlier = bottom of stack)
+  const sortedCategories = useMemo(() => {
+    const firstAppearance = new Map<string, number>();
+
+    // Find first data point where each category has a non-zero value
+    for (const point of data) {
+      for (const category of categories) {
+        if (!firstAppearance.has(category.id)) {
+          const value = point[category.id as keyof typeof point];
+          if (typeof value === 'number' && value > 0) {
+            firstAppearance.set(category.id, point.year * 12 + point.month);
+          }
+        }
+      }
+    }
+
+    // Sort categories by first appearance (earliest first = bottom of stack)
+    return [...categories].sort((a, b) => {
+      const aFirst = firstAppearance.get(a.id) ?? Infinity;
+      const bFirst = firstAppearance.get(b.id) ?? Infinity;
+      return aFirst - bFirst;
+    });
+  }, [data, categories]);
 
   // Animation duration
   const animationDuration = reducedMotion ? 0 : 1500;
@@ -123,21 +148,27 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
               }}
             />
 
-            {/* Stacked Areas - render in reverse order so first category is on bottom */}
-            {[...categories].reverse().map((category) => (
-              <Area
-                key={category.id}
-                type="monotone"
-                dataKey={category.id}
-                stackId="1"
-                stroke={category.color}
-                fill={`url(#gradient-${category.id})`}
-                strokeWidth={1}
-                isAnimationActive={!reducedMotion}
-                animationDuration={animationDuration}
-                animationEasing="ease-out"
-              />
-            ))}
+            {/* Stacked Areas - sorted by first appearance (earlier skills at bottom) */}
+            {sortedCategories.map((category) => {
+              const isHighlighted =
+                !highlightedCategory || highlightedCategory === category.id;
+              return (
+                <Area
+                  key={category.id}
+                  type="monotone"
+                  dataKey={category.id}
+                  stackId="1"
+                  stroke={category.color}
+                  fill={`url(#gradient-${category.id})`}
+                  strokeWidth={isHighlighted ? 2 : 1}
+                  fillOpacity={isHighlighted ? 1 : 0.15}
+                  strokeOpacity={isHighlighted ? 1 : 0.3}
+                  isAnimationActive={!reducedMotion}
+                  animationDuration={animationDuration}
+                  animationEasing="ease-out"
+                />
+              );
+            })}
 
             {/* Milestone Reference Lines */}
             {milestoneData.map((milestone) => (
@@ -159,11 +190,11 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
         </ResponsiveContainer>
       </div>
 
-      {/* Milestone Legend */}
+      {/* Milestone Badges */}
       <div className="mt-4 px-4">
         <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">★ Career Milestones</p>
         <div className="flex flex-wrap gap-2">
-          {milestones.slice(0, 6).map((milestone) => (
+          {milestones.map((milestone) => (
             <button
               key={milestone.id}
               onMouseEnter={() => setHoveredMilestone(milestone)}
@@ -171,17 +202,14 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
               onClick={() => setSelectedMilestone(milestone)}
               className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700 transition-colors hover:bg-[var(--color-engineering)] hover:text-white dark:bg-gray-800 dark:text-gray-300"
               aria-label={`View details for ${milestone.title}`}
-              data-testid="milestone-marker"
+              data-testid="milestone-badge"
             >
               {milestone.date.split('-')[0]}
             </button>
           ))}
-          {milestones.length > 6 && (
-            <span className="px-2 py-1 text-xs text-gray-500">+{milestones.length - 6} more</span>
-          )}
         </div>
 
-        {/* Hovered Milestone Detail - Hidden when modal is open */}
+        {/* Hovered Milestone Detail */}
         <AnimatePresence>
           {hoveredMilestone && !selectedMilestone && (
             <motion.div
@@ -204,16 +232,35 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
         </AnimatePresence>
       </div>
 
-      {/* Category Legend - with separator */}
+      {/* Category Legend */}
       <div className="mt-6 border-t border-gray-200 px-4 pt-4 dark:border-gray-700">
         <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">Categories</p>
-        <div className="flex flex-wrap gap-3">
-          {categories.map((category) => (
-            <div key={category.id} className="flex items-center gap-1.5">
-              <span className="h-3 w-3 rounded-full" style={{ backgroundColor: category.color }} />
-              <span className="text-xs text-gray-600 dark:text-gray-400">{category.name}</span>
-            </div>
-          ))}
+        <div className="flex flex-wrap gap-3" role="group" aria-label="Filter chart by category">
+          {categories.map((category) => {
+            const isSelected = highlightedCategory === category.id;
+            const isDimmed = highlightedCategory && highlightedCategory !== category.id;
+            return (
+              <button
+                key={category.id}
+                onClick={() =>
+                  setHighlightedCategory(isSelected ? null : category.id)
+                }
+                className={`flex items-center gap-1.5 rounded px-1.5 py-0.5 transition-all ${
+                  isSelected ? 'bg-gray-100 dark:bg-gray-800' : ''
+                } ${isDimmed ? 'opacity-50' : ''}`}
+                aria-pressed={isSelected}
+                aria-label={`${isSelected ? 'Remove filter' : 'Filter by'} ${category.name}`}
+              >
+                <span
+                  className="h-3 w-3 rounded-full"
+                  style={{ backgroundColor: category.color }}
+                />
+                <span className="text-xs text-gray-600 dark:text-gray-400">
+                  {category.name}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
