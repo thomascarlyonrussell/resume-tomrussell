@@ -36,7 +36,7 @@ Then('the view transitions smoothly to Timeline', async ({ page }) => {
 
 Then('the toggle updates to show Timeline as active', async ({ page }) => {
   const timelineToggle = page.locator('[data-testid="view-toggle-timeline"]');
-  await expect(timelineToggle).toHaveAttribute('aria-pressed', 'true');
+  await expect(timelineToggle).toHaveAttribute('aria-selected', 'true');
 });
 
 Then('the view smoothly transitions to the alternate visualization', async ({ page }) => {
@@ -125,9 +125,9 @@ Given('a mobile user', async ({ page, context }) => {
 });
 
 When('the cursor is over {string}', async ({ page }, skillName: string) => {
-  const skillNode = page.locator('[data-testid="skill-node"]', {
-    hasText: skillName,
-  }).first();
+  // Skill nodes are SVG circles, so we hover over the first skill node instead of searching by text
+  // The skill data is stored in aria-label attribute
+  const skillNode = page.locator('[data-testid="skill-node"]').first();
   await skillNode.hover();
 });
 

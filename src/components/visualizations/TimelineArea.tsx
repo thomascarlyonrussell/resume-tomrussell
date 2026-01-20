@@ -190,6 +190,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
               exit={{ opacity: 0, y: -5 }}
               transition={{ duration: reducedMotion ? 0.01 : 0.15 }}
               className="mt-2 rounded-lg border border-[var(--color-engineering)] bg-gray-50 p-2 dark:bg-gray-800"
+              data-testid="milestone-tooltip"
             >
               <p className="text-sm font-medium">{hoveredMilestone.title}</p>
               <p className="text-xs text-[var(--color-muted)]">
