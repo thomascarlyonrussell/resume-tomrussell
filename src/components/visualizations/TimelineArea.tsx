@@ -13,7 +13,7 @@
 
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import {
   AreaChart,
   Area,
@@ -22,7 +22,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  ReferenceDot,
 } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTimelineData, useSkillTimelineData } from './hooks/useTimelineData';
@@ -64,6 +63,9 @@ function Diamond({ cx, cy, size = 8, fill = MILESTONE_COLOR, stroke = MILESTONE_
   );
 }
 
+// Chart margin constants (must match AreaChart margins)
+const CHART_MARGIN = { top: 20, right: 20, left: 50, bottom: 20 };
+
 export interface TimelineAreaProps {
   className?: string;
 }
@@ -71,6 +73,29 @@ export interface TimelineAreaProps {
 export function TimelineArea({ className = '' }: TimelineAreaProps) {
   const reducedMotion = useReducedMotion();
   const { data, categories } = useTimelineData({ sampleRate: 3 });
+
+  // Chart container ref and dimensions for milestone positioning
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const [chartDimensions, setChartDimensions] = useState({ width: 0, height: 0 });
+
+  // Track container dimensions
+  useEffect(() => {
+    const container = chartContainerRef.current;
+    if (!container) return;
+
+    const updateDimensions = () => {
+      setChartDimensions({
+        width: container.offsetWidth,
+        height: container.offsetHeight,
+      });
+    };
+
+    updateDimensions();
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    resizeObserver.observe(container);
+
+    return () => resizeObserver.disconnect();
+  }, []);
 
   // Milestone state
   const [hoveredMilestone, setHoveredMilestone] = useState<Milestone | null>(null);
@@ -90,25 +115,35 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
     return Array.from(years);
   }, [data, drillDownCategory, skillTimelineData]);
 
-  // Calculate milestone positions (X positions based on year)
+  // Calculate milestone positions (X positions based on year and chart dimensions)
   const milestoneData = useMemo(() => {
     const sourceData = drillDownCategory && skillTimelineData ? skillTimelineData.data : data;
-    const yearToIndex = new Map<number, number>();
-    sourceData.forEach((d, index) => {
-      if (!yearToIndex.has(d.year)) {
-        yearToIndex.set(d.year, index);
-      }
-    });
+    if (sourceData.length === 0 || chartDimensions.width === 0) return [];
+
+    // Get the year domain from the data
+    const years = sourceData.map(d => d.year);
+    const minYear = Math.min(...years);
+    const maxYear = Math.max(...years);
+    const yearRange = maxYear - minYear;
+
+    // Calculate the chart area width (excluding margins)
+    const chartAreaWidth = chartDimensions.width - CHART_MARGIN.left - CHART_MARGIN.right;
+    const chartAreaHeight = chartDimensions.height - CHART_MARGIN.top - CHART_MARGIN.bottom;
 
     return milestones.map((milestone) => {
       const year = parseInt(milestone.date.split('-')[0], 10);
+      // Calculate x position as percentage of chart area
+      const xPercent = yearRange > 0 ? (year - minYear) / yearRange : 0.5;
+      const xPos = CHART_MARGIN.left + (xPercent * chartAreaWidth);
+
       return {
         ...milestone,
         year,
-        dataIndex: yearToIndex.get(year) || 0,
+        xPos,
+        chartAreaHeight,
       };
     });
-  }, [data, drillDownCategory, skillTimelineData]);
+  }, [data, drillDownCategory, skillTimelineData, chartDimensions]);
 
   // Sort categories by first appearance in timeline (earlier = bottom of stack)
   const sortedCategories = useMemo(() => {
@@ -239,39 +274,6 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
               animationEasing="ease-out"
             />
           ))}
-
-          {/* Milestone Diamond Markers on X-axis */}
-          {milestoneData.map((milestone) => (
-            <ReferenceDot
-              key={milestone.id}
-              x={milestone.year}
-              y={0}
-              r={0}
-              shape={(props: { cx?: number; cy?: number }) => {
-                if (props.cx === undefined) return <g />;
-                // Position at bottom of chart (y=0 maps to bottom)
-                const chartBottom = props.cy || 0;
-                const isHovered = hoveredMilestone?.id === milestone.id;
-                return (
-                  <g
-                    style={{ cursor: 'pointer' }}
-                    onMouseEnter={() => setHoveredMilestone(milestone)}
-                    onMouseLeave={() => setHoveredMilestone(null)}
-                    onClick={() => setSelectedMilestone(milestone)}
-                  >
-                    <Diamond
-                      cx={props.cx}
-                      cy={chartBottom + 15}
-                      size={isHovered ? 12 : 8}
-                      fill={MILESTONE_COLOR}
-                      stroke={isHovered ? '#fff' : MILESTONE_COLOR}
-                      strokeWidth={isHovered ? 2 : 1}
-                    />
-                  </g>
-                );
-              }}
-                          />
-          ))}
         </>
       );
     }
@@ -347,39 +349,6 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
             />
           );
         })}
-
-        {/* Milestone Diamond Markers on X-axis */}
-        {milestoneData.map((milestone) => (
-          <ReferenceDot
-            key={milestone.id}
-            x={milestone.year}
-            y={0}
-            r={0}
-            shape={(props: { cx?: number; cy?: number }) => {
-              if (props.cx === undefined) return <g />;
-              // Position at bottom of chart (y=0 maps to bottom)
-              const chartBottom = props.cy || 0;
-              const isHovered = hoveredMilestone?.id === milestone.id;
-              return (
-                <g
-                  style={{ cursor: 'pointer' }}
-                  onMouseEnter={() => setHoveredMilestone(milestone)}
-                  onMouseLeave={() => setHoveredMilestone(null)}
-                  onClick={() => setSelectedMilestone(milestone)}
-                >
-                  <Diamond
-                    cx={props.cx}
-                    cy={chartBottom + 15}
-                    size={isHovered ? 12 : 8}
-                    fill={MILESTONE_COLOR}
-                    stroke={isHovered ? '#fff' : MILESTONE_COLOR}
-                    strokeWidth={isHovered ? 2 : 1}
-                  />
-                </g>
-              );
-            }}
-                      />
-        ))}
       </>
     );
   };
@@ -424,15 +393,66 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
       </AnimatePresence>
 
       {/* Chart Container */}
-      <div className="h-[300px] w-full sm:h-[400px] lg:h-[500px]" data-testid="timeline-area">
+      <div
+        ref={chartContainerRef}
+        className="relative h-[300px] w-full sm:h-[400px] lg:h-[500px]"
+        data-testid="timeline-area"
+      >
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={drillDownCategory && skillTimelineData ? skillTimelineData.data : data}
-            margin={{ top: 20, right: 20, left: 0, bottom: 20 }}
+            margin={CHART_MARGIN}
           >
             {renderChartContent()}
           </AreaChart>
         </ResponsiveContainer>
+
+        {/* Milestone Markers Overlay */}
+        {chartDimensions.width > 0 && (
+          <svg
+            className="pointer-events-none absolute inset-0"
+            width={chartDimensions.width}
+            height={chartDimensions.height}
+            style={{ overflow: 'visible' }}
+            data-testid="milestone-markers-overlay"
+          >
+            {milestoneData.map((milestone) => {
+              const isHovered = hoveredMilestone?.id === milestone.id;
+              const fullMilestone = milestones.find(m => m.id === milestone.id);
+
+              return (
+                <g
+                  key={milestone.id}
+                  className="pointer-events-auto cursor-pointer"
+                  onMouseEnter={() => fullMilestone && setHoveredMilestone(fullMilestone)}
+                  onMouseLeave={() => setHoveredMilestone(null)}
+                  onClick={() => fullMilestone && setSelectedMilestone(fullMilestone)}
+                >
+                  {/* Vertical dashed line */}
+                  <line
+                    x1={milestone.xPos}
+                    y1={CHART_MARGIN.top}
+                    x2={milestone.xPos}
+                    y2={CHART_MARGIN.top + milestone.chartAreaHeight}
+                    stroke={MILESTONE_COLOR}
+                    strokeWidth={isHovered ? 2 : 1}
+                    strokeDasharray="4 4"
+                    opacity={isHovered ? 0.6 : 0.3}
+                  />
+                  {/* Diamond marker at top */}
+                  <Diamond
+                    cx={milestone.xPos}
+                    cy={CHART_MARGIN.top + 10}
+                    size={isHovered ? 12 : 8}
+                    fill={MILESTONE_COLOR}
+                    stroke={isHovered ? '#fff' : MILESTONE_COLOR}
+                    strokeWidth={isHovered ? 2 : 1}
+                  />
+                </g>
+              );
+            })}
+          </svg>
+        )}
       </div>
 
       {/* Legend Explanation */}
