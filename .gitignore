@@ -17,7 +17,7 @@
 !reports/.gitkeep
 
 # Playwright BDD
-/.feature-gen/
+/.features-gen/
 /test-results/
 /playwright-report/
 /playwright/.cache/
