@@ -22,7 +22,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  ReferenceLine,
+  ReferenceDot,
 } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTimelineData, useSkillTimelineData } from './hooks/useTimelineData';
@@ -31,6 +31,38 @@ import { TimelineTooltip } from './TimelineTooltip';
 import { MilestoneDetailModal } from './MilestoneDetailModal';
 import { milestones } from '@/data/milestones';
 import type { Milestone, CategoryId } from '@/data/types';
+
+// Cyan color for milestone markers (as per spec)
+const MILESTONE_COLOR = '#06B6D4';
+
+// Diamond shape component for milestone markers
+interface DiamondProps {
+  cx: number;
+  cy: number;
+  size?: number;
+  fill?: string;
+  stroke?: string;
+  strokeWidth?: number;
+}
+
+function Diamond({ cx, cy, size = 8, fill = MILESTONE_COLOR, stroke = MILESTONE_COLOR, strokeWidth = 1 }: DiamondProps) {
+  const halfSize = size / 2;
+  const points = [
+    `${cx},${cy - halfSize}`,     // top
+    `${cx + halfSize},${cy}`,     // right
+    `${cx},${cy + halfSize}`,     // bottom
+    `${cx - halfSize},${cy}`,     // left
+  ].join(' ');
+
+  return (
+    <polygon
+      points={points}
+      fill={fill}
+      stroke={stroke}
+      strokeWidth={strokeWidth}
+    />
+  );
+}
 
 export interface TimelineAreaProps {
   className?: string;
@@ -208,21 +240,37 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
             />
           ))}
 
-          {/* Milestone Reference Lines */}
+          {/* Milestone Diamond Markers on X-axis */}
           {milestoneData.map((milestone) => (
-            <ReferenceLine
+            <ReferenceDot
               key={milestone.id}
               x={milestone.year}
-              stroke="var(--color-engineering)"
-              strokeDasharray="3 3"
-              strokeOpacity={0.5}
-              label={{
-                value: '★',
-                position: 'top',
-                fill: 'var(--color-engineering)',
-                fontSize: 12,
+              y={0}
+              r={0}
+              shape={(props: { cx?: number; cy?: number }) => {
+                if (props.cx === undefined) return <g />;
+                // Position at bottom of chart (y=0 maps to bottom)
+                const chartBottom = props.cy || 0;
+                const isHovered = hoveredMilestone?.id === milestone.id;
+                return (
+                  <g
+                    style={{ cursor: 'pointer' }}
+                    onMouseEnter={() => setHoveredMilestone(milestone)}
+                    onMouseLeave={() => setHoveredMilestone(null)}
+                    onClick={() => setSelectedMilestone(milestone)}
+                  >
+                    <Diamond
+                      cx={props.cx}
+                      cy={chartBottom + 15}
+                      size={isHovered ? 12 : 8}
+                      fill={MILESTONE_COLOR}
+                      stroke={isHovered ? '#fff' : MILESTONE_COLOR}
+                      strokeWidth={isHovered ? 2 : 1}
+                    />
+                  </g>
+                );
               }}
-            />
+                          />
           ))}
         </>
       );
@@ -300,21 +348,37 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
           );
         })}
 
-        {/* Milestone Reference Lines */}
+        {/* Milestone Diamond Markers on X-axis */}
         {milestoneData.map((milestone) => (
-          <ReferenceLine
+          <ReferenceDot
             key={milestone.id}
             x={milestone.year}
-            stroke="var(--color-engineering)"
-            strokeDasharray="3 3"
-            strokeOpacity={0.5}
-            label={{
-              value: '★',
-              position: 'top',
-              fill: 'var(--color-engineering)',
-              fontSize: 12,
+            y={0}
+            r={0}
+            shape={(props: { cx?: number; cy?: number }) => {
+              if (props.cx === undefined) return <g />;
+              // Position at bottom of chart (y=0 maps to bottom)
+              const chartBottom = props.cy || 0;
+              const isHovered = hoveredMilestone?.id === milestone.id;
+              return (
+                <g
+                  style={{ cursor: 'pointer' }}
+                  onMouseEnter={() => setHoveredMilestone(milestone)}
+                  onMouseLeave={() => setHoveredMilestone(null)}
+                  onClick={() => setSelectedMilestone(milestone)}
+                >
+                  <Diamond
+                    cx={props.cx}
+                    cy={chartBottom + 15}
+                    size={isHovered ? 12 : 8}
+                    fill={MILESTONE_COLOR}
+                    stroke={isHovered ? '#fff' : MILESTONE_COLOR}
+                    strokeWidth={isHovered ? 2 : 1}
+                  />
+                </g>
+              );
             }}
-          />
+                      />
         ))}
       </>
     );
