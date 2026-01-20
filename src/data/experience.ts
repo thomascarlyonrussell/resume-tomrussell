@@ -68,7 +68,7 @@ export const experience: Experience[] = [
     company: 'Integral Analytics',
     title: 'Product Manager',
     startDate: '2019-01',
-    endDate: '2020-04',
+    endDate: '2020-03',
     location: 'San Francisco Bay Area',
     description:
       'Guided the development and implementation of LoadSEER software as a subject matter expert through utility engineering training and background.',
@@ -91,7 +91,7 @@ export const experience: Experience[] = [
     company: 'Pacific Gas and Electric Company',
     title: 'Expert Engineer, Grid Innovation',
     startDate: '2018-06',
-    endDate: '2019-01',
+    endDate: '2018-12',
     location: 'San Francisco Bay Area',
     description:
       "Technical lead for advancing PG&E's integrated distribution planning processes and tools, including hosting capacity efforts that set new 2015 standards across California and the U.S.",
@@ -118,7 +118,7 @@ export const experience: Experience[] = [
     company: 'Pacific Gas and Electric Company',
     title: 'Senior Engineer, Distributed Resource Planning',
     startDate: '2014-09',
-    endDate: '2018-06',
+    endDate: '2018-05',
     location: 'San Francisco Bay Area',
     description:
       "Technical expert for developing PG&E's first Electric Distribution Resource Plan.",
@@ -165,7 +165,7 @@ export const experience: Experience[] = [
     company: 'PPL Electric Utilities',
     title: 'Engineer, Distribution Standards',
     startDate: '2011-07',
-    endDate: '2012-09',
+    endDate: '2012-08',
     location: 'Allentown, Pennsylvania Area',
     description:
       "Lead technical engineer for system-wide distribution capacitor project and administrator of PPL's RTDS Real-Time Power System Simulator Laboratory.",
@@ -185,7 +185,7 @@ export const experience: Experience[] = [
     company: 'PPL Electric Utilities',
     title: 'Summer Co-Op Engineer, Distribution Automation',
     startDate: '2010-05',
-    endDate: '2011-07',
+    endDate: '2011-06',
     location: 'Allentown, PA',
     description:
       'SCADA development and testing for distribution and substation automation equipment.',
