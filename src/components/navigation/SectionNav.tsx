@@ -39,6 +39,7 @@ export function SectionNav({ sections, className = '' }: SectionNavProps) {
     <nav
       aria-label="Page sections"
       className={`fixed top-1/2 right-4 z-40 hidden -translate-y-1/2 lg:block ${className}`}
+      data-testid="section-nav"
     >
       <ul className="flex flex-col gap-3">
         {sections.map((section) => {
@@ -51,6 +52,9 @@ export function SectionNav({ sections, className = '' }: SectionNavProps) {
                 className="nav-button relative flex items-center justify-end focus:outline-none"
                 aria-label={`Go to ${section.label} section`}
                 aria-current={isActive ? 'true' : undefined}
+                data-testid="nav-dot"
+                data-section={section.id}
+                data-active={isActive ? 'true' : undefined}
               >
                 {/* Label (shown on hover) */}
                 <span className="nav-label pointer-events-none absolute right-6 z-50 rounded bg-gray-900 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity dark:bg-gray-100 dark:text-gray-900">

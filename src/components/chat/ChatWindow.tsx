@@ -78,6 +78,7 @@ export function ChatWindow({ onClose }: ChatWindowProps) {
       role="dialog"
       aria-label="Chat with Tom's Resume Assistant"
       aria-modal="true"
+      data-testid="chat-window"
     >
       <ChatHeader onClose={onClose} />
 

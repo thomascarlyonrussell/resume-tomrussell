@@ -54,6 +54,7 @@ export function TimelineTooltip({ active, payload }: TimelineTooltipProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reducedMotion ? 0.01 : 0.15 }}
       className="max-w-xs rounded-lg border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-900"
+      data-testid="timeline-tooltip"
     >
       {/* Date Header */}
       <div className="mb-2 border-b border-gray-200 pb-2 dark:border-gray-700">

@@ -377,7 +377,7 @@ Then("animations don't stutter", async ({ page }) => {
 // Default view
 Given('the visitor is viewing the Visualization section', async ({ page }) => {
   await page.goto(baseUrl);
-  await page.locator('[data-testid="visualization-section"]').scrollIntoViewIfNeeded();
+  await page.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
 });
 
 When('the section comes into view', async ({ page }) => {

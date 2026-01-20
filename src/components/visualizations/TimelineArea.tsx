@@ -65,7 +65,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
   const animationDuration = reducedMotion ? 0 : 1500;
 
   return (
-    <div className={`w-full ${className}`}>
+    <div className={`w-full ${className}`} data-testid="timeline-view">
       {/* Screen Reader Description */}
       <div className="sr-only" role="note">
         Timeline chart showing skill growth over time from {data[0]?.year} to{' '}
@@ -73,7 +73,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
       </div>
 
       {/* Chart Container */}
-      <div className="h-[300px] w-full sm:h-[400px] lg:h-[500px]">
+      <div className="h-[300px] w-full sm:h-[400px] lg:h-[500px]" data-testid="timeline-area">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 20 }}>
             <defs>
@@ -171,6 +171,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
               onClick={() => setSelectedMilestone(milestone)}
               className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700 transition-colors hover:bg-[var(--color-engineering)] hover:text-white dark:bg-gray-800 dark:text-gray-300"
               aria-label={`View details for ${milestone.title}`}
+              data-testid="milestone-marker"
             >
               {milestone.date.split('-')[0]}
             </button>

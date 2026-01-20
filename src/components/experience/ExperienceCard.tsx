@@ -74,6 +74,8 @@ export function ExperienceCard({ experience, animationDelay = 0 }: ExperienceCar
         duration: reducedMotion ? 0.01 : 0.5,
         delay: reducedMotion ? 0 : animationDelay * 0.1,
       }}
+      data-testid="experience-card"
+      data-current={isCurrent ? 'true' : undefined}
     >
       {/* Timeline line */}
       <div

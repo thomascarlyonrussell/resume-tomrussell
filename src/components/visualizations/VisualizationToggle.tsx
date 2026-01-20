@@ -66,6 +66,7 @@ export function VisualizationToggle({
       role="tablist"
       aria-label="Visualization view"
       className={`inline-flex rounded-lg bg-gray-100 p-1 dark:bg-gray-800 ${className}`}
+      data-testid="view-toggle"
     >
       {VIEWS.map((view, index) => {
         const isActive = activeView === view.id;
@@ -86,6 +87,8 @@ export function VisualizationToggle({
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
             } ${disabled ? 'cursor-not-allowed opacity-70' : ''}`}
             title={view.description}
+            data-testid={`view-toggle-${view.id}`}
+            id={`${view.id}-tab`}
           >
             {/* Active Background */}
             {isActive && (

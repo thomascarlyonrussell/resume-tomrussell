@@ -24,7 +24,7 @@ export function StarterPrompts({ onSelect }: StarterPromptsProps) {
   const reducedMotion = useReducedMotion();
 
   return (
-    <div className="space-y-2 p-3">
+    <div className="space-y-2 p-3" data-testid="starter-prompts">
       <p className="text-center text-xs text-gray-500 dark:text-gray-400">
         Try one of these questions:
       </p>
@@ -40,6 +40,7 @@ export function StarterPrompts({ onSelect }: StarterPromptsProps) {
               duration: reducedMotion ? 0.01 : 0.3,
               delay: reducedMotion ? 0 : index * 0.05,
             }}
+            data-testid="starter-prompt"
           >
             {prompt}
           </motion.button>
