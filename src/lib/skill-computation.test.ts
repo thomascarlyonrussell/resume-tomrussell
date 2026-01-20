@@ -10,6 +10,7 @@ import {
   getSkillProficiency,
   getSkillProficiencyHistory,
   computeSkill,
+  calculateSkillProficiencyAtDate,
 } from './skill-computation';
 import type { Experience, ExperienceSkill } from '../data/types';
 
@@ -472,5 +473,159 @@ describe('computeSkill', () => {
     expect(result.yearsOfExperience).toBe(0);
     expect(result.experiences).toHaveLength(0);
     expect(result.fibonacciSize).toBe(0);
+  });
+});
+
+describe('calculateSkillProficiencyAtDate', () => {
+  it('should return 0 for date before experience starts', () => {
+    const experiences: Experience[] = [
+      {
+        id: 'exp1',
+        company: 'Company A',
+        title: 'Developer',
+        startDate: '2020-01',
+        endDate: '2020-12',
+        description: 'Test',
+        skills: [{ skillId: 'python', proficiency: 6 }] as ExperienceSkill[],
+      } as Experience,
+    ];
+
+    const result = calculateSkillProficiencyAtDate({ id: 'python' }, '2019-06', experiences);
+    expect(result).toBe(0);
+  });
+
+  it('should calculate linear progression during experience', () => {
+    const experiences: Experience[] = [
+      {
+        id: 'exp1',
+        company: 'Company A',
+        title: 'Developer',
+        startDate: '2020-01',
+        endDate: '2020-12',
+        description: 'Test',
+        skills: [{ skillId: 'python', proficiency: 6 }] as ExperienceSkill[],
+      } as Experience,
+    ];
+
+    // 6 months into 11-month experience (Jan to Dec = 11 months): progressRatio = 6/11 = 0.545
+    // Expected: 6 × 0.545 = 3.27
+    const result = calculateSkillProficiencyAtDate({ id: 'python' }, '2020-07', experiences);
+    expect(result).toBeCloseTo(3.27, 1);
+  });
+
+  it('should return full proficiency at end of experience', () => {
+    const experiences: Experience[] = [
+      {
+        id: 'exp1',
+        company: 'Company A',
+        title: 'Developer',
+        startDate: '2020-01',
+        endDate: '2020-12',
+        description: 'Test',
+        skills: [{ skillId: 'python', proficiency: 6 }] as ExperienceSkill[],
+      } as Experience,
+    ];
+
+    // At end of experience, progressRatio = 12/12 = 1.0
+    // Expected: 6 × 1.0 = 6.0
+    const result = calculateSkillProficiencyAtDate({ id: 'python' }, '2020-12', experiences);
+    expect(result).toBeCloseTo(6.0, 1);
+  });
+
+  it('should calculate linear decay after experience ends', () => {
+    const experiences: Experience[] = [
+      {
+        id: 'exp1',
+        company: 'Company A',
+        title: 'Developer',
+        startDate: '2020-01',
+        endDate: '2020-12',
+        description: 'Test',
+        skills: [{ skillId: 'python', proficiency: 6 }] as ExperienceSkill[],
+      } as Experience,
+    ];
+
+    // 12 months after end: decayRatio = 1 - (12/24) = 0.5
+    // Expected: 6 × 0.5 = 3.0
+    const result = calculateSkillProficiencyAtDate({ id: 'python' }, '2021-12', experiences);
+    expect(result).toBeCloseTo(3.0, 1);
+  });
+
+  it('should return 0 after complete decay (24 months)', () => {
+    const experiences: Experience[] = [
+      {
+        id: 'exp1',
+        company: 'Company A',
+        title: 'Developer',
+        startDate: '2020-01',
+        endDate: '2020-12',
+        description: 'Test',
+        skills: [{ skillId: 'python', proficiency: 6 }] as ExperienceSkill[],
+      } as Experience,
+    ];
+
+    // 24 months after end: decayRatio = 1 - (24/24) = 0
+    // Expected: 0
+    const result = calculateSkillProficiencyAtDate({ id: 'python' }, '2022-12', experiences);
+    expect(result).toBe(0);
+  });
+
+  it('should aggregate proficiency from multiple experiences', () => {
+    const experiences: Experience[] = [
+      {
+        id: 'exp1',
+        company: 'Company A',
+        title: 'Developer',
+        startDate: '2019-01',
+        endDate: '2020-12',
+        description: 'Test',
+        skills: [{ skillId: 'python', proficiency: 3 }] as ExperienceSkill[],
+      } as Experience,
+      {
+        id: 'exp2',
+        company: 'Company B',
+        title: 'Senior Developer',
+        startDate: '2021-06',
+        endDate: '2023-06',
+        description: 'Test',
+        skills: [{ skillId: 'python', proficiency: 5 }] as ExperienceSkill[],
+      } as Experience,
+    ];
+
+    // At 2022-06 (mid-way through exp2):
+    // exp1: ended 18 months ago, decayRatio = 1 - (18/24) = 0.25, contribution = 3 × 0.25 = 0.75
+    // exp2: 12 months into 24-month experience, progressRatio = 12/24 = 0.5, contribution = 5 × 0.5 = 2.5
+    // Expected total: 0.75 + 2.5 = 3.25
+    const result = calculateSkillProficiencyAtDate({ id: 'python' }, '2022-06', experiences);
+    expect(result).toBeCloseTo(3.25, 1);
+  });
+
+  it('should return 0 for skill with no experiences', () => {
+    const experiences: Experience[] = [];
+    const result = calculateSkillProficiencyAtDate({ id: 'python' }, '2022-06', experiences);
+    expect(result).toBe(0);
+  });
+
+  it('should handle ongoing experience correctly', () => {
+    const experiences: Experience[] = [
+      {
+        id: 'exp1',
+        company: 'Company A',
+        title: 'Developer',
+        startDate: '2020-01',
+        endDate: null, // Ongoing
+        description: 'Test',
+        skills: [{ skillId: 'python', proficiency: 8 }] as ExperienceSkill[],
+      } as Experience,
+    ];
+
+    // Ongoing experience should continue to build proficiency
+    // At 2023-01 (36 months into experience that's still going)
+    // Since endDate is null, need to reference a future point for total duration
+    // The function treats ongoing experiences without proper duration calculation
+    // For an ongoing experience, we compute based on current progress
+    const result = calculateSkillProficiencyAtDate({ id: 'python' }, '2023-01', experiences);
+    expect(result).toBeGreaterThan(0);
+    expect(result).toBeLessThanOrEqual(8);
   });
 });

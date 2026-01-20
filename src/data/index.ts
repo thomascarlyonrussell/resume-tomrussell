@@ -66,7 +66,7 @@ import type {
   ProficiencyLevel,
 } from './types';
 import { isSkillActive } from '@/lib/calculations';
-import { computeSkill } from '@/lib/skill-computation';
+import { computeSkill, calculateSkillProficiencyAtDate } from '@/lib/skill-computation';
 
 // ============================================================================
 // Computed Skill Helpers
@@ -153,8 +153,12 @@ export function getCategoryStats(categoryId: CategoryId) {
 /**
  * Generate timeline data points for the stacked area chart
  *
- * Creates monthly data points showing active skill counts per category over time.
- * Uses computeSkill() to derive skill timelines from experiences.
+ * Creates monthly data points showing cumulative proficiency per category over time.
+ * Uses calculateSkillProficiencyAtDate() with linear progression during experiences
+ * and linear decay after experiences end.
+ *
+ * Y-axis values represent "Cumulative Proficiency" (sum of all skill proficiency
+ * contributions), not "Active Skill Count" as in the previous implementation.
  */
 export function generateTimelineData(
   startYear: number = 2009,
@@ -162,8 +166,8 @@ export function generateTimelineData(
 ): TimelineDataPoint[] {
   const dataPoints: TimelineDataPoint[] = [];
 
-  // Compute all skills once to get their timelines
-  const computedSkills = getAllComputedSkills();
+  // Get all skills for proficiency calculation
+  const allSkills = skills;
 
   for (let year = startYear; year <= endYear; year++) {
     for (let month = 1; month <= 12; month++) {
@@ -179,16 +183,23 @@ export function generateTimelineData(
         month,
       };
 
-      // Count active skills per category at this point in time
+      // Calculate cumulative proficiency per category at this point in time
       for (const category of categories) {
-        const activeCount = computedSkills.filter((skill) => {
-          if (skill.category !== category.id) return false;
-          if (!skill.startDate || skill.startDate > dateStr) return false;
-          if (skill.endDate && skill.endDate < dateStr) return false;
-          return true;
-        }).length;
+        let categoryProficiency = 0;
 
-        dataPoint[category.id] = activeCount;
+        // Sum proficiency contributions from all skills in this category
+        for (const skill of allSkills) {
+          if (skill.category !== category.id) continue;
+
+          const proficiency = calculateSkillProficiencyAtDate(
+            skill,
+            dateStr,
+            experience
+          );
+          categoryProficiency += proficiency;
+        }
+
+        dataPoint[category.id] = Math.round(categoryProficiency * 10) / 10; // Round to 1 decimal
       }
 
       dataPoints.push(dataPoint);
@@ -199,27 +210,120 @@ export function generateTimelineData(
 }
 
 /**
- * Get skills active at a specific date (for timeline hover)
- *
- * Uses computeSkill() to derive skill timelines and proficiency from experiences.
+ * Skill-level timeline data point for drill-down view
  */
-export function getSkillsAtDate(dateStr: string): TimelineSkillInfo[] {
-  // Compute all skills to get their timelines and proficiency
+export interface SkillTimelineDataPoint {
+  date: string;
+  year: number;
+  month: number;
+  [skillId: string]: number | string; // Proficiency values per skill
+}
+
+/**
+ * Generate skill-level timeline data for a specific category (drill-down view)
+ *
+ * Returns timeline data with individual skill proficiency values instead of
+ * category aggregates. Used when user clicks a category to see individual skills.
+ *
+ * @param categoryId - Category to drill down into
+ * @param startYear - Start year for timeline (default: 2009)
+ * @param endYear - End year for timeline (default: current year)
+ * @returns Array of data points with proficiency per skill
+ */
+export function generateSkillTimelineData(
+  categoryId: CategoryId,
+  startYear: number = 2009,
+  endYear: number = new Date().getFullYear()
+): SkillTimelineDataPoint[] {
+  const dataPoints: SkillTimelineDataPoint[] = [];
+
+  // Get all skills in this category
+  const categorySkills = skills.filter((s) => s.category === categoryId);
+
+  for (let year = startYear; year <= endYear; year++) {
+    for (let month = 1; month <= 12; month++) {
+      // Skip future months in current year
+      if (year === endYear && month > new Date().getMonth() + 1) {
+        break;
+      }
+
+      const dateStr = `${year}-${month.toString().padStart(2, '0')}`;
+      const dataPoint: SkillTimelineDataPoint = {
+        date: dateStr,
+        year,
+        month,
+      };
+
+      // Calculate proficiency for each skill in this category
+      for (const skill of categorySkills) {
+        const proficiency = calculateSkillProficiencyAtDate(
+          skill,
+          dateStr,
+          experience
+        );
+        dataPoint[skill.id] = Math.round(proficiency * 10) / 10;
+      }
+
+      dataPoints.push(dataPoint);
+    }
+  }
+
+  return dataPoints;
+}
+
+/**
+ * Get skills in a category sorted by first appearance (for consistent rendering)
+ *
+ * @param categoryId - Category to get skills for
+ * @returns Skills sorted by their first appearance date (earliest first)
+ */
+export function getCategorySkillsSorted(categoryId: CategoryId): Skill[] {
+  const categorySkills = skills.filter((s) => s.category === categoryId);
   const computedSkills = getAllComputedSkills();
 
-  return computedSkills
-    .filter((skill) => {
-      if (!skill.startDate || skill.startDate > dateStr) return false;
-      if (skill.endDate && skill.endDate < dateStr) return false;
-      if (!skill.proficiency) return false; // Skip skills without proficiency
-      return true;
-    })
-    .map((skill) => ({
-      skillId: skill.id,
-      skillName: skill.name,
-      category: skill.category,
-      proficiency: Math.round(skill.proficiency!) as ProficiencyLevel,
-    }));
+  return categorySkills.sort((a, b) => {
+    const aComputed = computedSkills.find((s) => s.id === a.id);
+    const bComputed = computedSkills.find((s) => s.id === b.id);
+    const aStart = aComputed?.startDate ?? '9999-99';
+    const bStart = bComputed?.startDate ?? '9999-99';
+    return aStart.localeCompare(bStart);
+  });
+}
+
+/**
+ * Extended skill info that includes calculated proficiency at a specific date
+ */
+export interface TimelineSkillInfoWithProficiency extends TimelineSkillInfo {
+  /** Calculated proficiency at the queried date (continuous value) */
+  calculatedProficiency: number;
+}
+
+/**
+ * Get skills active at a specific date (for timeline hover)
+ *
+ * Uses calculateSkillProficiencyAtDate() to get the proficiency value
+ * at the specific date point, including progression and decay effects.
+ */
+export function getSkillsAtDate(dateStr: string): TimelineSkillInfoWithProficiency[] {
+  const result: TimelineSkillInfoWithProficiency[] = [];
+
+  for (const skill of skills) {
+    const proficiency = calculateSkillProficiencyAtDate(skill, dateStr, experience);
+
+    // Only include skills with non-zero proficiency at this date
+    if (proficiency > 0) {
+      result.push({
+        skillId: skill.id,
+        skillName: skill.name,
+        category: skill.category,
+        proficiency: Math.min(8, Math.max(1, Math.round(proficiency))) as ProficiencyLevel,
+        calculatedProficiency: Math.round(proficiency * 10) / 10,
+      });
+    }
+  }
+
+  // Sort by proficiency descending
+  return result.sort((a, b) => b.calculatedProficiency - a.calculatedProficiency);
 }
 
 /**
