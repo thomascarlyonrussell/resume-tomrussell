@@ -15,6 +15,13 @@ import type {
   CategoryId,
 } from '../data/types';
 import { DEGRADATION_FACTORS } from '../data/types';
+import { TIMELINE_CONFIG } from './timeline-config';
+import {
+  monthsSince,
+  experienceDurationMonths,
+  isDateWithinExperience,
+  isDateAfterExperience,
+} from './date-utils';
 
 /**
  * Get all experiences that use a specific skill
@@ -335,4 +342,85 @@ export function computeSkill(
     fibonacciSize,
     degradationFactor,
   };
+}
+
+/**
+ * Calculate a skill's proficiency contribution at a specific date
+ *
+ * This function calculates the cumulative proficiency from all experiences
+ * that contributed to this skill, using:
+ * - Linear progression during experience (0 → target proficiency)
+ * - Linear decay after experience (target → 0 over DECAY_DURATION_MONTHS)
+ *
+ * @param skill - ComputedSkill object (or skill with id)
+ * @param date - Target date in YYYY-MM format
+ * @param experiences - Array of all experiences
+ * @returns Cumulative proficiency value at the given date
+ */
+export function calculateSkillProficiencyAtDate(
+  skill: { id: string },
+  date: string,
+  experiences: Experience[]
+): number {
+  const skillExperiences = getExperiencesForSkill(skill.id, experiences);
+
+  if (skillExperiences.length === 0) {
+    return 0;
+  }
+
+  let totalProficiency = 0;
+
+  for (const exp of skillExperiences) {
+    // Get proficiency for this skill in this experience
+    let targetProficiency: number | undefined;
+
+    if ('skills' in exp) {
+      const skills = exp.skills as ExperienceSkill[] | undefined;
+      const skillEntry = skills?.find((s) => s.skillId === skill.id);
+      targetProficiency = skillEntry?.proficiency;
+    }
+
+    if (targetProficiency === undefined) {
+      continue;
+    }
+
+    // Calculate contribution based on timing
+    if (isDateWithinExperience(date, exp)) {
+      // During experience: linear progression from 0 to target
+      const monthsIntoExp = monthsSince(exp.startDate, date);
+      const totalExpMonths = experienceDurationMonths(exp);
+
+      if (totalExpMonths > 0) {
+        const progressRatio = Math.min(1, monthsIntoExp / totalExpMonths);
+
+        if (TIMELINE_CONFIG.USE_LOGARITHMIC_PROGRESSION) {
+          // Logarithmic: rapid early growth, plateau later
+          // log(1 + x) / log(2) normalized to 0-1 range
+          totalProficiency += targetProficiency * (Math.log(1 + progressRatio) / Math.log(2));
+        } else {
+          // Linear: constant rate of growth
+          totalProficiency += targetProficiency * progressRatio;
+        }
+      }
+    } else if (isDateAfterExperience(date, exp)) {
+      // After experience: linear decay from target to 0 over decay duration
+      const monthsSinceEnd = monthsSince(exp.endDate!, date);
+      const decayDuration = TIMELINE_CONFIG.DECAY_DURATION_MONTHS;
+
+      if (TIMELINE_CONFIG.USE_EXPONENTIAL_DECAY) {
+        // Exponential decay: slower initial, faster over time
+        const decayRatio = Math.exp(-3 * monthsSinceEnd / decayDuration);
+        totalProficiency += targetProficiency * Math.max(0, decayRatio);
+      } else {
+        // Linear decay: constant rate
+        const decayRatio = 1 - monthsSinceEnd / decayDuration;
+        if (decayRatio > 0) {
+          totalProficiency += targetProficiency * decayRatio;
+        }
+      }
+    }
+    // Before experience: contributes 0 (skill not yet acquired)
+  }
+
+  return totalProficiency;
 }

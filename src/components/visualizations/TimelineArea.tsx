@@ -3,11 +3,17 @@
  *
  * Stacked area chart showing career progression over time.
  * Uses Recharts for the chart and displays milestone markers.
+ *
+ * Features:
+ * - Continuous proficiency visualization (linear progression during experience, decay after)
+ * - Category drill-down to see individual skills
+ * - Interactive legend with hover highlighting
+ * - Milestone markers and detail modal
  */
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import {
   AreaChart,
   Area,
@@ -19,12 +25,12 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTimelineData } from './hooks/useTimelineData';
+import { useTimelineData, useSkillTimelineData } from './hooks/useTimelineData';
 import { useReducedMotion } from './hooks';
 import { TimelineTooltip } from './TimelineTooltip';
 import { MilestoneDetailModal } from './MilestoneDetailModal';
 import { milestones } from '@/data/milestones';
-import type { Milestone } from '@/data/types';
+import type { Milestone, CategoryId } from '@/data/types';
 
 export interface TimelineAreaProps {
   className?: string;
@@ -33,20 +39,30 @@ export interface TimelineAreaProps {
 export function TimelineArea({ className = '' }: TimelineAreaProps) {
   const reducedMotion = useReducedMotion();
   const { data, categories } = useTimelineData({ sampleRate: 3 });
+
+  // Milestone state
   const [hoveredMilestone, setHoveredMilestone] = useState<Milestone | null>(null);
   const [selectedMilestone, setSelectedMilestone] = useState<Milestone | null>(null);
-  const [highlightedCategory, setHighlightedCategory] = useState<string | null>(null);
 
-  // Get year ticks for X-axis
+  // Category interaction state
+  const [highlightedCategory, setHighlightedCategory] = useState<string | null>(null);
+  const [drillDownCategory, setDrillDownCategory] = useState<CategoryId | null>(null);
+
+  // Get skill-level data for drill-down view
+  const skillTimelineData = useSkillTimelineData(drillDownCategory, { sampleRate: 3 });
+
+  // Get year ticks for X-axis (show all years)
   const yearTicks = useMemo(() => {
-    const years = new Set(data.map((d) => d.year));
-    return Array.from(years); // Show all years
-  }, [data]);
+    const sourceData = drillDownCategory && skillTimelineData ? skillTimelineData.data : data;
+    const years = new Set(sourceData.map((d) => d.year));
+    return Array.from(years);
+  }, [data, drillDownCategory, skillTimelineData]);
 
   // Calculate milestone positions (X positions based on year)
   const milestoneData = useMemo(() => {
+    const sourceData = drillDownCategory && skillTimelineData ? skillTimelineData.data : data;
     const yearToIndex = new Map<number, number>();
-    data.forEach((d, index) => {
+    sourceData.forEach((d, index) => {
       if (!yearToIndex.has(d.year)) {
         yearToIndex.set(d.year, index);
       }
@@ -60,7 +76,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
         dataIndex: yearToIndex.get(year) || 0,
       };
     });
-  }, [data]);
+  }, [data, drillDownCategory, skillTimelineData]);
 
   // Sort categories by first appearance in timeline (earlier = bottom of stack)
   const sortedCategories = useMemo(() => {
@@ -86,108 +102,282 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
     });
   }, [data, categories]);
 
+  // Handle category legend click (drill-down)
+  const handleCategoryClick = useCallback((categoryId: string) => {
+    setDrillDownCategory(categoryId as CategoryId);
+    setHighlightedCategory(null);
+  }, []);
+
+  // Handle category legend hover
+  const handleCategoryHover = useCallback((categoryId: string | null) => {
+    if (!drillDownCategory) {
+      setHighlightedCategory(categoryId);
+    }
+  }, [drillDownCategory]);
+
+  // Handle back to categories
+  const handleBackToCategories = useCallback(() => {
+    setDrillDownCategory(null);
+    setHighlightedCategory(null);
+  }, []);
+
   // Animation duration
   const animationDuration = reducedMotion ? 0 : 1500;
+  const transitionDuration = reducedMotion ? 0 : 300;
+
+  // Calculate current proficiency totals for legend
+  const currentProficiencyTotals = useMemo(() => {
+    const totals: Record<string, number> = {};
+    if (data.length > 0) {
+      const latestPoint = data[data.length - 1];
+      for (const category of categories) {
+        const value = latestPoint[category.id as keyof typeof latestPoint];
+        totals[category.id] = typeof value === 'number' ? Math.round(value * 10) / 10 : 0;
+      }
+    }
+    return totals;
+  }, [data, categories]);
+
+  // Render chart content based on drill-down state
+  const renderChartContent = () => {
+    if (drillDownCategory && skillTimelineData) {
+      // Drill-down view: show individual skills
+      return (
+        <>
+          <defs>
+            {skillTimelineData.skills.map((skill) => (
+              <linearGradient
+                key={`gradient-skill-${skill.id}`}
+                id={`gradient-skill-${skill.id}`}
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop offset="5%" stopColor={skill.color} stopOpacity={0.8} />
+                <stop offset="95%" stopColor={skill.color} stopOpacity={0.2} />
+              </linearGradient>
+            ))}
+          </defs>
+
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-muted)" opacity={0.2} />
+
+          <XAxis
+            dataKey="year"
+            ticks={yearTicks}
+            tick={{ fontSize: 12, fill: 'var(--color-muted)' }}
+            tickLine={{ stroke: 'var(--color-muted)' }}
+            axisLine={{ stroke: 'var(--color-muted)' }}
+          />
+
+          <YAxis
+            tick={{ fontSize: 12, fill: 'var(--color-muted)' }}
+            tickLine={{ stroke: 'var(--color-muted)' }}
+            axisLine={{ stroke: 'var(--color-muted)' }}
+            label={{
+              value: 'Cumulative Proficiency',
+              angle: -90,
+              position: 'insideLeft',
+              style: { fontSize: 12, fill: 'var(--color-muted)' },
+            }}
+          />
+
+          <Tooltip
+            content={<TimelineTooltip drillDownCategory={drillDownCategory} />}
+            cursor={{
+              stroke: 'var(--color-engineering)',
+              strokeWidth: 1,
+              strokeDasharray: '5 5',
+            }}
+          />
+
+          {/* Skill Areas - sorted by first appearance */}
+          {skillTimelineData.skills.map((skill) => (
+            <Area
+              key={skill.id}
+              type="monotone"
+              dataKey={skill.id}
+              stackId="1"
+              stroke={skill.color}
+              fill={`url(#gradient-skill-${skill.id})`}
+              strokeWidth={2}
+              fillOpacity={1}
+              isAnimationActive={!reducedMotion}
+              animationDuration={animationDuration}
+              animationEasing="ease-out"
+            />
+          ))}
+
+          {/* Milestone Reference Lines */}
+          {milestoneData.map((milestone) => (
+            <ReferenceLine
+              key={milestone.id}
+              x={milestone.year}
+              stroke="var(--color-engineering)"
+              strokeDasharray="3 3"
+              strokeOpacity={0.5}
+              label={{
+                value: '★',
+                position: 'top',
+                fill: 'var(--color-engineering)',
+                fontSize: 12,
+              }}
+            />
+          ))}
+        </>
+      );
+    }
+
+    // Category view
+    return (
+      <>
+        <defs>
+          {categories.map((category) => (
+            <linearGradient
+              key={`gradient-${category.id}`}
+              id={`gradient-${category.id}`}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop offset="5%" stopColor={category.color} stopOpacity={0.8} />
+              <stop offset="95%" stopColor={category.color} stopOpacity={0.2} />
+            </linearGradient>
+          ))}
+        </defs>
+
+        <CartesianGrid strokeDasharray="3 3" stroke="var(--color-muted)" opacity={0.2} />
+
+        <XAxis
+          dataKey="year"
+          ticks={yearTicks}
+          tick={{ fontSize: 12, fill: 'var(--color-muted)' }}
+          tickLine={{ stroke: 'var(--color-muted)' }}
+          axisLine={{ stroke: 'var(--color-muted)' }}
+        />
+
+        <YAxis
+          tick={{ fontSize: 12, fill: 'var(--color-muted)' }}
+          tickLine={{ stroke: 'var(--color-muted)' }}
+          axisLine={{ stroke: 'var(--color-muted)' }}
+          label={{
+            value: 'Cumulative Proficiency',
+            angle: -90,
+            position: 'insideLeft',
+            style: { fontSize: 12, fill: 'var(--color-muted)' },
+          }}
+        />
+
+        <Tooltip
+          content={<TimelineTooltip />}
+          cursor={{
+            stroke: 'var(--color-engineering)',
+            strokeWidth: 1,
+            strokeDasharray: '5 5',
+          }}
+        />
+
+        {/* Stacked Areas - sorted by first appearance (earlier skills at bottom) */}
+        {sortedCategories.map((category) => {
+          const isHighlighted =
+            !highlightedCategory || highlightedCategory === category.id;
+          return (
+            <Area
+              key={category.id}
+              type="monotone"
+              dataKey={category.id}
+              stackId="1"
+              stroke={category.color}
+              fill={`url(#gradient-${category.id})`}
+              strokeWidth={isHighlighted ? 2 : 1}
+              fillOpacity={isHighlighted ? 1 : 0.15}
+              strokeOpacity={isHighlighted ? 1 : 0.3}
+              isAnimationActive={!reducedMotion}
+              animationDuration={animationDuration}
+              animationEasing="ease-out"
+            />
+          );
+        })}
+
+        {/* Milestone Reference Lines */}
+        {milestoneData.map((milestone) => (
+          <ReferenceLine
+            key={milestone.id}
+            x={milestone.year}
+            stroke="var(--color-engineering)"
+            strokeDasharray="3 3"
+            strokeOpacity={0.5}
+            label={{
+              value: '★',
+              position: 'top',
+              fill: 'var(--color-engineering)',
+              fontSize: 12,
+            }}
+          />
+        ))}
+      </>
+    );
+  };
 
   return (
     <div className={`w-full ${className}`} data-testid="timeline-view">
       {/* Screen Reader Description */}
       <div className="sr-only" role="note">
-        Timeline chart showing skill growth over time from {data[0]?.year} to{' '}
-        {data[data.length - 1]?.year}. Use the milestone buttons below to explore key career events.
+        Timeline chart showing skill proficiency growth over time from {data[0]?.year} to{' '}
+        {data[data.length - 1]?.year}. Proficiency increases during experiences and gradually
+        decreases after they end. Click categories to see individual skills.
+        Use the milestone buttons below to explore key career events.
       </div>
+
+      {/* Back to Categories Button (when in drill-down) */}
+      <AnimatePresence>
+        {drillDownCategory && skillTimelineData && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: transitionDuration / 1000 }}
+            className="mb-4 flex items-center gap-3"
+          >
+            <button
+              onClick={handleBackToCategories}
+              className="flex items-center gap-1.5 rounded-md bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+              aria-label="Return to category view"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Categories
+            </button>
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Viewing: <span className="font-medium" style={{ color: skillTimelineData.categoryColor }}>
+                {skillTimelineData.categoryName}
+              </span> skills
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Chart Container */}
       <div className="h-[300px] w-full sm:h-[400px] lg:h-[500px]" data-testid="timeline-area">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 20 }}>
-            <defs>
-              {categories.map((category) => (
-                <linearGradient
-                  key={`gradient-${category.id}`}
-                  id={`gradient-${category.id}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
-                  <stop offset="5%" stopColor={category.color} stopOpacity={0.8} />
-                  <stop offset="95%" stopColor={category.color} stopOpacity={0.2} />
-                </linearGradient>
-              ))}
-            </defs>
-
-            <CartesianGrid strokeDasharray="3 3" stroke="var(--color-muted)" opacity={0.2} />
-
-            <XAxis
-              dataKey="year"
-              ticks={yearTicks}
-              tick={{ fontSize: 12, fill: 'var(--color-muted)' }}
-              tickLine={{ stroke: 'var(--color-muted)' }}
-              axisLine={{ stroke: 'var(--color-muted)' }}
-            />
-
-            <YAxis
-              tick={{ fontSize: 12, fill: 'var(--color-muted)' }}
-              tickLine={{ stroke: 'var(--color-muted)' }}
-              axisLine={{ stroke: 'var(--color-muted)' }}
-              label={{
-                value: 'Active Skills',
-                angle: -90,
-                position: 'insideLeft',
-                style: { fontSize: 12, fill: 'var(--color-muted)' },
-              }}
-            />
-
-            <Tooltip
-              content={<TimelineTooltip />}
-              cursor={{
-                stroke: 'var(--color-engineering)',
-                strokeWidth: 1,
-                strokeDasharray: '5 5',
-              }}
-            />
-
-            {/* Stacked Areas - sorted by first appearance (earlier skills at bottom) */}
-            {sortedCategories.map((category) => {
-              const isHighlighted =
-                !highlightedCategory || highlightedCategory === category.id;
-              return (
-                <Area
-                  key={category.id}
-                  type="monotone"
-                  dataKey={category.id}
-                  stackId="1"
-                  stroke={category.color}
-                  fill={`url(#gradient-${category.id})`}
-                  strokeWidth={isHighlighted ? 2 : 1}
-                  fillOpacity={isHighlighted ? 1 : 0.15}
-                  strokeOpacity={isHighlighted ? 1 : 0.3}
-                  isAnimationActive={!reducedMotion}
-                  animationDuration={animationDuration}
-                  animationEasing="ease-out"
-                />
-              );
-            })}
-
-            {/* Milestone Reference Lines */}
-            {milestoneData.map((milestone) => (
-              <ReferenceLine
-                key={milestone.id}
-                x={milestone.year}
-                stroke="var(--color-engineering)"
-                strokeDasharray="3 3"
-                strokeOpacity={0.5}
-                label={{
-                  value: '★',
-                  position: 'top',
-                  fill: 'var(--color-engineering)',
-                  fontSize: 12,
-                }}
-              />
-            ))}
+          <AreaChart
+            data={drillDownCategory && skillTimelineData ? skillTimelineData.data : data}
+            margin={{ top: 20, right: 20, left: 0, bottom: 20 }}
+          >
+            {renderChartContent()}
           </AreaChart>
         </ResponsiveContainer>
+      </div>
+
+      {/* Legend Explanation */}
+      <div className="mt-2 px-4 text-xs text-gray-500 dark:text-gray-400">
+        <p>
+          <strong>Cumulative Proficiency:</strong> Shows skill depth across your career.
+          Values increase during active experiences and gradually decay after they end.
+          Higher values indicate deeper expertise across more skills.
+        </p>
       </div>
 
       {/* Milestone Badges */}
@@ -232,36 +422,69 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
         </AnimatePresence>
       </div>
 
-      {/* Category Legend */}
+      {/* Category/Skill Legend */}
       <div className="mt-6 border-t border-gray-200 px-4 pt-4 dark:border-gray-700">
-        <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">Categories</p>
-        <div className="flex flex-wrap gap-3" role="group" aria-label="Filter chart by category">
-          {categories.map((category) => {
-            const isSelected = highlightedCategory === category.id;
-            const isDimmed = highlightedCategory && highlightedCategory !== category.id;
-            return (
-              <button
-                key={category.id}
-                onClick={() =>
-                  setHighlightedCategory(isSelected ? null : category.id)
-                }
-                className={`flex items-center gap-1.5 rounded px-1.5 py-0.5 transition-all ${
-                  isSelected ? 'bg-gray-100 dark:bg-gray-800' : ''
-                } ${isDimmed ? 'opacity-50' : ''}`}
-                aria-pressed={isSelected}
-                aria-label={`${isSelected ? 'Remove filter' : 'Filter by'} ${category.name}`}
-              >
-                <span
-                  className="h-3 w-3 rounded-full"
-                  style={{ backgroundColor: category.color }}
-                />
-                <span className="text-xs text-gray-600 dark:text-gray-400">
-                  {category.name}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        {drillDownCategory && skillTimelineData ? (
+          // Skill legend for drill-down
+          <>
+            <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">
+              {skillTimelineData.categoryName} Skills
+            </p>
+            <div className="flex flex-wrap gap-3" role="group" aria-label="Skills in category">
+              {skillTimelineData.skills.map((skill) => (
+                <div
+                  key={skill.id}
+                  className="flex items-center gap-1.5 rounded px-1.5 py-0.5"
+                >
+                  <span
+                    className="h-3 w-3 rounded-full"
+                    style={{ backgroundColor: skill.color }}
+                  />
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
+                    {skill.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          // Category legend
+          <>
+            <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">
+              Categories <span className="font-normal">(click to drill down)</span>
+            </p>
+            <div className="flex flex-wrap gap-3" role="group" aria-label="Filter chart by category">
+              {categories.map((category) => {
+                const isSelected = highlightedCategory === category.id;
+                const isDimmed = highlightedCategory && highlightedCategory !== category.id;
+                const proficiencyTotal = currentProficiencyTotals[category.id] || 0;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategoryClick(category.id)}
+                    onMouseEnter={() => handleCategoryHover(category.id)}
+                    onMouseLeave={() => handleCategoryHover(null)}
+                    className={`flex items-center gap-1.5 rounded px-1.5 py-0.5 transition-all cursor-pointer ${
+                      isSelected ? 'bg-gray-100 dark:bg-gray-800' : ''
+                    } ${isDimmed ? 'opacity-50' : ''}`}
+                    aria-label={`View ${category.name} skills (proficiency: ${proficiencyTotal})`}
+                  >
+                    <span
+                      className="h-3 w-3 rounded-full"
+                      style={{ backgroundColor: category.color }}
+                    />
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      {category.name}
+                    </span>
+                    <span className="text-xs font-medium text-gray-500 dark:text-gray-500">
+                      {proficiencyTotal > 0 ? proficiencyTotal.toFixed(1) : ''}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Milestone Detail Modal */}
