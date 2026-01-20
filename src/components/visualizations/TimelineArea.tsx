@@ -99,6 +99,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
 
   // Milestone state
   const [hoveredMilestone, setHoveredMilestone] = useState<Milestone | null>(null);
+  const [hoveredYear, setHoveredYear] = useState<number | null>(null);
   const [selectedMilestone, setSelectedMilestone] = useState<Milestone | null>(null);
 
   // Category interaction state
@@ -108,6 +109,25 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
   // Get skill-level data for drill-down view
   const skillTimelineData = useSkillTimelineData(drillDownCategory, { sampleRate: 3 });
 
+  // Group milestones by year for consolidated badges
+  const milestonesByYear = useMemo(() => {
+    const grouped = new Map<number, Milestone[]>();
+    milestones.forEach((milestone) => {
+      const year = parseInt(milestone.date.split('-')[0], 10);
+      if (!grouped.has(year)) {
+        grouped.set(year, []);
+      }
+      grouped.get(year)!.push(milestone);
+    });
+    // Sort years and sort milestones within each year by date
+    return Array.from(grouped.entries())
+      .sort(([a], [b]) => a - b)
+      .map(([year, msList]) => ({
+        year,
+        milestones: msList.sort((a, b) => a.date.localeCompare(b.date)),
+      }));
+  }, []);
+
   // Get year ticks for X-axis (show all years)
   const yearTicks = useMemo(() => {
     const sourceData = drillDownCategory && skillTimelineData ? skillTimelineData.data : data;
@@ -115,26 +135,74 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
     return Array.from(years);
   }, [data, drillDownCategory, skillTimelineData]);
 
-  // Calculate milestone positions (X positions based on year and chart dimensions)
+  // Calculate milestone positions (X positions based on data array index)
+  //
+  // Key insight: With quarterly data (4 points per year), Recharts' XAxis with
+  // ticks={yearTicks} positions each year label at the CENTER of all data points
+  // for that year (e.g., 2020 tick at center of indices 44-47 = index 45.5).
+  //
+  // To align milestones with user expectations (where "2020" marks the START of 2020),
+  // we calculate position based on where the milestone date falls between year boundaries.
   const milestoneData = useMemo(() => {
     const sourceData = drillDownCategory && skillTimelineData ? skillTimelineData.data : data;
     if (sourceData.length === 0 || chartDimensions.width === 0) return [];
 
-    // Get the year domain from the data
-    const years = sourceData.map(d => d.year);
-    const minYear = Math.min(...years);
-    const maxYear = Math.max(...years);
-    const yearRange = maxYear - minYear;
-
-    // Calculate the chart area width (excluding margins)
+    // Calculate the chart area dimensions (excluding margins)
     const chartAreaWidth = chartDimensions.width - CHART_MARGIN.left - CHART_MARGIN.right;
     const chartAreaHeight = chartDimensions.height - CHART_MARGIN.top - CHART_MARGIN.bottom;
 
+    // Build a map of year -> data indices for that year
+    const yearIndices: Record<number, number[]> = {};
+    sourceData.forEach((point, index) => {
+      if (!yearIndices[point.year]) {
+        yearIndices[point.year] = [];
+      }
+      yearIndices[point.year].push(index);
+    });
+
+    // Get all years in sorted order
+    const years = Object.keys(yearIndices).map(Number).sort((a, b) => a - b);
+    const totalPoints = sourceData.length;
+
     return milestones.map((milestone) => {
-      const year = parseInt(milestone.date.split('-')[0], 10);
-      // Calculate x position as percentage of chart area
-      const xPercent = yearRange > 0 ? (year - minYear) / yearRange : 0.5;
-      const xPos = CHART_MARGIN.left + (xPercent * chartAreaWidth);
+      const [yearStr, monthStr] = milestone.date.split('-');
+      const year = parseInt(yearStr, 10);
+      const month = parseInt(monthStr, 10);
+
+      // Find where this year's tick is centered (middle of year's data points)
+      const thisYearIndices = yearIndices[year] || [];
+      const nextYear = year + 1;
+      const nextYearIndices = yearIndices[nextYear] || [];
+
+      if (thisYearIndices.length === 0) {
+        // Year not in data, fall back to start
+        return { ...milestone, year, xPos: CHART_MARGIN.left, chartAreaHeight };
+      }
+
+      // The year tick label is positioned at the CENTER of this year's data points
+      const yearTickIndex = (thisYearIndices[0] + thisYearIndices[thisYearIndices.length - 1]) / 2;
+
+      // The next year tick (or end of chart) determines the right boundary
+      let nextYearTickIndex: number;
+      if (nextYearIndices.length > 0) {
+        nextYearTickIndex = (nextYearIndices[0] + nextYearIndices[nextYearIndices.length - 1]) / 2;
+      } else {
+        // No next year data, extrapolate based on typical year spacing
+        const pointsPerYear = thisYearIndices.length;
+        nextYearTickIndex = yearTickIndex + pointsPerYear;
+      }
+
+      // Calculate the fraction into the year (0 = Jan 1, 1 = Dec 31)
+      const monthFraction = (month - 1) / 12;
+
+      // Position the milestone between the year tick and next year tick
+      // based on how far into the year the month is
+      const milestoneIndex = yearTickIndex + (monthFraction * (nextYearTickIndex - yearTickIndex));
+
+      // Convert index to x percentage
+      const xPercent = totalPoints > 1 ? milestoneIndex / (totalPoints - 1) : 0.5;
+      const clampedPercent = Math.max(0, Math.min(1, xPercent));
+      const xPos = CHART_MARGIN.left + (clampedPercent * chartAreaWidth);
 
       return {
         ...milestone,
@@ -417,7 +485,9 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
             data-testid="milestone-markers-overlay"
           >
             {milestoneData.map((milestone) => {
-              const isHovered = hoveredMilestone?.id === milestone.id;
+              const isIndividualHovered = hoveredMilestone?.id === milestone.id;
+              const isYearHovered = hoveredYear === milestone.year;
+              const isHovered = isIndividualHovered || isYearHovered;
               const fullMilestone = milestones.find(m => m.id === milestone.id);
 
               return (
@@ -428,17 +498,6 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
                   onMouseLeave={() => setHoveredMilestone(null)}
                   onClick={() => fullMilestone && setSelectedMilestone(fullMilestone)}
                 >
-                  {/* Vertical dashed line */}
-                  <line
-                    x1={milestone.xPos}
-                    y1={CHART_MARGIN.top}
-                    x2={milestone.xPos}
-                    y2={CHART_MARGIN.top + milestone.chartAreaHeight}
-                    stroke={MILESTONE_COLOR}
-                    strokeWidth={isHovered ? 2 : 1}
-                    strokeDasharray="4 4"
-                    opacity={isHovered ? 0.6 : 0.3}
-                  />
                   {/* Diamond marker at top */}
                   <Diamond
                     cx={milestone.xPos}
@@ -468,39 +527,68 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
       <div className="mt-4 px-4">
         <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">★ Career Milestones</p>
         <div className="flex flex-wrap gap-2">
-          {milestones.map((milestone) => (
+          {milestonesByYear.map(({ year, milestones: yearMilestones }) => (
             <button
-              key={milestone.id}
-              onMouseEnter={() => setHoveredMilestone(milestone)}
-              onMouseLeave={() => setHoveredMilestone(null)}
-              onClick={() => setSelectedMilestone(milestone)}
+              key={year}
+              onMouseEnter={() => {
+                setHoveredYear(year);
+                if (yearMilestones.length === 1) {
+                  setHoveredMilestone(yearMilestones[0]);
+                }
+              }}
+              onMouseLeave={() => {
+                setHoveredYear(null);
+                setHoveredMilestone(null);
+              }}
+              onClick={() => {
+                if (yearMilestones.length === 1) {
+                  setSelectedMilestone(yearMilestones[0]);
+                }
+              }}
               className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700 transition-colors hover:bg-[var(--color-engineering)] hover:text-white dark:bg-gray-800 dark:text-gray-300"
-              aria-label={`View details for ${milestone.title}`}
+              aria-label={
+                yearMilestones.length === 1
+                  ? `View details for ${yearMilestones[0].title}`
+                  : `View ${yearMilestones.length} milestones from ${year}`
+              }
               data-testid="milestone-badge"
             >
-              {milestone.date.split('-')[0]}
+              {year}
+              {yearMilestones.length > 1 && (
+                <span className="ml-1 opacity-70">({yearMilestones.length})</span>
+              )}
             </button>
           ))}
         </div>
 
         {/* Hovered Milestone Detail */}
         <AnimatePresence>
-          {hoveredMilestone && !selectedMilestone && (
+          {hoveredYear && !selectedMilestone && (
             <motion.div
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}
               transition={{ duration: reducedMotion ? 0.01 : 0.15 }}
-              className="mt-2 rounded-lg border border-[var(--color-engineering)] bg-gray-50 p-2 dark:bg-gray-800"
+              className="mt-2 space-y-2"
               data-testid="milestone-tooltip"
             >
-              <p className="text-sm font-medium">{hoveredMilestone.title}</p>
-              <p className="text-xs text-[var(--color-muted)]">
-                {hoveredMilestone.date} • {hoveredMilestone.description}
-              </p>
-              <p className="mt-1 text-xs text-[var(--color-engineering)]">
-                Click to see more details
-              </p>
+              {milestonesByYear
+                .find(({ year }) => year === hoveredYear)
+                ?.milestones.map((milestone) => (
+                  <div
+                    key={milestone.id}
+                    onClick={() => setSelectedMilestone(milestone)}
+                    className="cursor-pointer rounded-lg border border-[var(--color-engineering)] bg-gray-50 p-2 transition-colors hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
+                  >
+                    <p className="text-sm font-medium">{milestone.title}</p>
+                    <p className="text-xs text-[var(--color-muted)]">
+                      {milestone.date} • {milestone.description}
+                    </p>
+                    <p className="mt-1 text-xs text-[var(--color-engineering)]">
+                      Click to see more details
+                    </p>
+                  </div>
+                ))}
             </motion.div>
           )}
         </AnimatePresence>
