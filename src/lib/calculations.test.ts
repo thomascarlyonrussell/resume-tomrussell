@@ -92,34 +92,31 @@ describe('calculateDegradationFactor', () => {
 });
 
 describe('mapToFibonacci', () => {
-  it('should return 1 for values <= 1', () => {
+  it('should normalize to 5-bin scale', () => {
+    // Bin 1: 0-1.6 → 1
     expect(mapToFibonacci(0)).toBe(1);
     expect(mapToFibonacci(0.5)).toBe(1);
     expect(mapToFibonacci(1)).toBe(1);
-  });
+    expect(mapToFibonacci(1.5)).toBe(1);
 
-  it('should return 89 for values >= 89', () => {
-    expect(mapToFibonacci(89)).toBe(89);
-    expect(mapToFibonacci(100)).toBe(89);
-    expect(mapToFibonacci(1000)).toBe(89);
-  });
-
-  it('should map to nearest Fibonacci number', () => {
-    expect(mapToFibonacci(1.4)).toBe(1);
+    // Bin 2: 1.6-3.2 → 2
     expect(mapToFibonacci(1.6)).toBe(2);
-    expect(mapToFibonacci(2.4)).toBe(2);
-    expect(mapToFibonacci(2.6)).toBe(3);
-    // 4 is equidistant from 3 and 5, algorithm picks first match (3)
-    expect(mapToFibonacci(4)).toBe(3);
-    expect(mapToFibonacci(4.5)).toBe(5);
-    expect(mapToFibonacci(6)).toBe(5);
-    expect(mapToFibonacci(7)).toBe(8);
-    expect(mapToFibonacci(10)).toBe(8);
-    expect(mapToFibonacci(11)).toBe(13);
-    expect(mapToFibonacci(17)).toBe(13);
-    expect(mapToFibonacci(18)).toBe(21);
-    expect(mapToFibonacci(27)).toBe(21);
-    expect(mapToFibonacci(28)).toBe(34);
+    expect(mapToFibonacci(2.0)).toBe(2);
+    expect(mapToFibonacci(3.0)).toBe(2);
+
+    // Bin 3: 3.2-4.8 → 3
+    expect(mapToFibonacci(3.5)).toBe(3);
+    expect(mapToFibonacci(4.0)).toBe(3);
+    expect(mapToFibonacci(4.5)).toBe(3);
+
+    // Bin 4: 4.8-6.4 → 5 (represents 4th bin)
+    expect(mapToFibonacci(5.0)).toBe(4);
+    expect(mapToFibonacci(6.0)).toBe(4);
+
+    // Bin 5: 6.4+ → 8 (represents 5th bin)
+    expect(mapToFibonacci(7.0)).toBe(5);
+    expect(mapToFibonacci(8.0)).toBe(5);
+    expect(mapToFibonacci(100)).toBe(5);
   });
 });
 
@@ -141,7 +138,8 @@ describe('calculateFibonacciSize', () => {
     expect(result.degradationFactor).toBe(1.0);
     // raw = 8 × (10 × 8/8) × 1.0 = 8 × 10 × 1.0 = 80
     expect(result.rawSize).toBeCloseTo(80, 0);
-    expect(result.fibonacciSize).toBe(89);
+    // rawSize 80 normalizes to bin 5 (top bin)
+    expect(result.fibonacciSize).toBe(5); // 8 represents bin 5 in 5-star scale
   });
 
   // Test scenario from spec: Degraded inactive skill
@@ -161,7 +159,8 @@ describe('calculateFibonacciSize', () => {
     expect(result.degradationFactor).toBe(0.25); // >5 years ago
     // raw = 5 × (3 × 5/8) × 0.25 = 5 × 1.875 × 0.25 = 2.34375
     expect(result.rawSize).toBeCloseTo(2.34, 1);
-    expect(result.fibonacciSize).toBe(2); // Actually maps to 2, not 3
+    // rawSize 2.34 normalizes to bin 2 (1.6-3.2 range)
+    expect(result.fibonacciSize).toBe(2);
   });
 
   it('should handle beginner skill with short experience', () => {

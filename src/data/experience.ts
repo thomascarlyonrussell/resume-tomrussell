@@ -36,23 +36,23 @@ export const experience: Experience[] = [
       'Advanced support tooling with modern AI integration patterns',
     ],
     skills: [
-      { skillId: 'product-management', proficiency: 8 },
-      { skillId: 'productboard', proficiency: 8 },
-      { skillId: 'jira', proficiency: 8 },
-      { skillId: 'python', proficiency: 8 },
-      { skillId: 'azure-devops', proficiency: 5 },
-      { skillId: 'github', proficiency: 5 },
-      { skillId: 'stakeholder-management', proficiency: 8 },
-      { skillId: 'cross-functional-collaboration', proficiency: 8 },
-      { skillId: 'claude-ai', proficiency: 3 },
-      { skillId: 'github-copilot', proficiency: 3 },
-      { skillId: 'openai-codex', proficiency: 3 },
-      { skillId: 'mcp-protocol', proficiency: 2 },
-      { skillId: 'openspec', proficiency: 2 },
-      { skillId: 'ai-agent-development', proficiency: 2 },
-      { skillId: 'playwright-mcp', proficiency: 2 },
-      { skillId: 'csharp', proficiency: 1 },
-      { skillId: 'loadseer', proficiency: 8 }
+      { skillId: 'product-management', rigor: 8 },
+      { skillId: 'productboard', rigor: 8 },
+      { skillId: 'jira', rigor: 8 },
+      { skillId: 'python', rigor: 8 },
+      { skillId: 'azure-devops', rigor: 5 },
+      { skillId: 'github', rigor: 5 },
+      { skillId: 'stakeholder-management', rigor: 8 },
+      { skillId: 'cross-functional-collaboration', rigor: 8 },
+      { skillId: 'claude-ai', rigor: 3 },
+      { skillId: 'github-copilot', rigor: 3 },
+      { skillId: 'openai-codex', rigor: 3 },
+      { skillId: 'mcp-protocol', rigor: 2 },
+      { skillId: 'openspec', rigor: 2 },
+      { skillId: 'ai-agent-development', rigor: 2 },
+      { skillId: 'playwright-mcp', rigor: 2 },
+      { skillId: 'csharp', rigor: 1 },
+      { skillId: 'loadseer', rigor: 8 }
     ] as ExperienceSkill[],
   },
   {
@@ -73,24 +73,26 @@ export const experience: Experience[] = [
       'Modeled graph database schemas to coordinate electric connectivity models using Neo4j and Cypher',
     ],
     skills: [
-      { skillId: 'product-management', proficiency: 8 },
-      { skillId: 'team-management', proficiency: 2 },
-      { skillId: 'productboard', proficiency: 8 },
-      { skillId: 'jira', proficiency: 8 },
-      { skillId: 'python', proficiency: 8 },
-      { skillId: 'github-copilot', proficiency: 2 },
-      { skillId: 'azure-pipelines', proficiency: 2 },
-      { skillId: 'azure-devops', proficiency: 5 },
-      { skillId: 'github', proficiency: 5 },
-      { skillId: 'sql', proficiency: 5 },
-      { skillId: 'neo4j', proficiency: 5 },
-      { skillId: 'cypher', proficiency: 5 },
-      { skillId: 'technical-training', proficiency: 5 },
-      { skillId: 'stakeholder-management', proficiency: 8 },
-      { skillId: 'cross-functional-collaboration', proficiency: 8 },
-      { skillId: 'public-speaking', proficiency: 5 },
-      { skillId: 'agile-scrum', proficiency: 3 },
-      { skillId: 'loadseer', proficiency: 8 }
+      { skillId: 'product-management', rigor: 8 },
+      { skillId: 'team-management', rigor: 2 },
+      { skillId: 'productboard', rigor: 8 },
+      { skillId: 'jira', rigor: 8 },
+      { skillId: 'python', rigor: 8 },
+      { skillId: 'github-copilot', rigor: 2 },
+      { skillId: 'azure-pipelines', rigor: 2 },
+      { skillId: 'azure-devops', rigor: 5 },
+      { skillId: 'github', rigor: 5 },
+      { skillId: 'sql', rigor: 5 },
+      { skillId: 'neo4j', rigor: 5 },
+      { skillId: 'cypher', rigor: 5 },
+      { skillId: 'technical-training', rigor: 5 },
+      { skillId: 'stakeholder-management', rigor: 8 },
+      { skillId: 'cross-functional-collaboration', rigor: 8 },
+      { skillId: 'public-speaking', rigor: 5 },
+      { skillId: 'agile-scrum', rigor: 3 },
+      { skillId: 'loadseer', rigor: 8 },
+      { skillId: 'distribution-planning', rigor: 3 },
+      { skillId: 'hosting-capacity', rigor: 1 },
     ] as ExperienceSkill[],
   },
   {
@@ -109,15 +111,17 @@ export const experience: Experience[] = [
       "Developed initial support tooling for LoadSEER's backend using Python and SQL",
     ],
     skills: [
-      { skillId: 'product-management', proficiency: 8 },
-      { skillId: 'productboard', proficiency: 8 },
-      { skillId: 'jira', proficiency: 8 },
-      { skillId: 'python', proficiency: 8 },
-      { skillId: 'sql', proficiency: 5 },
-      { skillId: 'technical-training', proficiency: 5 },
-      { skillId: 'stakeholder-management', proficiency: 8 },
-      { skillId: 'cross-functional-collaboration', proficiency: 8 },
-      { skillId: 'loadseer', proficiency: 8 }
+      { skillId: 'product-management', rigor: 8 },
+      { skillId: 'productboard', rigor: 8 },
+      { skillId: 'jira', rigor: 8 },
+      { skillId: 'python', rigor: 8 },
+      { skillId: 'sql', rigor: 5 },
+      { skillId: 'technical-training', rigor: 5 },
+      { skillId: 'stakeholder-management', rigor: 8 },
+      { skillId: 'cross-functional-collaboration', rigor: 8 },
+      { skillId: 'loadseer', rigor: 8 },
+      { skillId: 'distribution-planning', rigor: 3 },
+      { skillId: 'hosting-capacity', rigor: 1 },
     ] as ExperienceSkill[],
   },
   {
@@ -136,12 +140,14 @@ export const experience: Experience[] = [
       'Led product training, customer support, and sales demos',
     ],
     skills: [
-      { skillId: 'neo4j', proficiency: 2 },
-      { skillId: 'product-management', proficiency: 5 },
-      { skillId: 'python', proficiency: 8 },
-      { skillId: 'requirements-gathering', proficiency: 8 },
-      { skillId: 'technical-training', proficiency: 2 },
-      { skillId: 'loadseer', proficiency: 5 },
+      { skillId: 'neo4j', rigor: 2 },
+      { skillId: 'product-management', rigor: 5 },
+      { skillId: 'python', rigor: 8 },
+      { skillId: 'requirements-gathering', rigor: 8 },
+      { skillId: 'technical-training', rigor: 2 },
+      { skillId: 'loadseer', rigor: 5 },
+      { skillId: 'distribution-planning', rigor: 3 },
+      { skillId: 'hosting-capacity', rigor: 2 },
     ] as ExperienceSkill[],
   },
   {
@@ -159,16 +165,16 @@ export const experience: Experience[] = [
       'Represented PG&E at regulatory and external stakeholder workshops and events',
     ],
     skills: [
-      { skillId: 'cymdist', proficiency: 5 },
-      { skillId: 'distribution-planning', proficiency: 8 },
-      { skillId: 'hosting-capacity', proficiency: 8 },
-      { skillId: 'loadseer', proficiency: 3 },
-      { skillId: 'python', proficiency: 8 },
-      { skillId: 'sql', proficiency: 2 },
-      { skillId: 'stakeholder-management', proficiency: 5 },
-      { skillId: 'cross-functional-collaboration', proficiency: 5 },
-      { skillId: 'public-speaking', proficiency: 5 },
-      { skillId: 'regulatory-engagement', proficiency: 5 }
+      { skillId: 'cymdist', rigor: 5 },
+      { skillId: 'distribution-planning', rigor: 8 },
+      { skillId: 'hosting-capacity', rigor: 8 },
+      { skillId: 'loadseer', rigor: 3 },
+      { skillId: 'python', rigor: 8 },
+      { skillId: 'sql', rigor: 2 },
+      { skillId: 'stakeholder-management', rigor: 5 },
+      { skillId: 'cross-functional-collaboration', rigor: 5 },
+      { skillId: 'public-speaking', rigor: 5 },
+      { skillId: 'regulatory-engagement', rigor: 5 }
     ] as ExperienceSkill[],
   },
   {
@@ -186,15 +192,15 @@ export const experience: Experience[] = [
       'Coached and mentored entry-level engineers',
     ],
     skills: [
-      { skillId: 'distribution-planning', proficiency: 5 },
-      { skillId: 'hosting-capacity', proficiency: 5 },
-      { skillId: 'loadseer', proficiency: 2 },
-      { skillId: 'python', proficiency: 5 },
-      { skillId: 'technical-leadership', proficiency: 5 },
-      { skillId: 'stakeholder-management', proficiency: 5 },
-      { skillId: 'cross-functional-collaboration', proficiency: 5 },
-      { skillId: 'public-speaking', proficiency: 3 },
-      { skillId: 'regulatory-engagement', proficiency: 5 }
+      { skillId: 'distribution-planning', rigor: 5 },
+      { skillId: 'hosting-capacity', rigor: 5 },
+      { skillId: 'loadseer', rigor: 2 },
+      { skillId: 'python', rigor: 5 },
+      { skillId: 'technical-leadership', rigor: 5 },
+      { skillId: 'stakeholder-management', rigor: 5 },
+      { skillId: 'cross-functional-collaboration', rigor: 5 },
+      { skillId: 'public-speaking', rigor: 3 },
+      { skillId: 'regulatory-engagement', rigor: 5 }
     ] as ExperienceSkill[],
   },
   {
@@ -213,9 +219,9 @@ export const experience: Experience[] = [
       'Developed Access database app to track projects and record technical data for analysis',
     ],
     skills: [
-      { skillId: 'microsoft-access', proficiency: 3 },
-      { skillId: 'power-systems-analysis', proficiency: 8 },
-      { skillId: 'protection-and-control', proficiency: 5 }
+      { skillId: 'microsoft-access', rigor: 3 },
+      { skillId: 'power-systems-analysis', rigor: 8 },
+      { skillId: 'protection-and-control', rigor: 5 }
     ] as ExperienceSkill[],
   },
   {
@@ -234,8 +240,8 @@ export const experience: Experience[] = [
       'Reviewed and updated PPL distribution engineering and construction standard documents',
     ],
     skills: [
-      { skillId: 'power-systems-analysis', proficiency: 8 },
-      { skillId: 'protection-and-control', proficiency: 2 }
+      { skillId: 'power-systems-analysis', rigor: 8 },
+      { skillId: 'protection-and-control', rigor: 2 }
     ] as ExperienceSkill[],
   },
   {
@@ -253,7 +259,7 @@ export const experience: Experience[] = [
       'Researched and specified simulation equipment for troubleshooting and validation',
     ],
     skills: [
-      { skillId: 'scada', proficiency: 3 }
+      { skillId: 'scada', rigor: 3 }
     ] as ExperienceSkill[],
   },
   {
@@ -271,7 +277,7 @@ export const experience: Experience[] = [
       'Assessed distribution lines in the field to identify possible operational problems',
     ],
     skills: [
-      { skillId: 'power-systems-analysis', proficiency: 5 }
+      { skillId: 'power-systems-analysis', rigor: 5 }
     ] as ExperienceSkill[],
   },
 ];

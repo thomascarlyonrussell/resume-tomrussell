@@ -145,7 +145,7 @@ export function SkillDetailModal({ skill, onClose }: SkillDetailModalProps) {
                   </div>
                   {skill.proficiency && (
                     <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                      {skill.proficiency} / 8
+                      {skill.proficiency.toFixed(1)} / 8
                     </p>
                   )}
                 </div>

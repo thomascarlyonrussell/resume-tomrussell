@@ -94,7 +94,7 @@ Each category SHALL have a display name, color, and icon identifier.
 
 ### Requirement: Experience Role Structure
 
-Work experience SHALL define which skills were used and at what proficiency level.
+Work experience SHALL define which skills were used and at what rigor level.
 
 | Property | Type | Required | Description |
 |----------|------|----------|-------------|
@@ -105,19 +105,19 @@ Work experience SHALL define which skills were used and at what proficiency leve
 | `endDate` | string | No | End date (null if current) |
 | `description` | string | Yes | Role description |
 | `highlights` | string[] | No | Key achievements |
-| `skills` | ExperienceSkill[] | Yes | Skills used in this role with proficiency levels |
+| `skills` | ExperienceSkill[] | Yes | Skills used in this role with rigor levels |
 
 **MODIFIED**: Changed from `skillIds: string[]` to `skills: ExperienceSkill[]`
 
 #### Scenario: Experience with skill proficiencies
 - **GIVEN** an experience "Product Manager, VP at Integral Analytics"
 - **WHEN** defining skills used in this role
-- **THEN** each skill includes both the skill ID and the proficiency level achieved
+- **THEN** each skill includes both the skill ID and the rigor level achieved
 - **AND** the proficiency reflects the level attained during that specific role
 
 #### Scenario: Overlapping skill proficiencies
 - **GIVEN** two experiences that both used "Python"
-- **WHEN** the first experience had proficiency 3 and the second had proficiency 5
+- **WHEN** the first experience had proficiency 3 and the second had rigor 5
 - **THEN** the timeline shows skill growth from proficiency 3 to 5
 - **AND** the current proficiency is 5 (most recent)
 
@@ -172,7 +172,7 @@ The algorithm SHALL:
 - **AND** it appears much larger than a skill with proficiency 3 and 2 years
 
 #### Scenario: Degraded inactive skill
-- **GIVEN** a skill with proficiency 5, 3 years of experience, ended 6 years ago
+- **GIVEN** a skill with rigor 5, 3 years of experience, ended 6 years ago
 - **WHEN** rendered in Fibonacci view
 - **THEN** calculated size = 5 × (3 × 0.625) × 0.25 ≈ 2.34, mapped to 3
 - **AND** it appears smaller due to degradation
@@ -203,7 +203,7 @@ The export SHALL include:
 - Summary of all skills by category
 - Work experience narrative
 - Key milestones and achievements
-- Structured facts about proficiency levels
+- Structured facts about rigor levels
 - Publications and research contributions
 - Education and certifications
 
@@ -305,19 +305,19 @@ The data model SHALL support two distinct structures:
 
 ### Requirement: Experience Skill Structure
 
-Each skill reference within an experience SHALL specify the proficiency level.
+Each skill reference within an experience SHALL specify the rigor level.
 
 ```typescript
 interface ExperienceSkill {
   skillId: string;          // Reference to skill ID
-  proficiency: ProficiencyLevel; // 1, 2, 3, 5, or 8
+  rigor: RigorLevel;        // 1, 2, 3, 5, or 8
 }
 ```
 
-#### Scenario: Skill with proficiency in experience
+#### Scenario: Skill with rigor in experience
 - **GIVEN** an experience that used "Neo4j"
 - **WHEN** adding "Neo4j" to the experience skills
-- **THEN** the entry includes skillId "neo4j" and proficiency 5
+- **THEN** the entry includes skillId "neo4j" and rigor 5
 - **AND** the proficiency reflects the level achieved during that role
 
 ---
@@ -352,13 +352,13 @@ Where:
 - **AND** isActive is true
 
 #### Scenario: Skill proficiency computation with weighted average
-- **GIVEN** a skill "SQL" used in experience A (2014-2018, 48 months, proficiency 3) and experience B (2018-present, 84 months, proficiency 5)
+- **GIVEN** a skill "SQL" used in experience A (2014-2018, 48 months, proficiency 3) and experience B (2018-present, 84 months, rigor 5)
 - **WHEN** computing current proficiency
 - **THEN** proficiency = ((3 × 48) + (5 × 84)) / (48 + 84) × 1.0 = (144 + 420) / 132 × 1.0 = 4.27
 - **AND** degradation_factor is 1.0 (currently active)
 
 #### Scenario: Skill proficiency with inactive degradation
-- **GIVEN** a skill "Cymdist" used in experience A (2014-2020, 72 months, proficiency 5)
+- **GIVEN** a skill "Cymdist" used in experience A (2014-2020, 72 months, rigor 5)
 - **AND** not used since 2020 (>5 years ago as of 2025)
 - **WHEN** computing current proficiency
 - **THEN** base_proficiency = 5
@@ -368,7 +368,7 @@ Where:
 #### Scenario: Skill proficiency growth over three experiences
 - **GIVEN** a skill "Python" used in:
   - Experience A: 2015-2017, 24 months, proficiency 3
-  - Experience B: 2017-2020, 36 months, proficiency 5
+  - Experience B: 2017-2020, 36 months, rigor 5
   - Experience C: 2020-present, 60 months, proficiency 8
 - **WHEN** computing current proficiency
 - **THEN** weighted_proficiency = ((3 × 24) + (5 × 36) + (8 × 60)) / (24 + 36 + 60)
@@ -404,7 +404,7 @@ Note: The `proficiency` value already incorporates the degradation factor as def
 
 #### Scenario: Skill sizing with multiple experiences
 - **GIVEN** a skill "Python" with:
-  - Experience A: 2015-2019, 48 months, proficiency 5
+  - Experience A: 2015-2019, 48 months, rigor 5
   - Experience B: 2019-present, 72 months, proficiency 8
 - **WHEN** computing Fibonacci size
 - **THEN** base_proficiency = ((5 × 48) + (8 × 72)) / (48 + 72) = (240 + 576) / 120 = 6.8
@@ -435,7 +435,7 @@ For the Timeline visualization, data SHALL aggregate skills by category over tim
 
 The aggregation SHALL:
 - For each time point, count skills active in experiences during that period
-- Weight by proficiency level if desired
+- Weight by rigor level if desired
 - Group by category for stacked display
 - Support hover to show specific skills and their experiences at a point in time
 
@@ -448,7 +448,7 @@ The aggregation SHALL:
 #### Scenario: Skill proficiency evolution
 - **GIVEN** a skill "Python" growing from proficiency 3 to 8 across experiences
 - **WHEN** hovering over timeline at different points
-- **THEN** the tooltip shows the proficiency level at that time based on the active experience
+- **THEN** the tooltip shows the rigor level at that time based on the active experience
 
 ---
 

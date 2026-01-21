@@ -37,8 +37,17 @@ export interface Category {
 // ============================================================================
 
 /**
+ * Valid rigor levels using Fibonacci sequence
+ * Represents the intensity/depth of skill usage during an experience.
+ * 1 = Light/Occasional, 2 = Supporting, 3 = Regular, 5 = Core, 8 = Intensive/Expert
+ */
+export type RigorLevel = 1 | 2 | 3 | 5 | 8;
+
+/**
  * Valid proficiency levels using Fibonacci sequence
+ * Used for computed proficiency values (output of rigor-weighted calculations)
  * 1 = Beginner, 2 = Familiar, 3 = Competent, 5 = Proficient, 8 = Expert
+ * @deprecated Use RigorLevel for input (experience skill entries). This type is kept for computed proficiency binning.
  */
 export type ProficiencyLevel = 1 | 2 | 3 | 5 | 8;
 
@@ -52,7 +61,7 @@ export interface Skill {
   name: string;
   category: CategoryId;
   subcategory: string;
-  /** @deprecated Use ExperienceSkill.proficiency in Experience.skills instead */
+  /** @deprecated Use ExperienceSkill.rigor in Experience.skills instead */
   proficiency?: ProficiencyLevel;
   /** @deprecated Computed from experiences via computeSkillTimeline() */
   startDate?: string; // YYYY-MM format
@@ -62,15 +71,15 @@ export interface Skill {
 }
 
 /**
- * Skill reference in an experience with proficiency level
- * Used in the new experience-based model where experiences define
- * which skills were used and at what proficiency level
+ * Skill reference in an experience with rigor level
+ * Used in the experience-based model where experiences define
+ * which skills were used and at what intensity/rigor level
  */
 export interface ExperienceSkill {
   /** Reference to skill ID */
   skillId: string;
-  /** Proficiency level achieved in this experience (1, 2, 3, 5, or 8) */
-  proficiency: ProficiencyLevel;
+  /** Rigor level (intensity of skill usage) in this experience (1, 2, 3, 5, or 8) */
+  rigor: RigorLevel;
 }
 
 /**
@@ -108,15 +117,15 @@ export interface ComputedSkill {
 }
 
 /**
- * Point in time showing skill proficiency for proficiency history
+ * Point in time showing skill rigor for proficiency history
  */
 export interface SkillTimelinePoint {
   /** Date in YYYY-MM format */
   date: string;
-  /** Experience ID where this proficiency was achieved */
+  /** Experience ID where this rigor was recorded */
   experienceId: string;
-  /** Proficiency level at this point */
-  proficiency: ProficiencyLevel;
+  /** Rigor level at this point */
+  rigor: RigorLevel;
 }
 
 // ============================================================================
@@ -233,6 +242,7 @@ export interface TimelineSkillInfo {
   skillId: string;
   skillName: string;
   category: CategoryId;
+  /** Computed proficiency at this point in time (not raw rigor) */
   proficiency: ProficiencyLevel;
 }
 
@@ -241,10 +251,10 @@ export interface TimelineSkillInfo {
 // ============================================================================
 
 /**
- * Valid Fibonacci values for display sizing
+ * Valid Fibonacci values for display sizing (now simplified to 1-5 bins)
  */
 export const FIBONACCI_SEQUENCE = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89] as const;
-export type FibonacciValue = (typeof FIBONACCI_SEQUENCE)[number];
+export type FibonacciValue = 1 | 2 | 3 | 4 | 5;
 
 /**
  * Degradation factors for inactive skills

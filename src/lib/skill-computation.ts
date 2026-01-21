@@ -12,10 +12,12 @@ import type {
   ComputedSkill,
   SkillTimelinePoint,
   ProficiencyLevel,
+  RigorLevel,
   CategoryId,
 } from '../data/types';
 import { DEGRADATION_FACTORS } from '../data/types';
 import { TIMELINE_CONFIG } from './timeline-config';
+import { mapToFibonacci } from './calculations';
 import {
   monthsSince,
   experienceDurationMonths,
@@ -165,7 +167,11 @@ export function getDegradationFactor(
 /**
  * Calculate weighted average proficiency with degradation for inactive skills
  *
- * Formula: proficiency = (sum(exp_proficiency × exp_duration) / total_duration) × degradation_factor
+ * Formula: proficiency = (sum(exp_rigor × exp_duration) / total_duration) × degradation_factor
+ *
+ * Note: This calculates OUTPUT proficiency from INPUT rigor values.
+ * Rigor = intensity of skill usage during experience (input, static)
+ * Proficiency = computed current capability (output, time-dynamic)
  *
  * @param skillId - The skill ID
  * @param experiences - Array of all experiences
@@ -188,19 +194,19 @@ export function getSkillProficiency(
   let mostRecentEndDate: Date | null = null;
 
   for (const exp of skillExperiences) {
-    // Get proficiency for this skill in this experience
-    let proficiency: number | undefined;
+    // Get rigor for this skill in this experience
+    let rigor: number | undefined;
 
     // Check new format first
     if ('skills' in exp) {
       const skills = exp.skills as ExperienceSkill[] | undefined;
       const skillEntry = skills?.find((s) => s.skillId === skillId);
-      proficiency = skillEntry?.proficiency;
+      rigor = skillEntry?.rigor;
     }
 
-    // If no proficiency found and we have skillIds (legacy), we can't compute
+    // If no rigor found and we have skillIds (legacy), we can't compute
     // This will be handled during migration
-    if (proficiency === undefined) {
+    if (rigor === undefined) {
       continue;
     }
 
@@ -211,7 +217,7 @@ export function getSkillProficiency(
       referenceDate,
     );
 
-    totalWeightedProficiency += proficiency * duration;
+    totalWeightedProficiency += rigor * duration;
     totalDuration += duration;
 
     // Track most recent end date
@@ -245,11 +251,11 @@ export function getSkillProficiency(
 }
 
 /**
- * Get proficiency history for a skill over time
+ * Get rigor history for a skill over time
  *
  * @param skillId - The skill ID
  * @param experiences - Array of all experiences
- * @returns Array of timeline points showing proficiency at different points in time
+ * @returns Array of timeline points showing rigor at different points in time
  */
 export function getSkillProficiencyHistory(
   skillId: string,
@@ -260,20 +266,20 @@ export function getSkillProficiencyHistory(
   const points: SkillTimelinePoint[] = [];
 
   for (const exp of skillExperiences) {
-    // Get proficiency for this skill in this experience
-    let proficiency: ProficiencyLevel | undefined;
+    // Get rigor for this skill in this experience
+    let rigor: RigorLevel | undefined;
 
     if ('skills' in exp) {
       const skills = exp.skills as ExperienceSkill[] | undefined;
       const skillEntry = skills?.find((s) => s.skillId === skillId);
-      proficiency = skillEntry?.proficiency;
+      rigor = skillEntry?.rigor;
     }
 
-    if (proficiency !== undefined) {
+    if (rigor !== undefined) {
       points.push({
         date: exp.startDate,
         experienceId: exp.id,
-        proficiency,
+        rigor,
       });
     }
   }
@@ -325,7 +331,8 @@ export function computeSkill(
   // where weighted_years = years_of_experience × (proficiency / 8)
   const effectiveProficiency = proficiency ?? 0;
   const weightedYears = yearsOfExperience * (effectiveProficiency / 8);
-  const fibonacciSize = effectiveProficiency * weightedYears;
+  const rawSize = effectiveProficiency * weightedYears;
+  const fibonacciSize = mapToFibonacci(rawSize);
 
   return {
     id: skill.id,
@@ -349,8 +356,10 @@ export function computeSkill(
  *
  * This function calculates the cumulative proficiency from all experiences
  * that contributed to this skill, using:
- * - Linear progression during experience (0 → target proficiency)
- * - Linear decay after experience (target → 0 over DECAY_DURATION_MONTHS)
+ * - Linear progression during experience (0 → target rigor)
+ * - Continuous decay after experience (target → 0 over DECAY_DURATION_MONTHS)
+ *
+ * Note: This converts INPUT rigor to OUTPUT proficiency over time.
  *
  * @param skill - ComputedSkill object (or skill with id)
  * @param date - Target date in YYYY-MM format
@@ -371,22 +380,22 @@ export function calculateSkillProficiencyAtDate(
   let totalProficiency = 0;
 
   for (const exp of skillExperiences) {
-    // Get proficiency for this skill in this experience
-    let targetProficiency: number | undefined;
+    // Get rigor for this skill in this experience
+    let targetRigor: number | undefined;
 
     if ('skills' in exp) {
       const skills = exp.skills as ExperienceSkill[] | undefined;
       const skillEntry = skills?.find((s) => s.skillId === skill.id);
-      targetProficiency = skillEntry?.proficiency;
+      targetRigor = skillEntry?.rigor;
     }
 
-    if (targetProficiency === undefined) {
+    if (targetRigor === undefined) {
       continue;
     }
 
     // Calculate contribution based on timing
     if (isDateWithinExperience(date, exp)) {
-      // During experience: linear progression from 0 to target
+      // During experience: linear progression from 0 to target rigor
       const monthsIntoExp = monthsSince(exp.startDate, date);
       const totalExpMonths = experienceDurationMonths(exp);
 
@@ -396,26 +405,26 @@ export function calculateSkillProficiencyAtDate(
         if (TIMELINE_CONFIG.USE_LOGARITHMIC_PROGRESSION) {
           // Logarithmic: rapid early growth, plateau later
           // log(1 + x) / log(2) normalized to 0-1 range
-          totalProficiency += targetProficiency * (Math.log(1 + progressRatio) / Math.log(2));
+          totalProficiency += targetRigor * (Math.log(1 + progressRatio) / Math.log(2));
         } else {
           // Linear: constant rate of growth
-          totalProficiency += targetProficiency * progressRatio;
+          totalProficiency += targetRigor * progressRatio;
         }
       }
     } else if (isDateAfterExperience(date, exp)) {
-      // After experience: linear decay from target to 0 over decay duration
+      // After experience: continuous decay from target rigor to 0 over decay duration
       const monthsSinceEnd = monthsSince(exp.endDate!, date);
       const decayDuration = TIMELINE_CONFIG.DECAY_DURATION_MONTHS;
 
       if (TIMELINE_CONFIG.USE_EXPONENTIAL_DECAY) {
         // Exponential decay: slower initial, faster over time
         const decayRatio = Math.exp(-3 * monthsSinceEnd / decayDuration);
-        totalProficiency += targetProficiency * Math.max(0, decayRatio);
+        totalProficiency += targetRigor * Math.max(0, decayRatio);
       } else {
         // Linear decay: constant rate
         const decayRatio = 1 - monthsSinceEnd / decayDuration;
         if (decayRatio > 0) {
-          totalProficiency += targetProficiency * decayRatio;
+          totalProficiency += targetRigor * decayRatio;
         }
       }
     }

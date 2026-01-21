@@ -21,15 +21,8 @@ export interface SkillTooltipProps {
 
 // Proficiency stars component
 function ProficiencyStars({ level }: { level: number }) {
-  // Map Fibonacci proficiency to 5-star scale
-  const starMapping: Record<number, number> = {
-    1: 1,
-    2: 2,
-    3: 3,
-    5: 4,
-    8: 5,
-  };
-  const stars = starMapping[level] || 1;
+  // Direct 1-5 mapping (fibonacciSize is already binned to 1-5)
+  const stars = Math.min(5, Math.max(1, Math.round(level)));
 
   return (
     <div className="flex gap-0.5" aria-label={`${stars} out of 5 stars`}>
@@ -89,7 +82,7 @@ export function SkillTooltip({
               <span className="truncate font-semibold text-gray-900 dark:text-gray-100">
                 {skill.name}
               </span>
-              {skill.proficiency && <ProficiencyStars level={skill.proficiency} />}
+              {skill.fibonacciSize && <ProficiencyStars level={skill.fibonacciSize} />}
             </div>
 
             {/* Category breadcrumb */}

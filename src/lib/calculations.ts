@@ -1,14 +1,17 @@
 /**
- * Fibonacci Sizing Calculations
+ * Proficiency Sizing Calculations
  *
  * Implements the sizing algorithm for the Fibonacci spiral visualization.
  *
  * Formula: size = proficiency × weighted_years × degradation_factor
- * - proficiency: Base Fibonacci value (1, 2, 3, 5, or 8)
+ * - proficiency: Computed proficiency from rigor-weighted experiences (continuous value, 0-8 range)
  * - weighted_years: years_of_experience × (proficiency / 8)
  * - degradation_factor: 1.0 (active/<2yr), 0.5 (2-5yr), 0.25 (>5yr)
  *
- * Result is mapped to nearest Fibonacci value: [1, 2, 3, 5, 8, 13, 21, 34, 55, 89]
+ * Result is normalized to 5 levels: [1, 2, 3, 5, 8] representing bins 1-5 to match the 5-star display.
+ * This ensures node size and star count are perfectly aligned.
+ *
+ * Note: Input rigor (1, 2, 3, 5, 8) from experiences is converted to output proficiency via time-dynamic calculations.
  */
 
 import type {
@@ -91,26 +94,18 @@ export function calculateYearsOfExperience(
 }
 
 /**
- * Map a raw size value to the nearest Fibonacci number
+ * Normalize proficiency to 5-bin scale (1-5) matching star display
+ * This creates perfect alignment between node size and star count
  */
 export function mapToFibonacci(rawSize: number): FibonacciValue {
-  // Clamp to valid range
-  if (rawSize <= 1) return 1;
-  if (rawSize >= 89) return 89;
-
-  // Find the closest Fibonacci number
-  let closest: FibonacciValue = FIBONACCI_SEQUENCE[0];
-  let minDiff = Math.abs(rawSize - closest);
-
-  for (const fib of FIBONACCI_SEQUENCE) {
-    const diff = Math.abs(rawSize - fib);
-    if (diff < minDiff) {
-      minDiff = diff;
-      closest = fib;
-    }
-  }
-
-  return closest;
+  // Normalize to 1-5 bins to match 5-star display
+  // Returns 1, 2, 3, 4, 5 for bins 1-5
+  // Divides the 0-8 range into 5 equal bins of 1.6 each
+  if (rawSize < 1.6) return 1;   // Bin 1: 0.0-1.6 → 1 star
+  if (rawSize < 3.2) return 2;   // Bin 2: 1.6-3.2 → 2 stars
+  if (rawSize < 4.8) return 3;   // Bin 3: 3.2-4.8 → 3 stars
+  if (rawSize < 6.4) return 4;   // Bin 4: 4.8-6.4 → 4 stars (was 5)
+  return 5;                       // Bin 5: 6.4+ → 5 stars (was 8)
 }
 
 /**
@@ -154,7 +149,7 @@ export function isValidProficiency(value: number): value is ProficiencyLevel {
 }
 
 /**
- * Get proficiency label for display
+ * Get proficiency label for display (used for computed proficiency values)
  * Accepts both discrete ProficiencyLevel and continuous number values
  */
 export function getProficiencyLabel(proficiency: ProficiencyLevel | number): string {
@@ -176,6 +171,22 @@ export function getProficiencyLabel(proficiency: ProficiencyLevel | number): str
   }
 
   return labels[proficiency as ProficiencyLevel];
+}
+
+/**
+ * Get rigor label for display (used for input rigor values from experiences)
+ * Rigor represents intensity of skill usage during an experience
+ */
+export function getRigorLabel(rigor: 1 | 2 | 3 | 5 | 8): string {
+  const labels: Record<1 | 2 | 3 | 5 | 8, string> = {
+    1: 'Light/Occasional',
+    2: 'Supporting',
+    3: 'Regular',
+    5: 'Core',
+    8: 'Intensive/Expert',
+  };
+
+  return labels[rigor];
 }
 
 /**

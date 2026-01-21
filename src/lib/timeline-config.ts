@@ -10,7 +10,7 @@ export const TIMELINE_CONFIG = {
    * Duration in months for skill proficiency to decay from max to zero
    * after an experience ends.
    */
-  DECAY_DURATION_MONTHS: 24,
+  DECAY_DURATION_MONTHS: 60,
 
   /**
    * Whether to use logarithmic (true) or linear (false) progression

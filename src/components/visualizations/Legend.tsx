@@ -210,7 +210,7 @@ export function Legend({
                       Circle size = Proficiency &times; Experience &times; Recency
                     </p>
                     <div className="mt-1.5 flex items-end gap-1" aria-hidden="true">
-                      {[8, 16, 24, 32].map((size, i) => (
+                      {[8, 14, 20, 26, 32].map((size, i) => (
                         <div
                           key={size}
                           className="rounded-full bg-gray-300 dark:bg-gray-600"

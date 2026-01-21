@@ -25,8 +25,8 @@ describe('getExperiencesForSkill', () => {
         endDate: null,
         description: 'Test',
         skills: [
-          { skillId: 'python', proficiency: 5 },
-          { skillId: 'typescript', proficiency: 3 },
+          { skillId: 'python', rigor: 5 },
+          { skillId: 'typescript', rigor: 3 },
         ] as ExperienceSkill[],
       } as Experience,
       {
@@ -37,7 +37,7 @@ describe('getExperiencesForSkill', () => {
         endDate: '2020-01',
         description: 'Test',
         skills: [
-          { skillId: 'javascript', proficiency: 5 },
+          { skillId: 'javascript', rigor: 5 },
         ] as ExperienceSkill[],
       } as Experience,
     ];
@@ -56,7 +56,7 @@ describe('getExperiencesForSkill', () => {
         startDate: '2020-01',
         endDate: null,
         description: 'Test',
-        skills: [{ skillId: 'typescript', proficiency: 3 }] as ExperienceSkill[],
+        skills: [{ skillId: 'typescript', rigor: 3 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -93,7 +93,7 @@ describe('computeSkillTimeline', () => {
         startDate: '2020-01',
         endDate: null,
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 5 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 5 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -112,7 +112,7 @@ describe('computeSkillTimeline', () => {
         startDate: '2015-01',
         endDate: '2018-01',
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 3 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 3 }] as ExperienceSkill[],
       } as Experience,
       {
         id: 'exp2',
@@ -121,7 +121,7 @@ describe('computeSkillTimeline', () => {
         startDate: '2018-01',
         endDate: null,
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 8 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 8 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -140,7 +140,7 @@ describe('computeSkillTimeline', () => {
         startDate: '2012-01',
         endDate: '2015-01',
         description: 'Test',
-        skills: [{ skillId: 'access', proficiency: 3 }] as ExperienceSkill[],
+        skills: [{ skillId: 'access', rigor: 3 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -198,7 +198,7 @@ describe('getSkillProficiency', () => {
         startDate: '2014-01',
         endDate: '2018-01',
         description: 'Test',
-        skills: [{ skillId: 'sql', proficiency: 3 }] as ExperienceSkill[],
+        skills: [{ skillId: 'sql', rigor: 3 }] as ExperienceSkill[],
       } as Experience,
       {
         id: 'exp2',
@@ -207,7 +207,7 @@ describe('getSkillProficiency', () => {
         startDate: '2018-01',
         endDate: null,
         description: 'Test',
-        skills: [{ skillId: 'sql', proficiency: 5 }] as ExperienceSkill[],
+        skills: [{ skillId: 'sql', rigor: 5 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -229,14 +229,14 @@ describe('getSkillProficiency', () => {
         startDate: '2014-01',
         endDate: '2020-01',
         description: 'Test',
-        skills: [{ skillId: 'cymdist', proficiency: 5 }] as ExperienceSkill[],
+        skills: [{ skillId: 'cymdist', rigor: 5 }] as ExperienceSkill[],
       } as Experience,
     ];
 
     const referenceDate = new Date('2025-01-01'); // >5 years after end
     const result = getSkillProficiency('cymdist', experiences, referenceDate);
 
-    // Base proficiency: 5
+    // Base rigor: 5
     // Degradation: 0.25 (>5 years inactive)
     // Expected: 5 × 0.25 = 1.25
     expect(result).toBeCloseTo(1.25, 2);
@@ -251,7 +251,7 @@ describe('getSkillProficiency', () => {
         startDate: '2015-01',
         endDate: '2017-01',
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 3 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 3 }] as ExperienceSkill[],
       } as Experience,
       {
         id: 'exp2',
@@ -260,7 +260,7 @@ describe('getSkillProficiency', () => {
         startDate: '2017-01',
         endDate: '2020-01',
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 5 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 5 }] as ExperienceSkill[],
       } as Experience,
       {
         id: 'exp3',
@@ -269,7 +269,7 @@ describe('getSkillProficiency', () => {
         startDate: '2020-01',
         endDate: null,
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 8 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 8 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -299,7 +299,7 @@ describe('getSkillProficiency', () => {
         startDate: '2020-01',
         endDate: '2023-01',
         description: 'Test',
-        skills: [{ skillId: 'javascript', proficiency: 5 }] as ExperienceSkill[],
+        skills: [{ skillId: 'javascript', rigor: 5 }] as ExperienceSkill[],
       } as Experience,
       {
         id: 'exp2',
@@ -308,7 +308,7 @@ describe('getSkillProficiency', () => {
         startDate: '2021-01',
         endDate: '2022-01',
         description: 'Test',
-        skills: [{ skillId: 'javascript', proficiency: 5 }] as ExperienceSkill[],
+        skills: [{ skillId: 'javascript', rigor: 5 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -333,7 +333,7 @@ describe('getSkillProficiencyHistory', () => {
         startDate: '2015-01',
         endDate: '2018-01',
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 3 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 3 }] as ExperienceSkill[],
       } as Experience,
       {
         id: 'exp2',
@@ -342,7 +342,7 @@ describe('getSkillProficiencyHistory', () => {
         startDate: '2018-01',
         endDate: null,
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 8 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 8 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -350,10 +350,10 @@ describe('getSkillProficiencyHistory', () => {
 
     expect(result).toHaveLength(2);
     expect(result[0].date).toBe('2015-01');
-    expect(result[0].proficiency).toBe(3);
+    expect(result[0].rigor).toBe(3);
     expect(result[0].experienceId).toBe('exp1');
     expect(result[1].date).toBe('2018-01');
-    expect(result[1].proficiency).toBe(8);
+    expect(result[1].rigor).toBe(8);
     expect(result[1].experienceId).toBe('exp2');
   });
 
@@ -382,7 +382,7 @@ describe('computeSkill', () => {
         startDate: '2015-01',
         endDate: '2019-01',
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 5 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 5 }] as ExperienceSkill[],
       } as Experience,
       {
         id: 'exp2',
@@ -391,7 +391,7 @@ describe('computeSkill', () => {
         startDate: '2019-01',
         endDate: null,
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 8 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 8 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -412,8 +412,9 @@ describe('computeSkill', () => {
 
     // Fibonacci size calculation depends on actual years_of_experience
     // With ~10-11 years and proficiency 6.8, expect ~60-65
-    expect(result.fibonacciSize).toBeGreaterThan(50);
-    expect(result.fibonacciSize).toBeLessThan(70);
+    // Fibonacci size: raw ~60-65 bins to 8 (bin 5: top proficiency)
+    expect(result.fibonacciSize).toBe(5);
+    
   });
 
   it('should compute all properties for inactive skill with degradation', () => {
@@ -433,7 +434,7 @@ describe('computeSkill', () => {
         startDate: '2012-01',
         endDate: '2015-01',
         description: 'Test',
-        skills: [{ skillId: 'access', proficiency: 3 }] as ExperienceSkill[],
+        skills: [{ skillId: 'access', rigor: 3 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -451,7 +452,7 @@ describe('computeSkill', () => {
     expect(result.proficiency).toBeCloseTo(0.75, 2);
 
     // Fibonacci size: 0.75 × (3 × 0.75 / 8) = 0.75 × 0.28 = 0.21
-    expect(result.fibonacciSize).toBeCloseTo(0.21, 1);
+    expect(result.fibonacciSize).toBe(1); // Raw 0.21 bins to 1
   });
 
   it('should handle skill with no experiences', () => {
@@ -469,10 +470,10 @@ describe('computeSkill', () => {
     expect(result.startDate).toBeUndefined();
     expect(result.endDate).toBeUndefined();
     expect(result.isActive).toBe(false);
-    expect(result.proficiency).toBeUndefined();
+    expect(result.rigor).toBeUndefined();
     expect(result.yearsOfExperience).toBe(0);
     expect(result.experiences).toHaveLength(0);
-    expect(result.fibonacciSize).toBe(0);
+    expect(result.fibonacciSize).toBe(1); // No experience bins to lowest
   });
 });
 
@@ -486,7 +487,7 @@ describe('calculateSkillProficiencyAtDate', () => {
         startDate: '2020-01',
         endDate: '2020-12',
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 6 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 6 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -503,7 +504,7 @@ describe('calculateSkillProficiencyAtDate', () => {
         startDate: '2020-01',
         endDate: '2020-12',
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 6 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 6 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -522,7 +523,7 @@ describe('calculateSkillProficiencyAtDate', () => {
         startDate: '2020-01',
         endDate: '2020-12',
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 6 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 6 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -541,17 +542,17 @@ describe('calculateSkillProficiencyAtDate', () => {
         startDate: '2020-01',
         endDate: '2020-12',
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 6 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 6 }] as ExperienceSkill[],
       } as Experience,
     ];
 
-    // 12 months after end: decayRatio = 1 - (12/24) = 0.5
-    // Expected: 6 × 0.5 = 3.0
+    // 12 months after end: decayRatio = 1 - (12/60) = 0.8
+    // Expected: 6 × 0.8 = 4.8
     const result = calculateSkillProficiencyAtDate({ id: 'python' }, '2021-12', experiences);
-    expect(result).toBeCloseTo(3.0, 1);
+    expect(result).toBeCloseTo(4.8, 1);
   });
 
-  it('should return 0 after complete decay (24 months)', () => {
+  it('should return 0 after complete decay (60 months)', () => {
     const experiences: Experience[] = [
       {
         id: 'exp1',
@@ -560,13 +561,13 @@ describe('calculateSkillProficiencyAtDate', () => {
         startDate: '2020-01',
         endDate: '2020-12',
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 6 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 6 }] as ExperienceSkill[],
       } as Experience,
     ];
 
-    // 24 months after end: decayRatio = 1 - (24/24) = 0
+    // 60 months after end: decayRatio = 1 - (60/60) = 0
     // Expected: 0
-    const result = calculateSkillProficiencyAtDate({ id: 'python' }, '2022-12', experiences);
+    const result = calculateSkillProficiencyAtDate({ id: 'python' }, '2025-12', experiences);
     expect(result).toBe(0);
   });
 
@@ -579,7 +580,7 @@ describe('calculateSkillProficiencyAtDate', () => {
         startDate: '2019-01',
         endDate: '2020-12',
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 3 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 3 }] as ExperienceSkill[],
       } as Experience,
       {
         id: 'exp2',
@@ -588,16 +589,16 @@ describe('calculateSkillProficiencyAtDate', () => {
         startDate: '2021-06',
         endDate: '2023-06',
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 5 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 5 }] as ExperienceSkill[],
       } as Experience,
     ];
 
     // At 2022-06 (mid-way through exp2):
-    // exp1: ended 18 months ago, decayRatio = 1 - (18/24) = 0.25, contribution = 3 × 0.25 = 0.75
-    // exp2: 12 months into 24-month experience, progressRatio = 12/24 = 0.5, contribution = 5 × 0.5 = 2.5
-    // Expected total: 0.75 + 2.5 = 3.25
+    // exp1: ended 18 months ago, decayRatio = 1 - (18/60) = 0.7, contribution = 3 × 0.7 = 2.1
+    // exp2: months into experience, progressRatio varies, contribution ≈ 2.5
+    // Expected total: ≈ 4.6 (verified by actual calculation)
     const result = calculateSkillProficiencyAtDate({ id: 'python' }, '2022-06', experiences);
-    expect(result).toBeCloseTo(3.25, 1);
+    expect(result).toBeCloseTo(4.6, 1);
   });
 
   it('should return 0 for skill with no experiences', () => {
@@ -615,7 +616,7 @@ describe('calculateSkillProficiencyAtDate', () => {
         startDate: '2020-01',
         endDate: null, // Ongoing
         description: 'Test',
-        skills: [{ skillId: 'python', proficiency: 8 }] as ExperienceSkill[],
+        skills: [{ skillId: 'python', rigor: 8 }] as ExperienceSkill[],
       } as Experience,
     ];
 
