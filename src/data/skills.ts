@@ -227,13 +227,6 @@ export const skills: Skill[] = [
     description: 'MCP usage in VSCode and Claude for enhanced AI capabilities',
   },
   {
-    id: 'v0-vibes',
-    name: 'v0 by Vercel',
-    category: 'ai-automation',
-    subcategory: 'Prototyping',
-    description: 'Quick UI prototyping with AI-generated React components',
-  },
-  {
     id: 'openspec',
     name: 'OpenSpec',
     category: 'ai-automation',
