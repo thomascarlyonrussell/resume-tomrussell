@@ -46,7 +46,7 @@ export const skills: Skill[] = [
   },
   {
     id: 'microsoft-access',
-    name: 'Microsoft Access',
+    name: 'MS Access',
     category: 'software-development',
     subcategory: 'Desktop Applications',
     description: 'Database application development for project tracking and data analysis',
@@ -98,7 +98,7 @@ export const skills: Skill[] = [
   },
   {
     id: 'distribution-planning',
-    name: 'Distribution Planning',
+    name: 'Dx Planning',
     category: 'engineering',
     subcategory: 'Power Systems',
     description: 'Integrated distribution planning, DER integration, and grid modernization',
@@ -152,7 +152,7 @@ export const skills: Skill[] = [
   },
   {
     id: 'agile-scrum',
-    name: 'Agile/Scrum Methodology',
+    name: 'Agile/Scrum',
     category: 'product-management',
     subcategory: 'Project Management',
     description:
@@ -175,7 +175,7 @@ export const skills: Skill[] = [
   },
   {
     id: 'technical-leadership',
-    name: 'Technical Leadership',
+    name: 'Tech Leadership',
     category: 'product-management',
     subcategory: 'Leadership',
     description: 'Cross-functional team collaboration, mentoring, and technical guidance',
@@ -193,35 +193,35 @@ export const skills: Skill[] = [
   // ============================================================================
   {
     id: 'github-copilot',
-    name: 'GitHub Copilot',
+    name: 'Copilot-AI',
     category: 'ai-automation',
     subcategory: 'AI Coding Assistants',
     description: 'AI-powered code completion and generation',
   },
   {
     id: 'claude-ai',
-    name: 'Claude (Anthropic)',
+    name: 'Claude-AI',
     category: 'ai-automation',
     subcategory: 'AI Coding Assistants',
     description: 'Advanced AI assistant for coding, analysis, and product work',
   },
   {
     id: 'openai-codex',
-    name: 'OpenAI Codex',
+    name: 'Codex-AI',
     category: 'ai-automation',
     subcategory: 'AI Coding Assistants',
     description: 'GPT-based code generation and completion',
   },
   {
     id: 'ai-agent-development',
-    name: 'AI Agent Development',
+    name: 'AI Agent Context',
     category: 'ai-automation',
     subcategory: 'Agent Building',
     description: 'Building custom AI agents with instructions and specialized skills',
   },
   {
     id: 'mcp-protocol',
-    name: 'Model Context Protocol (MCP)',
+    name: 'MCP',
     category: 'ai-automation',
     subcategory: 'AI Integration',
     description: 'MCP usage in VSCode and Claude for enhanced AI capabilities',
@@ -234,8 +234,8 @@ export const skills: Skill[] = [
     description: 'Spec-driven development with AI-powered context building and validation',
   },
   {
-    id: 'playwright-mcp',
-    name: 'Playwright MCP',
+    id: 'playwright',
+    name: 'Playwright',
     category: 'ai-automation',
     subcategory: 'Browser Automation',
     description: 'Browser automation via MCP for testing and interaction workflows',
