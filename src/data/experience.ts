@@ -55,6 +55,7 @@ export const experience: Experience[] = [
       { skillId: 'ai-agent-development', rigor: 2 },
       { skillId: 'playwright', rigor: 2 },
       { skillId: 'csharp', rigor: 1 },
+      { skillId: 'typescript', rigor: 1 },
     ] as ExperienceSkill[],
   },
   {
@@ -196,13 +197,14 @@ export const experience: Experience[] = [
     skills: [
       { skillId: 'distribution-planning', rigor: 5 },
       { skillId: 'hosting-capacity', rigor: 5 },
-      { skillId: 'python', rigor: 5 },
       { skillId: 'technical-leadership', rigor: 5 },
       { skillId: 'stakeholder-management', rigor: 5 },
       { skillId: 'cross-functional-collaboration', rigor: 5 },
       { skillId: 'regulatory-engagement', rigor: 5 },
       { skillId: 'public-speaking', rigor: 3 },
       { skillId: 'loadseer', rigor: 2 },
+      { skillId: 'python', rigor: 2 },
+      { skillId: 'sql', rigor: 1 },
     ] as ExperienceSkill[],
   },
   {
@@ -224,6 +226,7 @@ export const experience: Experience[] = [
       { skillId: 'power-systems-analysis', rigor: 8 },
       { skillId: 'protection-and-control', rigor: 5 },
       { skillId: 'microsoft-access', rigor: 3 },
+      { skillId: 'sql', rigor: 2 },
     ] as ExperienceSkill[],
   },
   {
