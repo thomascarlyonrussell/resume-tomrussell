@@ -273,24 +273,42 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
   const animationDuration = reducedMotion ? 0 : 1500;
   const transitionDuration = reducedMotion ? 0 : 300;
 
-  // Wrapper component for tooltip that captures data for mobile display
-  const TooltipWrapper = useCallback((props: any) => {
+  // Custom tooltip component that captures data for mobile display
+  const CustomTooltip = useCallback((props: {
+    active?: boolean;
+    payload?: Array<{
+      payload: {
+        date: string;
+        year: number;
+        [key: string]: unknown;
+      };
+      value?: number;
+      dataKey?: string;
+      color?: string;
+      name?: string;
+    }>;
+    label?: string;
+    drillDownCategory?: CategoryId | null;
+  }) => {
     const { active, payload } = props;
     
     // Update mobile tooltip data when tooltip is active
-    useEffect(() => {
-      if (active && payload && payload.length > 0) {
-        const dataPoint = payload[0]?.payload;
-        setMobileTooltipData({
-          year: dataPoint?.year,
-          date: dataPoint?.date,
-          payload: payload,
-        });
+    if (active && payload && payload.length > 0) {
+      const dataPoint = payload[0]?.payload;
+      const newData = {
+        year: dataPoint?.year,
+        date: dataPoint?.date,
+        payload: payload,
+      };
+      
+      // Only update if data has changed to avoid unnecessary rerenders
+      if (JSON.stringify(newData) !== JSON.stringify(mobileTooltipData)) {
+        setMobileTooltipData(newData);
       }
-    }, [active, payload]);
+    }
 
     return <TimelineTooltip {...props} />;
-  }, []);
+  }, [mobileTooltipData]);
 
   // Calculate current proficiency totals for legend
   const currentProficiencyTotals = useMemo(() => {
@@ -350,7 +368,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
           />
 
           <Tooltip
-            content={<TooltipWrapper drillDownCategory={drillDownCategory} />}
+            content={<CustomTooltip drillDownCategory={drillDownCategory} />}
             cursor={{
               stroke: 'var(--color-engineering)',
               strokeWidth: 1,
@@ -420,7 +438,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
         />
 
         <Tooltip
-          content={<TooltipWrapper />}
+          content={<CustomTooltip />}
           cursor={{
             stroke: 'var(--color-engineering)',
             strokeWidth: 1,
