@@ -40,8 +40,8 @@ export function ChatButton({ onClick }: ChatButtonProps) {
           clipRule="evenodd"
         />
       </svg>
-      {/* Text - hidden on mobile */}
-      <span className="hidden text-sm font-medium sm:inline">Chat with Tom&apos;s AI</span>
+      {/* Text - visible on all screen sizes */}
+      <span className="text-sm font-medium">Ask about Tom</span>
     </motion.button>
   );
 }
