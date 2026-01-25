@@ -460,6 +460,71 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
         )}
       </AnimatePresence>
 
+      {/* Category/Skill Legend - Moved above chart for better visibility */}
+      <div className="mb-6 border-b border-gray-200 px-4 pb-4 dark:border-gray-700">
+        {drillDownCategory && skillTimelineData ? (
+          // Skill legend for drill-down
+          <>
+            <p className="mb-3 text-sm font-medium text-[var(--color-muted)]">
+              {skillTimelineData.categoryName} Skills
+            </p>
+            <div className="flex flex-wrap gap-3" role="group" aria-label="Skills in category">
+              {skillTimelineData.skills.map((skill) => (
+                <div
+                  key={skill.id}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2 bg-gray-50 dark:bg-gray-800"
+                >
+                  <span
+                    className="h-4 w-4 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: skill.color }}
+                  />
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    {skill.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          // Category legend
+          <>
+            <p className="mb-3 text-sm font-medium text-[var(--color-muted)]">
+              Categories <span className="font-normal text-xs">(click to drill down)</span>
+            </p>
+            <div className="flex flex-wrap gap-3" role="group" aria-label="Filter chart by category">
+              {categories.map((category) => {
+                const isSelected = highlightedCategory === category.id;
+                const isDimmed = highlightedCategory && highlightedCategory !== category.id;
+                const proficiencyTotal = currentProficiencyTotals[category.id] || 0;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategoryClick(category.id)}
+                    onMouseEnter={() => handleCategoryHover(category.id)}
+                    onMouseLeave={() => handleCategoryHover(null)}
+                    className={`flex items-center gap-2 rounded-lg px-4 py-2.5 transition-all cursor-pointer border border-gray-200 dark:border-gray-700 hover:shadow-md ${
+                      isSelected ? 'bg-gray-100 dark:bg-gray-800 shadow-sm' : 'bg-white dark:bg-gray-900'
+                    } ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
+                    aria-label={`View ${category.name} skills (proficiency: ${proficiencyTotal})`}
+                  >
+                    <span
+                      className="h-4 w-4 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: category.color }}
+                    />
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {category.name}
+                    </span>
+                    <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                      {proficiencyTotal > 0 ? proficiencyTotal.toFixed(1) : ''}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </>
+        )}
+      </div>
+
       {/* Chart Container */}
       <div
         ref={chartContainerRef}
@@ -592,71 +657,6 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-
-      {/* Category/Skill Legend */}
-      <div className="mt-6 border-t border-gray-200 px-4 pt-4 dark:border-gray-700">
-        {drillDownCategory && skillTimelineData ? (
-          // Skill legend for drill-down
-          <>
-            <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">
-              {skillTimelineData.categoryName} Skills
-            </p>
-            <div className="flex flex-wrap gap-3" role="group" aria-label="Skills in category">
-              {skillTimelineData.skills.map((skill) => (
-                <div
-                  key={skill.id}
-                  className="flex items-center gap-1.5 rounded px-1.5 py-0.5"
-                >
-                  <span
-                    className="h-3 w-3 rounded-full"
-                    style={{ backgroundColor: skill.color }}
-                  />
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
-                    {skill.name}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          // Category legend
-          <>
-            <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">
-              Categories <span className="font-normal">(click to drill down)</span>
-            </p>
-            <div className="flex flex-wrap gap-3" role="group" aria-label="Filter chart by category">
-              {categories.map((category) => {
-                const isSelected = highlightedCategory === category.id;
-                const isDimmed = highlightedCategory && highlightedCategory !== category.id;
-                const proficiencyTotal = currentProficiencyTotals[category.id] || 0;
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() => handleCategoryClick(category.id)}
-                    onMouseEnter={() => handleCategoryHover(category.id)}
-                    onMouseLeave={() => handleCategoryHover(null)}
-                    className={`flex items-center gap-1.5 rounded px-1.5 py-0.5 transition-all cursor-pointer ${
-                      isSelected ? 'bg-gray-100 dark:bg-gray-800' : ''
-                    } ${isDimmed ? 'opacity-50' : ''}`}
-                    aria-label={`View ${category.name} skills (proficiency: ${proficiencyTotal})`}
-                  >
-                    <span
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: category.color }}
-                    />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      {category.name}
-                    </span>
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-500">
-                      {proficiencyTotal > 0 ? proficiencyTotal.toFixed(1) : ''}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </>
-        )}
       </div>
 
       {/* Milestone Detail Modal */}
