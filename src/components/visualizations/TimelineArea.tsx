@@ -29,6 +29,8 @@ import { useReducedMotion } from './hooks';
 import { TimelineTooltip } from './TimelineTooltip';
 import { MilestoneDetailModal } from './MilestoneDetailModal';
 import { milestones } from '@/data/milestones';
+import { categories as allCategories, categoryMap } from '@/data/categories';
+import { getSkillsAtDate } from '@/data';
 import type { Milestone, CategoryId } from '@/data/types';
 
 // Cyan color for milestone markers (as per spec)
@@ -105,6 +107,17 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
   // Category interaction state
   const [highlightedCategory, setHighlightedCategory] = useState<string | null>(null);
   const [drillDownCategory, setDrillDownCategory] = useState<CategoryId | null>(null);
+
+  // Mobile tooltip state - tracks current hover/touch data to display below chart
+  const [mobileTooltipData, setMobileTooltipData] = useState<{
+    year: number;
+    date: string;
+    payload: Array<{
+      value?: number;
+      dataKey?: string;
+      color?: string;
+    }>;
+  } | null>(null);
 
   // Get skill-level data for drill-down view
   const skillTimelineData = useSkillTimelineData(drillDownCategory, { sampleRate: 3 });
@@ -260,6 +273,43 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
   const animationDuration = reducedMotion ? 0 : 1500;
   const transitionDuration = reducedMotion ? 0 : 300;
 
+  // Custom tooltip component that captures data for mobile display
+  const CustomTooltip = useCallback((props: {
+    active?: boolean;
+    payload?: Array<{
+      payload: {
+        date: string;
+        year: number;
+        [key: string]: unknown;
+      };
+      value?: number;
+      dataKey?: string;
+      color?: string;
+      name?: string;
+    }>;
+    label?: string;
+    drillDownCategory?: CategoryId | null;
+  }) => {
+    const { active, payload } = props;
+    
+    // Update mobile tooltip data when tooltip is active
+    if (active && payload && payload.length > 0) {
+      const dataPoint = payload[0]?.payload;
+      const newData = {
+        year: dataPoint?.year,
+        date: dataPoint?.date,
+        payload: payload,
+      };
+      
+      // Only update if data has changed to avoid unnecessary rerenders
+      if (JSON.stringify(newData) !== JSON.stringify(mobileTooltipData)) {
+        setMobileTooltipData(newData);
+      }
+    }
+
+    return <TimelineTooltip {...props} />;
+  }, [mobileTooltipData]);
+
   // Calculate current proficiency totals for legend
   const currentProficiencyTotals = useMemo(() => {
     const totals: Record<string, number> = {};
@@ -318,7 +368,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
           />
 
           <Tooltip
-            content={<TimelineTooltip drillDownCategory={drillDownCategory} />}
+            content={<CustomTooltip drillDownCategory={drillDownCategory} />}
             cursor={{
               stroke: 'var(--color-engineering)',
               strokeWidth: 1,
@@ -388,7 +438,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
         />
 
         <Tooltip
-          content={<TimelineTooltip />}
+          content={<CustomTooltip />}
           cursor={{
             stroke: 'var(--color-engineering)',
             strokeWidth: 1,
@@ -460,71 +510,73 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
         )}
       </AnimatePresence>
 
-      {/* Chart Container */}
-      <div
-        ref={chartContainerRef}
-        className="relative h-[300px] w-full sm:h-[400px] lg:h-[500px]"
-        data-testid="timeline-area"
-      >
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={drillDownCategory && skillTimelineData ? skillTimelineData.data : data}
-            margin={CHART_MARGIN}
-          >
-            {renderChartContent()}
-          </AreaChart>
-        </ResponsiveContainer>
-
-        {/* Milestone Markers Overlay */}
-        {chartDimensions.width > 0 && (
-          <svg
-            className="pointer-events-none absolute inset-0"
-            width={chartDimensions.width}
-            height={chartDimensions.height}
-            style={{ overflow: 'visible' }}
-            data-testid="milestone-markers-overlay"
-          >
-            {milestoneData.map((milestone) => {
-              const isIndividualHovered = hoveredMilestone?.id === milestone.id;
-              const isYearHovered = hoveredYear === milestone.year;
-              const isHovered = isIndividualHovered || isYearHovered;
-              const fullMilestone = milestones.find(m => m.id === milestone.id);
-
-              return (
-                <g
-                  key={milestone.id}
-                  className="pointer-events-auto cursor-pointer"
-                  onMouseEnter={() => fullMilestone && setHoveredMilestone(fullMilestone)}
-                  onMouseLeave={() => setHoveredMilestone(null)}
-                  onClick={() => fullMilestone && setSelectedMilestone(fullMilestone)}
+      {/* Category/Skill Legend - Moved above chart for better visibility */}
+      <div className="mb-6 border-b border-gray-200 px-4 pb-4 dark:border-gray-700">
+        {drillDownCategory && skillTimelineData ? (
+          // Skill legend for drill-down
+          <>
+            <p className="mb-3 text-sm font-medium text-[var(--color-muted)]">
+              {skillTimelineData.categoryName} Skills
+            </p>
+            <div className="flex flex-wrap gap-3" role="group" aria-label="Skills in category">
+              {skillTimelineData.skills.map((skill) => (
+                <div
+                  key={skill.id}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2 bg-gray-50 dark:bg-gray-800"
                 >
-                  {/* Diamond marker at top */}
-                  <Diamond
-                    cx={milestone.xPos}
-                    cy={CHART_MARGIN.top + 10}
-                    size={isHovered ? 12 : 8}
-                    fill={MILESTONE_COLOR}
-                    stroke={isHovered ? '#fff' : MILESTONE_COLOR}
-                    strokeWidth={isHovered ? 2 : 1}
+                  <span
+                    className="h-4 w-4 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: skill.color }}
                   />
-                </g>
-              );
-            })}
-          </svg>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    {skill.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          // Category legend
+          <>
+            <p className="mb-3 text-sm font-medium text-[var(--color-muted)]">
+              Categories <span className="font-normal text-xs">(click to drill down)</span>
+            </p>
+            <div className="flex flex-wrap gap-3" role="group" aria-label="Filter chart by category">
+              {categories.map((category) => {
+                const isSelected = highlightedCategory === category.id;
+                const isDimmed = highlightedCategory && highlightedCategory !== category.id;
+                const proficiencyTotal = currentProficiencyTotals[category.id] || 0;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategoryClick(category.id)}
+                    onMouseEnter={() => handleCategoryHover(category.id)}
+                    onMouseLeave={() => handleCategoryHover(null)}
+                    className={`flex items-center gap-2 rounded-lg px-4 py-2.5 transition-all cursor-pointer border border-gray-200 dark:border-gray-700 hover:shadow-md ${
+                      isSelected ? 'bg-gray-100 dark:bg-gray-800 shadow-sm' : 'bg-white dark:bg-gray-900'
+                    } ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
+                    aria-label={`View ${category.name} skills (proficiency: ${proficiencyTotal})`}
+                  >
+                    <span
+                      className="h-4 w-4 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: category.color }}
+                    />
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {category.name}
+                    </span>
+                    <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                      {proficiencyTotal > 0 ? proficiencyTotal.toFixed(1) : ''}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
 
-      {/* Legend Explanation */}
-      <div className="mt-2 px-4 text-xs text-gray-500 dark:text-gray-400">
-        <p>
-          <strong>Cumulative Proficiency:</strong> Shows skill depth across your career.
-          Values increase during active experiences and gradually decay after they end.
-          Higher values indicate deeper expertise across more skills.
-        </p>
-      </div>
-
-      {/* Milestone Badges */}
-      <div className="mt-4 px-4">
+      {/* Milestone Badges - Moved above chart for better alignment with markers */}
+      <div className="mb-4 px-4">
         <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">★ Career Milestones</p>
         <div className="flex flex-wrap gap-2">
           {milestonesByYear.map(({ year, milestones: yearMilestones }) => (
@@ -594,69 +646,156 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
         </AnimatePresence>
       </div>
 
-      {/* Category/Skill Legend */}
-      <div className="mt-6 border-t border-gray-200 px-4 pt-4 dark:border-gray-700">
-        {drillDownCategory && skillTimelineData ? (
-          // Skill legend for drill-down
-          <>
-            <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">
-              {skillTimelineData.categoryName} Skills
-            </p>
-            <div className="flex flex-wrap gap-3" role="group" aria-label="Skills in category">
-              {skillTimelineData.skills.map((skill) => (
-                <div
-                  key={skill.id}
-                  className="flex items-center gap-1.5 rounded px-1.5 py-0.5"
+      {/* Chart Container */}
+      <div
+        ref={chartContainerRef}
+        className="relative h-[300px] w-full sm:h-[400px] lg:h-[500px]"
+        data-testid="timeline-area"
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={drillDownCategory && skillTimelineData ? skillTimelineData.data : data}
+            margin={CHART_MARGIN}
+          >
+            {renderChartContent()}
+          </AreaChart>
+        </ResponsiveContainer>
+
+        {/* Milestone Markers Overlay */}
+        {chartDimensions.width > 0 && (
+          <svg
+            className="pointer-events-none absolute inset-0"
+            width={chartDimensions.width}
+            height={chartDimensions.height}
+            style={{ overflow: 'visible' }}
+            data-testid="milestone-markers-overlay"
+          >
+            {milestoneData.map((milestone) => {
+              const isIndividualHovered = hoveredMilestone?.id === milestone.id;
+              const isYearHovered = hoveredYear === milestone.year;
+              const isHovered = isIndividualHovered || isYearHovered;
+              const fullMilestone = milestones.find(m => m.id === milestone.id);
+
+              return (
+                <g
+                  key={milestone.id}
+                  className="pointer-events-auto cursor-pointer"
+                  onMouseEnter={() => fullMilestone && setHoveredMilestone(fullMilestone)}
+                  onMouseLeave={() => setHoveredMilestone(null)}
+                  onClick={() => fullMilestone && setSelectedMilestone(fullMilestone)}
                 >
-                  <span
-                    className="h-3 w-3 rounded-full"
-                    style={{ backgroundColor: skill.color }}
+                  {/* Diamond marker at top */}
+                  <Diamond
+                    cx={milestone.xPos}
+                    cy={CHART_MARGIN.top + 10}
+                    size={isHovered ? 12 : 8}
+                    fill={MILESTONE_COLOR}
+                    stroke={isHovered ? '#fff' : MILESTONE_COLOR}
+                    strokeWidth={isHovered ? 2 : 1}
                   />
-                  <span className="text-xs text-gray-600 dark:text-gray-400">
-                    {skill.name}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          // Category legend
-          <>
-            <p className="mb-2 text-xs font-medium text-[var(--color-muted)]">
-              Categories <span className="font-normal">(click to drill down)</span>
-            </p>
-            <div className="flex flex-wrap gap-3" role="group" aria-label="Filter chart by category">
-              {categories.map((category) => {
-                const isSelected = highlightedCategory === category.id;
-                const isDimmed = highlightedCategory && highlightedCategory !== category.id;
-                const proficiencyTotal = currentProficiencyTotals[category.id] || 0;
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() => handleCategoryClick(category.id)}
-                    onMouseEnter={() => handleCategoryHover(category.id)}
-                    onMouseLeave={() => handleCategoryHover(null)}
-                    className={`flex items-center gap-1.5 rounded px-1.5 py-0.5 transition-all cursor-pointer ${
-                      isSelected ? 'bg-gray-100 dark:bg-gray-800' : ''
-                    } ${isDimmed ? 'opacity-50' : ''}`}
-                    aria-label={`View ${category.name} skills (proficiency: ${proficiencyTotal})`}
-                  >
-                    <span
-                      className="h-3 w-3 rounded-full"
-                      style={{ backgroundColor: category.color }}
-                    />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      {category.name}
-                    </span>
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-500">
-                      {proficiencyTotal > 0 ? proficiencyTotal.toFixed(1) : ''}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </>
+                </g>
+              );
+            })}
+          </svg>
         )}
+      </div>
+
+      {/* Mobile Tooltip Display - Shows below chart on mobile */}
+      <AnimatePresence>
+        {mobileTooltipData && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: reducedMotion ? 0.01 : 0.15 }}
+            className="md:hidden mt-4 px-4"
+          >
+            <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-md dark:border-gray-700 dark:bg-gray-900">
+              {/* Year Header */}
+              <div className="mb-2 border-b border-gray-200 pb-2 dark:border-gray-700">
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {mobileTooltipData.year}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Total: {mobileTooltipData.payload.reduce((sum, entry) => sum + (entry.value || 0), 0).toFixed(1)} proficiency
+                </p>
+              </div>
+
+              {/* Category Breakdown */}
+              <div className="space-y-1.5">
+                {drillDownCategory ? (
+                  // Drill-down view: show individual skills
+                  <>
+                    {mobileTooltipData.payload
+                      .filter((entry) => (entry.value ?? 0) > 0)
+                      .map((entry) => {
+                        const skillId = entry.dataKey as string;
+                        const skill = skillTimelineData?.skills.find(s => s.id === skillId);
+                        return (
+                          <div key={skillId} className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-1.5">
+                              <span
+                                className="h-2.5 w-2.5 rounded-full flex-shrink-0"
+                                style={{ backgroundColor: entry.color }}
+                              />
+                              <span className="text-gray-700 dark:text-gray-300">
+                                {skill?.name || skillId}
+                              </span>
+                            </div>
+                            <span className="font-medium text-gray-900 dark:text-gray-100">
+                              {(entry.value || 0).toFixed(1)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                  </>
+                ) : (
+                  // Category view
+                  <>
+                    {allCategories.map((category) => {
+                      const entry = mobileTooltipData.payload.find(p => p.dataKey === category.id);
+                      const proficiency = entry?.value ?? 0;
+                      if (!proficiency || proficiency === 0) return null;
+
+                      return (
+                        <div key={category.id} className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              className="h-2.5 w-2.5 rounded-full flex-shrink-0"
+                              style={{ backgroundColor: category.color }}
+                            />
+                            <span className="text-gray-700 dark:text-gray-300">{category.name}</span>
+                          </div>
+                          <span className="font-medium text-gray-900 dark:text-gray-100">
+                            {proficiency.toFixed(1)}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </>
+                )}
+              </div>
+
+              {/* Active skills count */}
+              {!drillDownCategory && mobileTooltipData.date && (
+                <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {getSkillsAtDate(mobileTooltipData.date).length} skills active
+                  </p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Legend Explanation */}
+      <div className="mt-2 px-4 text-xs text-gray-500 dark:text-gray-400">
+        <p>
+          <strong>Cumulative Proficiency:</strong> Shows skill depth across your career.
+          Values increase during active experiences and gradually decay after they end.
+          Higher values indicate deeper expertise across more skills.
+        </p>
       </div>
 
       {/* Milestone Detail Modal */}
