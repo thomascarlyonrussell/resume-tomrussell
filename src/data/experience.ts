@@ -5,22 +5,6 @@ import type { Experience, ExperienceSkill } from './types';
  */
 export const experience: Experience[] = [
   {
-    id: 'personal-development',
-    company: 'Personal Development',
-    title: 'Self-Study & Continuous Learning',
-    startDate: '2023-01',
-    endDate: null,
-    location: 'Remote',
-    description:
-      'Continuous learning and skill development through personal projects, online courses, and hands-on experimentation with emerging technologies.',
-    highlights: [
-      'Explored modern AI tools and development practices',
-      'Built personal projects to learn new frameworks and languages',
-      'Stayed current with industry trends and best practices',
-    ],
-    skills: [] as ExperienceSkill[],
-  } as Experience,
-  {
     id: 'integral-analytics-vp-2025',
     company: 'Integral Analytics',
     title: 'Product Manager, VP',
@@ -30,7 +14,7 @@ export const experience: Experience[] = [
     description:
       'Lead product manager focused on AI-driven development practices and innovative tooling for LoadSEER and related products.',
     highlights: [
-      'Pioneered AI-assisted development workflows at IA using Claude AI, GitHub Copilot, and MCP protocol',
+      'Pioneered AI-assisted development workflows at IA using Claude AI, GitHub Copilot, and OpenAI Codex',
       'Developed custom AI agents and skills for product development automation',
       'Continued strategic roadmap direction and feature prioritization',
       'Advanced support tooling with modern AI integration patterns',
@@ -50,7 +34,6 @@ export const experience: Experience[] = [
       { skillId: 'github-copilot', rigor: 3 },
       { skillId: 'openai-codex', rigor: 3 },
       { skillId: 'distribution-planning', rigor: 3 },
-      { skillId: 'mcp-protocol', rigor: 2 },
       { skillId: 'openspec', rigor: 2 },
       { skillId: 'ai-agent-development', rigor: 2 },
       { skillId: 'playwright', rigor: 2 },
@@ -108,14 +91,13 @@ export const experience: Experience[] = [
     description:
       'Promoted to VP, establishing processes and systems for long-term product roadmap and backlog management for LoadSEER and related products.',
     highlights: [
-      'Established strategic roadmap framework and feature prioritization using Productboard',
+      'Established strategic roadmap framework and feature prioritization',
       'Gathered client insights and coordinated developer feedback for sprint management with JIRA',
       'Built foundation for product training and technical guidance programs',
-      "Developed initial support tooling for LoadSEER's backend using Python and SQL",
+      "Developed support tooling for LoadSEER's backend using Python and SQL",
     ],
     skills: [
       { skillId: 'product-management', rigor: 8 },
-      { skillId: 'productboard', rigor: 8 },
       { skillId: 'jira', rigor: 8 },
       { skillId: 'python', rigor: 8 },
       { skillId: 'stakeholder-management', rigor: 8 },
