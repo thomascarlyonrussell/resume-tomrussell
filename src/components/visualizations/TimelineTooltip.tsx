@@ -71,7 +71,7 @@ export function TimelineTooltip({ active, payload, drillDownCategory }: Timeline
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: reducedMotion ? 0.01 : 0.15 }}
-        className="max-w-xs rounded-lg border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-900"
+        className="hidden md:block max-w-xs rounded-lg border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-900"
         data-testid="timeline-tooltip"
       >
         {/* Date Header */}
@@ -130,7 +130,7 @@ export function TimelineTooltip({ active, payload, drillDownCategory }: Timeline
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: reducedMotion ? 0.01 : 0.15 }}
-      className="max-w-xs rounded-lg border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-900"
+      className="hidden md:block max-w-xs rounded-lg border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-900"
       data-testid="timeline-tooltip"
     >
       {/* Date Header */}

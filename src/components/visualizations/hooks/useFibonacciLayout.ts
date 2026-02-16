@@ -152,12 +152,9 @@ export function useFibonacciLayout(options: FibonacciLayoutOptions): FibonacciLa
     }
 
     // Sort skills by fibonacciSize ascending (smallest at center, largest on outskirts)
-    // Sort by raw proficiency (continuous value) for precise ordering
-    // Fall back to fibonacciSize if proficiency is undefined
+    // This ensures visual size matches spatial positioning in the spiral
     const sortedSkills = [...skills].sort((a, b) => {
-      const aProf = a.proficiency ?? a.fibonacciSize;
-      const bProf = b.proficiency ?? b.fibonacciSize;
-      return aProf - bProf;
+      return a.fibonacciSize - b.fibonacciSize;
     });
 
     // Initial calculation with a base center
