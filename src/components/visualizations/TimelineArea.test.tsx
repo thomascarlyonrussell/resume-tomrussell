@@ -17,13 +17,18 @@ class ResizeObserverMock {
     Object.defineProperty(target, 'offsetHeight', { value: 400, configurable: true });
 
     // Simulate dimensions being set
-    this.callback([{
-      target,
-      contentRect: { width: 800, height: 400 } as DOMRectReadOnly,
-      borderBoxSize: [],
-      contentBoxSize: [],
-      devicePixelContentBoxSize: [],
-    }], this);
+    this.callback(
+      [
+        {
+          target,
+          contentRect: { width: 800, height: 400 } as DOMRectReadOnly,
+          borderBoxSize: [],
+          contentBoxSize: [],
+          devicePixelContentBoxSize: [],
+        },
+      ],
+      this
+    );
   }
   unobserve() {}
   disconnect() {}
@@ -35,10 +40,38 @@ global.ResizeObserver = ResizeObserverMock;
 vi.mock('./hooks/useTimelineData', () => ({
   useTimelineData: vi.fn(() => ({
     data: [
-      { year: 2011, month: 1, date: '2011-01', engineering: 5, 'software-development': 0, 'product-management': 0 },
-      { year: 2015, month: 1, date: '2015-01', engineering: 15, 'software-development': 5, 'product-management': 0 },
-      { year: 2019, month: 1, date: '2019-01', engineering: 10, 'software-development': 10, 'product-management': 10 },
-      { year: 2024, month: 1, date: '2024-01', engineering: 8, 'software-development': 15, 'product-management': 15 },
+      {
+        year: 2011,
+        month: 1,
+        date: '2011-01',
+        engineering: 5,
+        'software-development': 0,
+        'product-management': 0,
+      },
+      {
+        year: 2015,
+        month: 1,
+        date: '2015-01',
+        engineering: 15,
+        'software-development': 5,
+        'product-management': 0,
+      },
+      {
+        year: 2019,
+        month: 1,
+        date: '2019-01',
+        engineering: 10,
+        'software-development': 10,
+        'product-management': 10,
+      },
+      {
+        year: 2024,
+        month: 1,
+        date: '2024-01',
+        engineering: 8,
+        'software-development': 15,
+        'product-management': 15,
+      },
     ],
     categories: [
       { id: 'engineering', name: 'Engineering', color: '#3B82F6' },
@@ -57,7 +90,9 @@ vi.mock('./hooks', () => ({
 // Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div {...props}>{children}</div>,
+    div: ({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+      <div {...props}>{children}</div>
+    ),
   },
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
@@ -119,7 +154,7 @@ describe('TimelineArea Milestone Markers', () => {
     const { container } = render(<TimelineArea />);
 
     // Wait for useEffect to process
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // The ResizeObserver mock triggers with dimensions, so SVG should render
     // Look for the milestone-markers-overlay SVG
@@ -143,7 +178,7 @@ describe('TimelineArea Milestone Markers', () => {
     const { container } = render(<TimelineArea />);
 
     // Wait for useEffect to process
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const overlay = container.querySelector('[data-testid="milestone-markers-overlay"]');
 

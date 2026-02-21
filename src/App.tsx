@@ -1,3 +1,10 @@
+/**
+ * App Component
+ *
+ * Root application component for the portfolio website.
+ * Replaces Next.js page.tsx with a standard React component.
+ */
+
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import {
   HeroSection,
@@ -17,7 +24,7 @@ const sections: SectionConfig[] = [
   { id: 'contact', label: 'Contact' },
 ];
 
-export default function Home() {
+export function App() {
   return (
     <>
       {/* Skip Link for Accessibility */}

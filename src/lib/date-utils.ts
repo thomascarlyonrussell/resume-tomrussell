@@ -83,7 +83,7 @@ export function isDateWithinExperience(dateStr: string, experience: Experience):
  * @returns True if the date is after the experience ended
  */
 export function isDateAfterExperience(dateStr: string, experience: Experience): boolean {
-  return experience.endDate !== null &&
-         experience.endDate !== undefined &&
-         dateStr > experience.endDate;
+  return (
+    experience.endDate !== null && experience.endDate !== undefined && dateStr > experience.endDate
+  );
 }

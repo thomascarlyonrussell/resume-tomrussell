@@ -84,7 +84,9 @@ export const SkillNode = forwardRef<SVGCircleElement, SkillNodeProps>(function S
   const radius = size / 2;
 
   // Generate accessible label
-  const proficiencyText = skill.proficiency ? `${getProficiencyLabel(skill.proficiency)} level, ` : '';
+  const proficiencyText = skill.proficiency
+    ? `${getProficiencyLabel(skill.proficiency)} level, `
+    : '';
   const ariaLabel = `${skill.name}: ${proficiencyText}${formatYearsOfExperience(skill.yearsOfExperience)} experience, ${skill.isActive ? 'currently active' : 'no longer active'}`;
 
   const handleMouseEnter = useCallback(() => onHover(true), [onHover]);

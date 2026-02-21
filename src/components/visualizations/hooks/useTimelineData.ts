@@ -146,8 +146,8 @@ export function useSkillTimelineData(
     const skillsWithColors: SkillChartInfo[] = categorySkills.map((skill, index) => {
       // Generate shades from light to dark based on index
       const totalSkills = categorySkills.length;
-      const lightness = 70 - (index * 40 / Math.max(1, totalSkills - 1)); // 70% to 30%
-      const saturation = 60 + (index * 20 / Math.max(1, totalSkills - 1)); // 60% to 80%
+      const lightness = 70 - (index * 40) / Math.max(1, totalSkills - 1); // 70% to 30%
+      const saturation = 60 + (index * 20) / Math.max(1, totalSkills - 1); // 60% to 80%
 
       // Parse category color (assumes hex format)
       const baseColor = category.color;

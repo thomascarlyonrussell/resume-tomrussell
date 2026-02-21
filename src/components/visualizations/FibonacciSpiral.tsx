@@ -88,7 +88,11 @@ function ResponsiveContainer({
   const width = size.width > 0 ? size.width : 800;
   const height = size.height > 0 ? size.height : 600;
 
-  return <div ref={containerRef} className="h-full w-full">{children({ width, height })}</div>;
+  return (
+    <div ref={containerRef} className="h-full w-full">
+      {children({ width, height })}
+    </div>
+  );
 }
 
 function SpiralContent({
@@ -287,8 +291,12 @@ function SpiralContent({
 
               // Calculate what the unscaled radius would be at the first position
               // Use the same minimum radius logic as in useFibonacciLayout
-              const baseUnscaledInitialRadius = sortedSkills[0].fibonacciSize * SIZE_MULTIPLIER * 0.5;
-              const unscaledInitialRadius = Math.max(baseUnscaledInitialRadius, SIZE_MULTIPLIER * 2);
+              const baseUnscaledInitialRadius =
+                sortedSkills[0].fibonacciSize * SIZE_MULTIPLIER * 0.5;
+              const unscaledInitialRadius = Math.max(
+                baseUnscaledInitialRadius,
+                SIZE_MULTIPLIER * 2
+              );
               const unscaledFirstRadius =
                 unscaledInitialRadius * Math.exp(SPIRAL_B * firstPos.angle);
               const scale = firstPos.radius / unscaledFirstRadius;

@@ -2,14 +2,13 @@
  * ChatWindow Component
  *
  * Expanded chat interface with header, messages, and input.
- * Uses Vercel AI SDK's useChat hook for message handling.
+ * Uses custom useChat hook with OpenRouter SDK.
  */
 
 'use client';
 
 import { useEffect, useCallback, useState } from 'react';
-import { useChat } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
+import { useChat } from '@/hooks/useChat';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from '@/components/visualizations/hooks';
 import { ChatHeader } from './ChatHeader';
@@ -27,9 +26,7 @@ export function ChatWindow({ onClose }: ChatWindowProps) {
   const [input, setInput] = useState('');
 
   const { messages, sendMessage, status, error, regenerate } = useChat({
-    transport: new DefaultChatTransport({
-      api: '/api/chat',
-    }),
+    api: '/.netlify/functions/chat',
   });
 
   const isLoading = status === 'streaming' || status === 'submitted';

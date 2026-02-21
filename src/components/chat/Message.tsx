@@ -10,7 +10,7 @@ import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useReducedMotion } from '@/components/visualizations/hooks';
-import type { UIMessage } from '@ai-sdk/react';
+import type { UIMessage } from '@/hooks/useChat';
 
 // Extract the parts type from UIMessage
 type UIMessagePart = UIMessage['parts'][number];
@@ -29,10 +29,11 @@ export function Message({ role, parts }: MessageProps) {
     return parts.map((part, index) => {
       if (part.type === 'text') {
         return (
-          <div key={index} className="text-sm leading-relaxed prose prose-sm max-w-none dark:prose-invert">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {part.text}
-            </ReactMarkdown>
+          <div
+            key={index}
+            className="prose prose-sm dark:prose-invert max-w-none text-sm leading-relaxed"
+          >
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{part.text}</ReactMarkdown>
           </div>
         );
       }

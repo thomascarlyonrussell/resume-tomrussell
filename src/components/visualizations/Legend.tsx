@@ -145,11 +145,7 @@ export function Legend({
               className="overflow-hidden"
             >
               {/* Category colors */}
-              <div
-                className="mt-2 space-y-1.5"
-                role="radiogroup"
-                aria-label="Category filters"
-              >
+              <div className="mt-2 space-y-1.5" role="radiogroup" aria-label="Category filters">
                 {categories.map((category, index) => {
                   const isSelected = selectedCategoryFilter === category.id;
                   const isOtherSelected =
@@ -176,10 +172,8 @@ export function Legend({
                             ? 'opacity-50 grayscale'
                             : ''
                       } ${
-                        reducedMotion
-                          ? ''
-                          : 'hover:scale-105 hover:brightness-110 active:scale-95'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-blue-400`}
+                        reducedMotion ? '' : 'hover:scale-105 hover:brightness-110 active:scale-95'
+                      } focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none dark:focus:ring-blue-400`}
                       onClick={() => handleCategoryClick(category.id)}
                       onKeyDown={(e) => handleKeyDown(e, index)}
                       tabIndex={index === 0 || isSelected ? 0 : -1}
@@ -228,12 +222,7 @@ export function Legend({
       </div>
 
       {/* Screen reader live region for filter announcements */}
-      <div
-        ref={liveRegionRef}
-        className="sr-only"
-        aria-live="polite"
-        aria-atomic="true"
-      />
+      <div ref={liveRegionRef} className="sr-only" aria-live="polite" aria-atomic="true" />
     </div>
   );
 }

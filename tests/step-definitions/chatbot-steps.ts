@@ -83,11 +83,14 @@ Then('conversation history is preserved for the session', async ({ page }) => {
 });
 
 // Message interaction steps
-When('the visitor types a message {string} and presses Enter', async ({ page }, message: string) => {
-  const input = page.locator('[data-testid="chat-input"]');
-  await input.fill(message);
-  await input.press('Enter');
-});
+When(
+  'the visitor types a message {string} and presses Enter',
+  async ({ page }, message: string) => {
+    const input = page.locator('[data-testid="chat-input"]');
+    await input.fill(message);
+    await input.press('Enter');
+  }
+);
 
 Then('the message appears in the chat', async ({ page }) => {
   const lastMessage = page.locator('[data-testid="chat-message"]').last();
@@ -100,19 +103,20 @@ Then('a loading indicator appears', async ({ page }) => {
 });
 
 Then('the AI response streams in', async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   await expect(aiMessage).toBeVisible({ timeout: 10000 });
 });
 
 // Starter prompts
-When('the visitor clicks a starter prompt button {string}', async ({ page }, promptText: string) => {
-  const promptButton = page.locator('[data-testid="starter-prompt"]', {
-    hasText: promptText,
-  });
-  await promptButton.click();
-});
+When(
+  'the visitor clicks a starter prompt button {string}',
+  async ({ page }, promptText: string) => {
+    const promptButton = page.locator('[data-testid="starter-prompt"]', {
+      hasText: promptText,
+    });
+    await promptButton.click();
+  }
+);
 
 Then('that prompt is sent as their message', async ({ page }) => {
   const userMessage = page.locator('[data-testid="chat-message"][data-role="user"]').last();
@@ -120,9 +124,7 @@ Then('that prompt is sent as their message', async ({ page }) => {
 });
 
 Then('the AI responds accordingly', async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   await expect(aiMessage).toBeVisible({ timeout: 10000 });
 });
 
@@ -160,27 +162,33 @@ Given('the visitor asks about LoadSEER', async ({ page }) => {
   await input.press('Enter');
 });
 
-Given("the visitor asks about Tom's experience with a specific technology {string}", async ({ page }, technology: string) => {
-  await page.goto(baseUrl);
-  const chatButton = page.locator('[data-testid="chat-button"]');
-  await chatButton.click();
-  await page.waitForTimeout(300);
+Given(
+  "the visitor asks about Tom's experience with a specific technology {string}",
+  async ({ page }, technology: string) => {
+    await page.goto(baseUrl);
+    const chatButton = page.locator('[data-testid="chat-button"]');
+    await chatButton.click();
+    await page.waitForTimeout(300);
 
-  const input = page.locator('[data-testid="chat-input"]');
-  await input.fill(`Tell me about Tom's experience with ${technology}`);
-  await input.press('Enter');
-});
+    const input = page.locator('[data-testid="chat-input"]');
+    await input.fill(`Tell me about Tom's experience with ${technology}`);
+    await input.press('Enter');
+  }
+);
 
-Given('the visitor asks about something not in the knowledge base {string}', async ({ page }, question: string) => {
-  await page.goto(baseUrl);
-  const chatButton = page.locator('[data-testid="chat-button"]');
-  await chatButton.click();
-  await page.waitForTimeout(300);
+Given(
+  'the visitor asks about something not in the knowledge base {string}',
+  async ({ page }, question: string) => {
+    await page.goto(baseUrl);
+    const chatButton = page.locator('[data-testid="chat-button"]');
+    await chatButton.click();
+    await page.waitForTimeout(300);
 
-  const input = page.locator('[data-testid="chat-input"]');
-  await input.fill(question);
-  await input.press('Enter');
-});
+    const input = page.locator('[data-testid="chat-input"]');
+    await input.fill(question);
+    await input.press('Enter');
+  }
+);
 
 When('the AI processes the question', async ({ page }) => {
   await page.waitForTimeout(1000);
@@ -195,48 +203,36 @@ When('the AI cannot find relevant information', async ({ page }) => {
 });
 
 Then('it retrieves relevant skills from the knowledge base', async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   await expect(aiMessage).toBeVisible({ timeout: 10000 });
 });
 
 Then('provides an accurate, detailed response', async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   const messageText = await aiMessage.textContent();
   expect(messageText?.length).toBeGreaterThan(50);
 });
 
 Then("it provides accurate information about Tom's work on LoadSEER", async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   await expect(aiMessage).toBeVisible({ timeout: 10000 });
   const messageText = await aiMessage.textContent();
   expect(messageText?.toLowerCase()).toContain('loadseer');
 });
 
 Then('the AI provides accurate details', async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   await expect(aiMessage).toBeVisible({ timeout: 10000 });
 });
 
 Then('may mention related projects or context', async ({ page }) => {
   // Optional step - just verify message exists
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   await expect(aiMessage).toBeVisible();
 });
 
 Then("it honestly states it doesn't have that information", async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   await expect(aiMessage).toBeVisible({ timeout: 10000 });
   const messageText = (await aiMessage.textContent())?.toLowerCase() || '';
   const hasUncertaintyPhrase =
@@ -249,9 +245,7 @@ Then("it honestly states it doesn't have that information", async ({ page }) => 
 });
 
 Then('suggests the visitor contact Tom directly for details', async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   const messageText = (await aiMessage.textContent())?.toLowerCase() || '';
   const hasContactSuggestion =
     messageText.includes('contact') ||
@@ -292,16 +286,12 @@ When('processing the sensitive request', async ({ page }) => {
 });
 
 Then('the AI politely declines', async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   await expect(aiMessage).toBeVisible({ timeout: 10000 });
 });
 
 Then('suggests focusing on professional topics', async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   const messageText = (await aiMessage.textContent())?.toLowerCase() || '';
   const hasProfessionalRedirect =
     messageText.includes('professional') ||
@@ -311,16 +301,12 @@ Then('suggests focusing on professional topics', async ({ page }) => {
 });
 
 Then("the AI explains it can't discuss compensation", async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   await expect(aiMessage).toBeVisible({ timeout: 10000 });
 });
 
 Then('provides contact information for direct inquiry', async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   const messageText = (await aiMessage.textContent())?.toLowerCase() || '';
   const hasContactInfo =
     messageText.includes('contact') ||
@@ -346,16 +332,12 @@ When('the AI recognizes a hiring context', async ({ page }) => {
 });
 
 Then('it provides helpful general info', async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   await expect(aiMessage).toBeVisible({ timeout: 10000 });
 });
 
 Then('suggests direct contact for specifics', async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   const messageText = (await aiMessage.textContent())?.toLowerCase() || '';
   const hasDirectContactSuggestion =
     messageText.includes('contact') ||
@@ -412,17 +394,13 @@ When('the AI generates the response', async ({ page }) => {
 });
 
 Then('text appears progressively', async ({ page }) => {
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   await expect(aiMessage).toBeVisible({ timeout: 10000 });
 });
 
 Then('the user sees content before the full response completes', async ({ page }) => {
   // Streaming is implicit in the previous step
-  const aiMessage = page.locator(
-    '[data-testid="chat-message"][data-role="assistant"]'
-  ).last();
+  const aiMessage = page.locator('[data-testid="chat-message"][data-role="assistant"]').last();
   await expect(aiMessage).toBeVisible();
 });
 
@@ -491,7 +469,7 @@ Then('it uses the configured model', async ({ page }) => {
   await expect(chatButton).toBeVisible();
 });
 
-Then('the chatbot responds using that model\'s capabilities', async ({ page }) => {
+Then("the chatbot responds using that model's capabilities", async ({ page }) => {
   const chatButton = page.locator('[data-testid="chat-button"]');
   await chatButton.click();
   await page.waitForTimeout(300);
@@ -504,11 +482,14 @@ Given('no environment variable specifies a model', async ({ page }) => {
   await page.goto(baseUrl);
 });
 
-Then('it uses the default free-tier model \\(e.g., Llama {float} or Mistral Small)', async ({ page }, version: number) => {
-  // Backend behavior - chat should function
-  const chatButton = page.locator('[data-testid="chat-button"]');
-  await expect(chatButton).toBeVisible();
-});
+Then(
+  'it uses the default free-tier model \\(e.g., Llama {float} or Mistral Small)',
+  async ({ page }, version: number) => {
+    // Backend behavior - chat should function
+    const chatButton = page.locator('[data-testid="chat-button"]');
+    await expect(chatButton).toBeVisible();
+  }
+);
 
 Then('the chatbot functions normally with the default model', async ({ page }) => {
   const chatButton = page.locator('[data-testid="chat-button"]');

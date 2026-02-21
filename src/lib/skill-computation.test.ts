@@ -36,9 +36,7 @@ describe('getExperiencesForSkill', () => {
         startDate: '2018-01',
         endDate: '2020-01',
         description: 'Test',
-        skills: [
-          { skillId: 'javascript', rigor: 5 },
-        ] as ExperienceSkill[],
+        skills: [{ skillId: 'javascript', rigor: 5 }] as ExperienceSkill[],
       } as Experience,
     ];
 
@@ -414,7 +412,6 @@ describe('computeSkill', () => {
     // With ~10-11 years and proficiency 6.8, expect ~60-65
     // Fibonacci size: raw ~60-65 bins to 8 (bin 5: top proficiency)
     expect(result.fibonacciSize).toBe(5);
-    
   });
 
   it('should compute all properties for inactive skill with degradation', () => {

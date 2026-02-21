@@ -46,23 +46,23 @@ interface DiamondProps {
   strokeWidth?: number;
 }
 
-function Diamond({ cx, cy, size = 8, fill = MILESTONE_COLOR, stroke = MILESTONE_COLOR, strokeWidth = 1 }: DiamondProps) {
+function Diamond({
+  cx,
+  cy,
+  size = 8,
+  fill = MILESTONE_COLOR,
+  stroke = MILESTONE_COLOR,
+  strokeWidth = 1,
+}: DiamondProps) {
   const halfSize = size / 2;
   const points = [
-    `${cx},${cy - halfSize}`,     // top
-    `${cx + halfSize},${cy}`,     // right
-    `${cx},${cy + halfSize}`,     // bottom
-    `${cx - halfSize},${cy}`,     // left
+    `${cx},${cy - halfSize}`, // top
+    `${cx + halfSize},${cy}`, // right
+    `${cx},${cy + halfSize}`, // bottom
+    `${cx - halfSize},${cy}`, // left
   ].join(' ');
 
-  return (
-    <polygon
-      points={points}
-      fill={fill}
-      stroke={stroke}
-      strokeWidth={strokeWidth}
-    />
-  );
+  return <polygon points={points} fill={fill} stroke={stroke} strokeWidth={strokeWidth} />;
 }
 
 // Chart margin constants (must match AreaChart margins)
@@ -174,7 +174,9 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
     });
 
     // Get all years in sorted order
-    const years = Object.keys(yearIndices).map(Number).sort((a, b) => a - b);
+    const years = Object.keys(yearIndices)
+      .map(Number)
+      .sort((a, b) => a - b);
     const totalPoints = sourceData.length;
 
     return milestones.map((milestone) => {
@@ -210,12 +212,12 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
 
       // Position the milestone between the year tick and next year tick
       // based on how far into the year the month is
-      const milestoneIndex = yearTickIndex + (monthFraction * (nextYearTickIndex - yearTickIndex));
+      const milestoneIndex = yearTickIndex + monthFraction * (nextYearTickIndex - yearTickIndex);
 
       // Convert index to x percentage
       const xPercent = totalPoints > 1 ? milestoneIndex / (totalPoints - 1) : 0.5;
       const clampedPercent = Math.max(0, Math.min(1, xPercent));
-      const xPos = CHART_MARGIN.left + (clampedPercent * chartAreaWidth);
+      const xPos = CHART_MARGIN.left + clampedPercent * chartAreaWidth;
 
       return {
         ...milestone,
@@ -257,11 +259,14 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
   }, []);
 
   // Handle category legend hover
-  const handleCategoryHover = useCallback((categoryId: string | null) => {
-    if (!drillDownCategory) {
-      setHighlightedCategory(categoryId);
-    }
-  }, [drillDownCategory]);
+  const handleCategoryHover = useCallback(
+    (categoryId: string | null) => {
+      if (!drillDownCategory) {
+        setHighlightedCategory(categoryId);
+      }
+    },
+    [drillDownCategory]
+  );
 
   // Handle back to categories
   const handleBackToCategories = useCallback(() => {
@@ -274,41 +279,44 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
   const transitionDuration = reducedMotion ? 0 : 300;
 
   // Custom tooltip component that captures data for mobile display
-  const CustomTooltip = useCallback((props: {
-    active?: boolean;
-    payload?: Array<{
-      payload: {
-        date: string;
-        year: number;
-        [key: string]: unknown;
-      };
-      value?: number;
-      dataKey?: string;
-      color?: string;
-      name?: string;
-    }>;
-    label?: string;
-    drillDownCategory?: CategoryId | null;
-  }) => {
-    const { active, payload } = props;
-    
-    // Update mobile tooltip data when tooltip is active
-    if (active && payload && payload.length > 0) {
-      const dataPoint = payload[0]?.payload;
-      const newData = {
-        year: dataPoint?.year,
-        date: dataPoint?.date,
-        payload: payload,
-      };
-      
-      // Only update if data has changed to avoid unnecessary rerenders
-      if (JSON.stringify(newData) !== JSON.stringify(mobileTooltipData)) {
-        setMobileTooltipData(newData);
-      }
-    }
+  const CustomTooltip = useCallback(
+    (props: {
+      active?: boolean;
+      payload?: Array<{
+        payload: {
+          date: string;
+          year: number;
+          [key: string]: unknown;
+        };
+        value?: number;
+        dataKey?: string;
+        color?: string;
+        name?: string;
+      }>;
+      label?: string;
+      drillDownCategory?: CategoryId | null;
+    }) => {
+      const { active, payload } = props;
 
-    return <TimelineTooltip {...props} />;
-  }, [mobileTooltipData]);
+      // Update mobile tooltip data when tooltip is active
+      if (active && payload && payload.length > 0) {
+        const dataPoint = payload[0]?.payload;
+        const newData = {
+          year: dataPoint?.year,
+          date: dataPoint?.date,
+          payload: payload,
+        };
+
+        // Only update if data has changed to avoid unnecessary rerenders
+        if (JSON.stringify(newData) !== JSON.stringify(mobileTooltipData)) {
+          setMobileTooltipData(newData);
+        }
+      }
+
+      return <TimelineTooltip {...props} />;
+    },
+    [mobileTooltipData]
+  );
 
   // Calculate current proficiency totals for legend
   const currentProficiencyTotals = useMemo(() => {
@@ -448,8 +456,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
 
         {/* Stacked Areas - sorted by first appearance (earlier skills at bottom) */}
         {sortedCategories.map((category) => {
-          const isHighlighted =
-            !highlightedCategory || highlightedCategory === category.id;
+          const isHighlighted = !highlightedCategory || highlightedCategory === category.id;
           return (
             <Area
               key={category.id}
@@ -477,8 +484,8 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
       <div className="sr-only" role="note">
         Timeline chart showing skill proficiency growth over time from {data[0]?.year} to{' '}
         {data[data.length - 1]?.year}. Proficiency increases during experiences and gradually
-        decreases after they end. Click categories to see individual skills.
-        Use the milestone buttons below to explore key career events.
+        decreases after they end. Click categories to see individual skills. Use the milestone
+        buttons below to explore key career events.
       </div>
 
       {/* Back to Categories Button (when in drill-down) */}
@@ -497,14 +504,21 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
               aria-label="Return to category view"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
               Back to Categories
             </button>
             <span className="text-sm text-gray-600 dark:text-gray-400">
-              Viewing: <span className="font-medium" style={{ color: skillTimelineData.categoryColor }}>
+              Viewing:{' '}
+              <span className="font-medium" style={{ color: skillTimelineData.categoryColor }}>
                 {skillTimelineData.categoryName}
-              </span> skills
+              </span>{' '}
+              skills
             </span>
           </motion.div>
         )}
@@ -522,15 +536,13 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
               {skillTimelineData.skills.map((skill) => (
                 <div
                   key={skill.id}
-                  className="flex items-center gap-2 rounded-lg px-3 py-2 bg-gray-50 dark:bg-gray-800"
+                  className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800"
                 >
                   <span
-                    className="h-4 w-4 rounded-full flex-shrink-0"
+                    className="h-4 w-4 flex-shrink-0 rounded-full"
                     style={{ backgroundColor: skill.color }}
                   />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {skill.name}
-                  </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">{skill.name}</span>
                 </div>
               ))}
             </div>
@@ -539,9 +551,13 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
           // Category legend
           <>
             <p className="mb-3 text-sm font-medium text-[var(--color-muted)]">
-              Categories <span className="font-normal text-xs">(click to drill down)</span>
+              Categories <span className="text-xs font-normal">(click to drill down)</span>
             </p>
-            <div className="flex flex-wrap gap-3" role="group" aria-label="Filter chart by category">
+            <div
+              className="flex flex-wrap gap-3"
+              role="group"
+              aria-label="Filter chart by category"
+            >
               {categories.map((category) => {
                 const isSelected = highlightedCategory === category.id;
                 const isDimmed = highlightedCategory && highlightedCategory !== category.id;
@@ -552,13 +568,15 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
                     onClick={() => handleCategoryClick(category.id)}
                     onMouseEnter={() => handleCategoryHover(category.id)}
                     onMouseLeave={() => handleCategoryHover(null)}
-                    className={`flex items-center gap-2 rounded-lg px-4 py-2.5 transition-all cursor-pointer border border-gray-200 dark:border-gray-700 hover:shadow-md ${
-                      isSelected ? 'bg-gray-100 dark:bg-gray-800 shadow-sm' : 'bg-white dark:bg-gray-900'
+                    className={`flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 transition-all hover:shadow-md dark:border-gray-700 ${
+                      isSelected
+                        ? 'bg-gray-100 shadow-sm dark:bg-gray-800'
+                        : 'bg-white dark:bg-gray-900'
                     } ${isDimmed ? 'opacity-40' : 'opacity-100'}`}
                     aria-label={`View ${category.name} skills (proficiency: ${proficiencyTotal})`}
                   >
                     <span
-                      className="h-4 w-4 rounded-full flex-shrink-0"
+                      className="h-4 w-4 flex-shrink-0 rounded-full"
                       style={{ backgroundColor: category.color }}
                     />
                     <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -674,7 +692,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
               const isIndividualHovered = hoveredMilestone?.id === milestone.id;
               const isYearHovered = hoveredYear === milestone.year;
               const isHovered = isIndividualHovered || isYearHovered;
-              const fullMilestone = milestones.find(m => m.id === milestone.id);
+              const fullMilestone = milestones.find((m) => m.id === milestone.id);
 
               return (
                 <g
@@ -708,7 +726,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: reducedMotion ? 0.01 : 0.15 }}
-            className="md:hidden mt-4 px-4"
+            className="mt-4 px-4 md:hidden"
           >
             <div className="rounded-lg border border-gray-200 bg-white p-3 shadow-md dark:border-gray-700 dark:bg-gray-900">
               {/* Year Header */}
@@ -717,7 +735,11 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
                   {mobileTooltipData.year}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Total: {mobileTooltipData.payload.reduce((sum, entry) => sum + (entry.value || 0), 0).toFixed(1)} proficiency
+                  Total:{' '}
+                  {mobileTooltipData.payload
+                    .reduce((sum, entry) => sum + (entry.value || 0), 0)
+                    .toFixed(1)}{' '}
+                  proficiency
                 </p>
               </div>
 
@@ -730,12 +752,12 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
                       .filter((entry) => (entry.value ?? 0) > 0)
                       .map((entry) => {
                         const skillId = entry.dataKey as string;
-                        const skill = skillTimelineData?.skills.find(s => s.id === skillId);
+                        const skill = skillTimelineData?.skills.find((s) => s.id === skillId);
                         return (
                           <div key={skillId} className="flex items-center justify-between text-xs">
                             <div className="flex items-center gap-1.5">
                               <span
-                                className="h-2.5 w-2.5 rounded-full flex-shrink-0"
+                                className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
                                 style={{ backgroundColor: entry.color }}
                               />
                               <span className="text-gray-700 dark:text-gray-300">
@@ -753,18 +775,25 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
                   // Category view
                   <>
                     {allCategories.map((category) => {
-                      const entry = mobileTooltipData.payload.find(p => p.dataKey === category.id);
+                      const entry = mobileTooltipData.payload.find(
+                        (p) => p.dataKey === category.id
+                      );
                       const proficiency = entry?.value ?? 0;
                       if (!proficiency || proficiency === 0) return null;
 
                       return (
-                        <div key={category.id} className="flex items-center justify-between text-xs">
+                        <div
+                          key={category.id}
+                          className="flex items-center justify-between text-xs"
+                        >
                           <div className="flex items-center gap-1.5">
                             <span
-                              className="h-2.5 w-2.5 rounded-full flex-shrink-0"
+                              className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
                               style={{ backgroundColor: category.color }}
                             />
-                            <span className="text-gray-700 dark:text-gray-300">{category.name}</span>
+                            <span className="text-gray-700 dark:text-gray-300">
+                              {category.name}
+                            </span>
                           </div>
                           <span className="font-medium text-gray-900 dark:text-gray-100">
                             {proficiency.toFixed(1)}
@@ -778,7 +807,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
 
               {/* Active skills count */}
               {!drillDownCategory && mobileTooltipData.date && (
-                <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                <div className="mt-2 border-t border-gray-200 pt-2 dark:border-gray-700">
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     {getSkillsAtDate(mobileTooltipData.date).length} skills active
                   </p>
@@ -792,9 +821,9 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
       {/* Legend Explanation */}
       <div className="mt-2 px-4 text-xs text-gray-500 dark:text-gray-400">
         <p>
-          <strong>Cumulative Proficiency:</strong> Shows skill depth across your career.
-          Values increase during active experiences and gradually decay after they end.
-          Higher values indicate deeper expertise across more skills.
+          <strong>Cumulative Proficiency:</strong> Shows skill depth across your career. Values
+          increase during active experiences and gradually decay after they end. Higher values
+          indicate deeper expertise across more skills.
         </p>
       </div>
 
