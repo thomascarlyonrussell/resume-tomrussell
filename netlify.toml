@@ -15,6 +15,10 @@
   # Node.js version
   NODE_VERSION = "20"
 
+# Explicitly disable all plugins (especially auto-detected Next.js plugin)
+# We're using Vite, not Next.js
+[[plugins]]
+
 # Functions configuration
 [functions]
   # Enable TypeScript support with esbuild bundler
