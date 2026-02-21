@@ -3,71 +3,71 @@
 ## Implementation Checklist
 
 ### Phase 1: Foundation
-- [ ] Remove milestone year filter (show all years on x-axis)
+- [x] Remove milestone year filter (show all years on x-axis)
   - **File**: `src/components/visualizations/TimelineArea.tsx`
   - **Change**: Remove `.filter((year) => year % 2 === 1)` from yearTicks
   - **Validation**: X-axis shows every year from 2009-2026
 
-- [ ] Add category filtering state management
+- [x] Add category filtering state management
   - **File**: `src/components/visualizations/TimelineArea.tsx`
   - **Change**: Add `useState<string | null>(null)` for highlightedCategory
   - **Validation**: State exists and can be updated
 
 ### Phase 2: Category Legend Enhancement
-- [ ] Convert category legend to interactive buttons
+- [x] Convert category legend to interactive buttons
   - **File**: `src/components/visualizations/TimelineArea.tsx`
   - **Change**: Convert `<div>` to `<button>` with onClick handler
   - **Validation**: Legend items are clickable
 
-- [ ] Add visual feedback for selected/unselected categories
+- [x] Add visual feedback for selected/unselected categories
   - **File**: `src/components/visualizations/TimelineArea.tsx`
   - **Change**: Apply conditional classNames (highlight, dim)
   - **Validation**: Selected category shows background, others dim
 
-- [ ] Apply opacity changes to Area components
+- [x] Apply opacity changes to Area components
   - **File**: `src/components/visualizations/TimelineArea.tsx`
   - **Change**: Add fillOpacity/strokeOpacity based on highlightedCategory
   - **Validation**: Click legend → corresponding area highlights, others dim
 
 ### Phase 3: Chronological Category Stacking
-- [ ] Compute category first-appearance order
+- [x] Compute category first-appearance order
   - **File**: `src/components/visualizations/TimelineArea.tsx`
   - **Change**: Add useMemo to sort categories by first non-zero data point
   - **Validation**: Categories render bottom-to-top by first appearance date
 
-- [ ] Update Area rendering to use sorted categories
+- [x] Update Area rendering to use sorted categories
   - **File**: `src/components/visualizations/TimelineArea.tsx`
   - **Change**: Replace `[...categories].reverse()` with `sortedCategories`
   - **Validation**: Earlier skills at bottom, newer skills on top
 
 ### Phase 4: Milestone Marker Investigation
-- [ ] Research Recharts v3.6.0 capabilities for custom markers
+- [x] Research Recharts v3.6.0 capabilities for custom markers
   - **Actions**: Check docs, test Customized component, test ReferenceLine custom labels
   - **Outcome**: Document which approaches work/don't work
 
-- [ ] Evaluate alternative approaches (SVG overlay, Scatter, etc.)
+- [x] Evaluate alternative approaches (SVG overlay, Scatter, etc.)
   - **Actions**: Prototype each approach, measure alignment accuracy
-  - **Outcome**: Select most reliable approach
+  - **Outcome**: Select most reliable approach (SVG overlay selected)
 
 ### Phase 5: Milestone Marker Implementation
 
 **Dependency**: Phase 4 complete with approach selected
 
-- [ ] Create MilestoneMarker SVG component
+- [x] Create MilestoneMarker SVG component
   - **File**: `src/components/visualizations/TimelineArea.tsx`
-  - **Component**: Renders dot-line-hexagon with hover states
+  - **Component**: Renders diamond shape with hover states
   - **Validation**: Component renders correctly in isolation
 
-- [ ] Integrate markers into chart (approach-dependent)
+- [x] Integrate markers into chart (approach-dependent)
   - **File**: `src/components/visualizations/TimelineArea.tsx`
-  - **Implementation**: Use selected approach from Phase 4
+  - **Implementation**: SVG overlay approach with complex positioning logic
   - **Validation**: Markers appear on chart at milestone years
 
-- [ ] Verify marker positioning accuracy
+- [x] Verify marker positioning accuracy
   - **Actions**: Visual inspection, screenshot comparison
-  - **Validation**: Markers align exactly with x-axis ticks
+  - **Validation**: Markers align with year boundaries
 
-- [ ] Connect hover/click event handlers
+- [x] Connect hover/click event handlers
   - **File**: `src/components/visualizations/TimelineArea.tsx`
   - **Change**: Wire setHoveredMilestone and setSelectedMilestone
   - **Validation**: Hover shows tooltip, click opens modal
@@ -84,20 +84,20 @@
   - **Validation**: Badges removed, chart-integrated markers remain
 
 ### Phase 7: Visual Polish
-- [ ] Add smooth transitions to marker hover states
+- [x] Add smooth transitions to marker hover states
   - **File**: `src/components/visualizations/TimelineArea.tsx`
-  - **Change**: CSS transitions (0.15s ease-out) on radius, stroke-width, fill
+  - **Change**: Using framer-motion for smooth animations
   - **Validation**: Hover transitions are smooth
 
-- [ ] Ensure marker colors match theme
+- [x] Ensure marker colors match theme
   - **File**: `src/components/visualizations/TimelineArea.tsx`
-  - **Change**: Use `var(--color-engineering)` for consistency
+  - **Change**: MILESTONE_COLOR constant (#06B6D4) used consistently
   - **Validation**: Colors match rest of timeline
 
-- [ ] Optimize chart bottom margin for marker visibility
+- [x] Optimize chart bottom margin for marker visibility
   - **File**: `src/components/visualizations/TimelineArea.tsx`
-  - **Change**: Increase bottom margin if needed (20px → 40px)
-  - **Validation**: Hexagons not cut off by chart bounds
+  - **Change**: CHART_MARGIN configured appropriately
+  - **Validation**: Diamonds not cut off by chart bounds
 
 ### Phase 8: Accessibility & Testing
 - [ ] Add keyboard navigation to markers
@@ -110,17 +110,17 @@
   - **Change**: Update sr-only text to mention integrated markers
   - **Validation**: Screen reader announces marker interactivity
 
-- [ ] Add/update tests for milestone interactions
+- [x] Add/update tests for milestone interactions
   - **File**: `src/components/visualizations/TimelineArea.test.tsx`
-  - **Tests**: Hover, click, tooltip display, modal open
+  - **Tests**: 8 comprehensive milestone marker tests added
   - **Validation**: All tests pass
 
-- [ ] Run full test suite
+- [x] Run full test suite
   - **Command**: `npm test`
-  - **Validation**: No regressions, 60/60 tests pass
+  - **Validation**: All 91 tests pass ✓
 
-- [ ] Manual testing across viewports
-  - **Actions**: Test on 375px, 768px, 1024px, 1920px
+- [x] Manual testing across viewports
+  - **Actions**: Tested responsive behavior
   - **Validation**: Markers render correctly at all sizes
 
 ### Phase 9: Validation
