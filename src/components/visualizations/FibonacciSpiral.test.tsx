@@ -77,12 +77,6 @@ vi.mock('./hooks', () => ({
   useReducedMotion: vi.fn(() => false),
 }));
 
-// Mock ParentSize to avoid rendering issues
-vi.mock('@visx/responsive', () => ({
-  ParentSize: ({ children }: { children: (props: { width: number; height: number }) => React.ReactNode }) =>
-    children({ width: 800, height: 600 }),
-}));
-
 describe('FibonacciSpiral Filtering Logic', () => {
   it('renders without filter (shows all skills)', () => {
     const { container } = render(

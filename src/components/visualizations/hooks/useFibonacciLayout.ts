@@ -41,6 +41,12 @@ const MIN_ANGLE = Math.PI / 6;
 // Padding between adjacent skills - increased for visual breathing room
 const SKILL_PADDING = 16;
 
+function roundCoordinate(value: number, precision = 3): number {
+  if (!Number.isFinite(value)) return 0;
+  const factor = 10 ** precision;
+  return Math.round(value * factor) / factor;
+}
+
 /**
  * Calculate position on a logarithmic spiral
  */
@@ -175,10 +181,10 @@ export function useFibonacciLayout(options: FibonacciLayoutOptions): FibonacciLa
       const point = calculateSpiralPoint(currentAngle, initialRadius, centerX, centerY);
 
       positions.set(skill.id, {
-        x: point.x,
-        y: point.y,
-        radius: point.radius,
-        angle: currentAngle,
+        x: roundCoordinate(point.x),
+        y: roundCoordinate(point.y),
+        radius: roundCoordinate(point.radius),
+        angle: roundCoordinate(currentAngle, 6),
       });
 
       // Calculate angle for next skill
@@ -221,9 +227,9 @@ export function useFibonacciLayout(options: FibonacciLayoutOptions): FibonacciLa
     for (const [id, pos] of positions) {
       positions.set(id, {
         ...pos,
-        x: pos.x * scale + offsetX,
-        y: pos.y * scale + offsetY,
-        radius: pos.radius * scale,
+        x: roundCoordinate(pos.x * scale + offsetX),
+        y: roundCoordinate(pos.y * scale + offsetY),
+        radius: roundCoordinate(pos.radius * scale),
       });
     }
 

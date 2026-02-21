@@ -34,7 +34,7 @@ const labelVariants = {
       type: 'spring' as const,
       stiffness: 200,
       damping: 20,
-      delay: delay * 0.03 + 0.1, // Slightly after circle appears
+      delay: Math.min(delay * 0.008 + 0.05, 0.4),
     },
   }),
   exit: {

@@ -7,10 +7,8 @@
 
 'use client';
 
-import { useState, useCallback, useRef, useMemo } from 'react';
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ParentSize } from '@visx/responsive';
-import { Group } from '@visx/group';
 import type { ComputedSkill, CategoryId } from '@/data/types';
 import { skills, experience, getCategorySkillCounts } from '@/data';
 import { computeSkill } from '@/lib/skill-computation';
@@ -36,6 +34,61 @@ const SIZE_MULTIPLIER = 20;
 interface SpiralContentProps extends FibonacciSpiralProps {
   width: number;
   height: number;
+}
+
+function ResponsiveContainer({
+  children,
+}: {
+  children: (size: { width: number; height: number }) => React.ReactNode;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const updateSize = (width: number, height: number) => {
+      setSize((prev) => {
+        if (prev.width === width && prev.height === height) {
+          return prev;
+        }
+        return { width, height };
+      });
+    };
+
+    const initialRect = container.getBoundingClientRect();
+    updateSize(initialRect.width, initialRect.height);
+
+    const handleWindowResize = () => {
+      const rect = container.getBoundingClientRect();
+      updateSize(rect.width, rect.height);
+    };
+
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', handleWindowResize);
+      return () => {
+        window.removeEventListener('resize', handleWindowResize);
+      };
+    }
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      updateSize(entry.contentRect.width, entry.contentRect.height);
+    });
+
+    observer.observe(container);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  const width = size.width > 0 ? size.width : 800;
+  const height = size.height > 0 ? size.height : 600;
+
+  return <div ref={containerRef} className="h-full w-full">{children({ width, height })}</div>;
 }
 
 function SpiralContent({
@@ -218,7 +271,7 @@ function SpiralContent({
         <title>Skills Fibonacci Spiral Visualization</title>
         <desc>{description}</desc>
 
-        <Group>
+        <g>
           {/* Render smooth spiral curve (behind everything) */}
           {sortedSkills.length > 1 &&
             (() => {
@@ -267,7 +320,10 @@ function SpiralContent({
                 const x = scaledRadius * Math.cos(angle) + offsetX;
                 const y = scaledRadius * Math.sin(angle) + offsetY;
 
-                return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
+                const normalizedX = Number.isFinite(x) ? Number(x.toFixed(3)) : 0;
+                const normalizedY = Number.isFinite(y) ? Number(y.toFixed(3)) : 0;
+
+                return `${i === 0 ? 'M' : 'L'} ${normalizedX} ${normalizedY}`;
               }).join(' ');
 
               return (
@@ -325,7 +381,7 @@ function SpiralContent({
                   y={pos.y}
                   size={skill.fibonacciSize * SIZE_MULTIPLIER}
                   isHovered={hoveredId === skill.id}
-                  animationDelay={index}
+                  animationDelay={0}
                   reducedMotion={reducedMotion}
                   tabIndex={focusedIndex === index || (focusedIndex === -1 && index === 0) ? 0 : -1}
                   onHover={(hovering) => handleSkillHover(skill, hovering)}
@@ -354,13 +410,13 @@ function SpiralContent({
                   skillIndex={index}
                   totalSmallSkills={sortedSkills.length}
                   viewportCenter={center}
-                  animationDelay={index}
+                  animationDelay={0}
                   reducedMotion={reducedMotion}
                 />
               );
             })}
           </AnimatePresence>
-        </Group>
+        </g>
       </motion.svg>
 
       {/* Tooltip */}
@@ -396,9 +452,9 @@ export function FibonacciSpiral(props: FibonacciSpiralProps) {
       className={`h-[400px] w-full sm:h-[500px] md:h-[600px] lg:h-[700px] ${className}`}
       data-testid="fibonacci-view"
     >
-      <ParentSize>
+      <ResponsiveContainer>
         {({ width, height }) => <SpiralContent {...props} width={width} height={height} />}
-      </ParentSize>
+      </ResponsiveContainer>
     </div>
   );
 }

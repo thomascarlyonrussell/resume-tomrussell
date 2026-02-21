@@ -8,9 +8,9 @@
 
 import { useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import dynamic from 'next/dynamic';
 import { useReducedMotion, useViewTransition } from '@/components/visualizations/hooks';
 import {
-  FibonacciSpiral,
   TimelineArea,
   VisualizationToggle,
   SkillDetailModal,
@@ -38,6 +38,14 @@ const VIEW_CONFIG: Record<VisualizationView, { title: string; subtitle: string }
       'See how skills have grown over time. Hover to explore skills, click milestones for details.',
   },
 };
+
+const FibonacciSpiral = dynamic(
+  () => import('@/components/visualizations').then((module) => module.FibonacciSpiral),
+  {
+    ssr: false,
+    loading: () => <div className="h-[400px] w-full sm:h-[500px] md:h-[600px] lg:h-[700px]" />,
+  }
+);
 
 export function SkillsSection({ id = 'skills', className = '' }: SkillsSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);

@@ -40,7 +40,7 @@ const nodeVariants = {
       type: 'spring' as const,
       stiffness: 260,
       damping: 20,
-      delay: delay * 0.03,
+      delay: Math.min(delay * 0.008, 0.35),
     },
   }),
   exit: {
