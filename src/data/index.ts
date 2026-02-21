@@ -191,11 +191,7 @@ export function generateTimelineData(
         for (const skill of allSkills) {
           if (skill.category !== category.id) continue;
 
-          const proficiency = calculateSkillProficiencyAtDate(
-            skill,
-            dateStr,
-            experience
-          );
+          const proficiency = calculateSkillProficiencyAtDate(skill, dateStr, experience);
           categoryProficiency += proficiency;
         }
 
@@ -256,11 +252,7 @@ export function generateSkillTimelineData(
 
       // Calculate proficiency for each skill in this category
       for (const skill of categorySkills) {
-        const proficiency = calculateSkillProficiencyAtDate(
-          skill,
-          dateStr,
-          experience
-        );
+        const proficiency = calculateSkillProficiencyAtDate(skill, dateStr, experience);
         dataPoint[skill.id] = Math.round(proficiency * 10) / 10;
       }
 

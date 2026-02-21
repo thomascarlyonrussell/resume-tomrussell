@@ -1,0 +1,74 @@
+# Netlify Configuration
+# Documentation: https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[build]
+  # Build command
+  command = "npm run build"
+  
+  # Directory with build output
+  publish = "dist"
+  
+  # Netlify Functions directory
+  functions = "netlify/functions"
+
+[build.environment]
+  # Node.js version
+  NODE_VERSION = "20"
+
+# Explicitly disable all plugins (especially auto-detected Next.js plugin)
+# We're using Vite, not Next.js
+[[plugins]]
+
+# Functions configuration
+[functions]
+  # Enable TypeScript support with esbuild bundler
+  node_bundler = "esbuild"
+
+# Local development configuration
+[dev]
+  # Command to run the dev server
+  command = "vite"
+  
+  # Port that Vite runs on
+  targetPort = 3000
+  
+  # Framework detection
+  framework = "#custom"
+
+# SPA fallback routing - redirect all requests to index.html
+# Note: Netlify automatically excludes /.netlify/* paths (including functions)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for security and performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Environment variable configuration
+# Set these in Netlify UI: Site settings > Build & deploy > Environment
+# Required:
+# - OPENROUTER_API_KEY: Your OpenRouter API key
+# Optional:
+# - CHAT_MODEL: OpenRouter model ID (default: meta-llama/llama-3.3-70b-instruct:free)

@@ -151,9 +151,12 @@ Given('the site provides visual indicators with interactive navigation', async (
   await page.goto(baseUrl);
 });
 
-Given('the navigation displays the currently active section with a larger, colored dot', async ({ page }) => {
-  await page.waitForLoadState('domcontentloaded');
-});
+Given(
+  'the navigation displays the currently active section with a larger, colored dot',
+  async ({ page }) => {
+    await page.waitForLoadState('domcontentloaded');
+  }
+);
 
 Given('allows clicking to jump directly to any section', async ({ page }) => {
   await page.waitForLoadState('domcontentloaded');

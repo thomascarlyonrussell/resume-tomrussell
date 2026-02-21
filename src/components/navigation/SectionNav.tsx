@@ -80,7 +80,7 @@ export function SectionNav({ sections, className = '' }: SectionNavProps) {
                 {/* Focus ring */}
                 <span className="nav-focus-ring absolute inset-0 -m-1 rounded-full ring-2 ring-transparent" />
 
-                <style jsx>{`
+                <style>{`
                   .nav-button:hover .nav-label,
                   .nav-button:focus-visible .nav-label {
                     opacity: 1;

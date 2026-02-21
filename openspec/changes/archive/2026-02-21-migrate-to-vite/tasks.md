@@ -57,10 +57,10 @@
 
 ## Phase 4: API Route Migration
 
-- [ ] Create `api/chat/route.ts` at project root (Vercel convention)
+- [ ] Create `netlify/functions/chat.ts` for Netlify Functions
 - [ ] Copy contents from `src/app/api/chat/route.ts`
-- [ ] Verify export structure works with Vercel serverless
-- [ ] Test locally with `vercel dev`
+- [ ] Verify handler structure works with Netlify Functions
+- [ ] Test locally with `netlify dev`
 
 ## Phase 5: Update Build Scripts
 
@@ -118,7 +118,7 @@
 
 ## Phase 10: Deployment
 
-- [ ] Deploy to Vercel preview
+- [ ] Deploy to Netlify preview
 - [ ] Test serverless API in preview environment
 - [ ] Verify all functionality in preview
 - [ ] Deploy to production

@@ -154,7 +154,7 @@ function generateProfessionalSummary(): string {
   const currentRole = experience[0];
   const totalYears = Math.round(getTotalYearsOfExperience());
   const computedSkills = getAllComputedSkills();
-  const activeSkillCount = computedSkills.filter(s => s.isActive).length;
+  const activeSkillCount = computedSkills.filter((s) => s.isActive).length;
 
   return `### Professional Summary
 

@@ -25,7 +25,12 @@ export function LoadingIndicator() {
   });
 
   return (
-    <div className="flex items-center gap-1 px-3 py-2" aria-label="AI is typing" role="status" data-testid="loading-indicator">
+    <div
+      className="flex items-center gap-1 px-3 py-2"
+      aria-label="AI is typing"
+      role="status"
+      data-testid="loading-indicator"
+    >
       <motion.span
         className="h-2 w-2 rounded-full bg-gray-400 dark:bg-gray-500"
         variants={dotVariants}

@@ -228,7 +228,7 @@ export const experience: Experience[] = [
     ],
     skills: [
       { skillId: 'power-systems-analysis', rigor: 8 },
-      { skillId: 'protection-and-control', rigor: 2 }
+      { skillId: 'protection-and-control', rigor: 2 },
     ] as ExperienceSkill[],
   },
   {
@@ -245,9 +245,7 @@ export const experience: Experience[] = [
       "Wired and programmed the company's first distribution smart grid switch controller",
       'Researched and specified simulation equipment for troubleshooting and validation',
     ],
-    skills: [
-      { skillId: 'scada', rigor: 3 }
-    ] as ExperienceSkill[],
+    skills: [{ skillId: 'scada', rigor: 3 }] as ExperienceSkill[],
   },
   {
     id: 'ppl-coop-reliability',
@@ -263,9 +261,7 @@ export const experience: Experience[] = [
       'Performed load flow and short circuit studies on local circuits to ensure proper operating conditions',
       'Assessed distribution lines in the field to identify possible operational problems',
     ],
-    skills: [
-      { skillId: 'power-systems-analysis', rigor: 5 }
-    ] as ExperienceSkill[],
+    skills: [{ skillId: 'power-systems-analysis', rigor: 5 }] as ExperienceSkill[],
   },
 ];
 

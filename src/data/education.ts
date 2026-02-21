@@ -25,7 +25,8 @@ export const certifications: Certification[] = [
     name: 'Professional Engineer (PE)',
     issuer: 'State of California',
     date: '2014-12',
-    description: 'Licensed Professional Engineer in the State of California. Credential ID E 21108.',
+    description:
+      'Licensed Professional Engineer in the State of California. Credential ID E 21108.',
     url: 'https://search.dca.ca.gov/details/7500/E/21108/1161d983f72f27f8c60096982fad035d',
     expirationDate: '2021-03',
   },

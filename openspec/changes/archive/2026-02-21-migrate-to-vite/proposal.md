@@ -5,7 +5,7 @@
 
 ## Overview
 
-Replace Next.js with Vite as the build tool and dev server, while maintaining all existing functionality. The chat API moves to Vercel Serverless Functions (framework-agnostic), and SEO metadata is handled via `react-helmet-async`.
+Replace Next.js with Vite as the build tool and dev server, while maintaining all existing functionality. The chat API moves to Netlify Functions, and SEO metadata is handled via `react-helmet-async`.
 
 ## Problem Statement
 
@@ -26,7 +26,7 @@ The current Next.js setup introduces unnecessary complexity for what is fundamen
 
 ## Proposed Solution
 
-Migrate to a Vite + React stack with Vercel Serverless Functions for the API:
+Migrate to a Vite + React stack with Netlify Functions for the API:
 
 ### Architecture Change
 
@@ -35,7 +35,7 @@ BEFORE (Next.js)                    AFTER (Vite)
 ─────────────────────              ─────────────────────
 src/app/layout.tsx     →           src/App.tsx + index.html
 src/app/page.tsx       →           (merged into App.tsx)
-src/app/api/chat/      →           api/chat/route.ts (Vercel)
+src/app/api/chat/      →           netlify/functions/chat.ts (Netlify)
 'use client' directive →           (removed - all client)
 next.config.ts         →           vite.config.ts
 ```
@@ -44,7 +44,7 @@ next.config.ts         →           vite.config.ts
 
 1. **Build Tool**: Next.js → Vite
 2. **Entry Point**: `src/app/layout.tsx` + `page.tsx` → `index.html` + `src/main.tsx` + `src/App.tsx`
-3. **API Route**: `src/app/api/chat/route.ts` → `api/chat/route.ts` (Vercel Serverless)
+3. **API Route**: `src/app/api/chat/route.ts` → `netlify/functions/chat.ts` (Netlify Functions)
 4. **SEO/Metadata**: Next.js Metadata API → `react-helmet-async`
 5. **Client Directives**: Remove all `'use client'` lines (39 files)
 
@@ -54,22 +54,22 @@ next.config.ts         →           vite.config.ts
 - Tailwind CSS 4 (styling)
 - Framer Motion (animations)
 - Visx/Recharts (visualizations)
-- Vercel AI SDK (chat streaming)
+- AI SDK (chat streaming)
 - `next-themes` (works without Next.js)
 - Vitest (testing - already Vite-based)
 - Playwright BDD (e2e testing)
-- Vercel deployment platform
+- Netlify deployment platform
 
 ## Design Decisions
 
-### 1. Vercel Serverless for API (vs. Hono/Express)
+### 1. Netlify Functions for API (vs. Hono/Express)
 
-- **Decision**: Use Vercel Serverless Functions
+- **Decision**: Use Netlify Functions
 - **Rationale**:
   - Zero server management
   - Existing `route.ts` code works with minimal changes
-  - Vercel AI SDK designed for this deployment model
-  - Already deploying to Vercel
+  - AI SDK works with this deployment model
+  - Already deploying to Netlify
 - **Alternative Considered**: Hono server running alongside Vite
   - Rejected: Adds operational complexity for a single endpoint
 
@@ -111,7 +111,7 @@ next.config.ts         →           vite.config.ts
 | `vite.config.ts` | Vite configuration |
 | `src/main.tsx` | React DOM render entry |
 | `src/App.tsx` | Root component (from layout + page) |
-| `api/chat/route.ts` | Vercel serverless function |
+| `netlify/functions/chat.ts` | Netlify function |
 
 ### Files Deleted
 | File | Reason |
@@ -138,7 +138,7 @@ next.config.ts         →           vite.config.ts
 - **Positive**: Faster dev server startup (Vite's esbuild vs Webpack)
 - **Positive**: Faster HMR (Vite's native ESM)
 - **Neutral**: Production bundle size similar
-- **Neutral**: Chat API latency unchanged (same Vercel infrastructure)
+- **Neutral**: Chat API latency unchanged (same deployment region constraints)
 
 ### Accessibility Impact
 - **None**: All accessibility features preserved
@@ -163,7 +163,7 @@ next.config.ts         →           vite.config.ts
 ### Technical Requirements
 - [ ] `npm run dev` starts Vite server on localhost:3000
 - [ ] `npm run build` produces production bundle
-- [ ] Vercel deployment succeeds with serverless API
+- [ ] Netlify deployment succeeds with serverless API
 - [ ] All Vitest unit tests pass
 - [ ] All Playwright BDD tests pass
 
@@ -181,7 +181,7 @@ next.config.ts         →           vite.config.ts
 
 ## Open Questions
 
-None - the user has confirmed Vercel Serverless as the preferred API backend approach.
+None - the user has confirmed Netlify Functions as the preferred API backend approach.
 
 ## References
 

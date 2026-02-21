@@ -3,8 +3,8 @@
 ## Documentation Updates
 
 - [x] Research visualization libraries (Visx, Recharts, Nivo, Victory, D3)
-- [x] Research AI chatbot frameworks (Vercel AI SDK, LangChain)
-- [x] Research hosting platforms (Vercel, Cloudflare, Netlify)
+- [x] Research AI chatbot frameworks (AI SDK, LangChain)
+- [x] Research hosting platforms (Netlify, Cloudflare)
 - [x] Research LLM providers and pricing
 - [x] Create comprehensive research document
 - [ ] Update project.md with finalized tech stack
@@ -16,8 +16,8 @@
 - [ ] Configure Tailwind CSS v4
 - [ ] Set up dark mode (system + manual toggle)
 - [ ] Configure ESLint + Prettier
-- [ ] Set up Vercel deployment
-- [ ] Verify: Dark mode works, TypeScript compiles, Vercel deploys
+- [ ] Set up Netlify deployment
+- [ ] Verify: Dark mode works, TypeScript compiles, Netlify deploys
 
 ## Phase 2: Data Layer
 
@@ -52,7 +52,7 @@
 ## Phase 5: AI Chatbot
 
 - [ ] Set up OpenRouter account
-- [ ] Install Vercel AI SDK + assistant-ui
+- [ ] Install AI SDK + assistant-ui
 - [ ] Create API route (src/app/api/chat/route.ts)
 - [ ] Configure Llama 3.3 70B (free tier)
 - [ ] Create chatbot-knowledge.ts
@@ -85,6 +85,6 @@
 - [ ] Cross-browser testing
 - [ ] Mobile device testing
 - [ ] Add meta tags and OpenGraph
-- [ ] Set up Vercel Analytics
+- [ ] Set up Netlify Analytics
 - [ ] Deploy to production
 - [ ] Verify: All quality standards met

@@ -101,11 +101,11 @@ export function mapToFibonacci(rawSize: number): FibonacciValue {
   // Normalize to 1-5 bins to match 5-star display
   // Returns 1, 2, 3, 4, 5 for bins 1-5
   // Divides the 0-8 range into 5 equal bins of 1.6 each
-  if (rawSize < 1.6) return 1;   // Bin 1: 0.0-1.6 → 1 star
-  if (rawSize < 3.2) return 2;   // Bin 2: 1.6-3.2 → 2 stars
-  if (rawSize < 4.8) return 3;   // Bin 3: 3.2-4.8 → 3 stars
-  if (rawSize < 6.4) return 4;   // Bin 4: 4.8-6.4 → 4 stars (was 5)
-  return 5;                       // Bin 5: 6.4+ → 5 stars (was 8)
+  if (rawSize < 1.6) return 1; // Bin 1: 0.0-1.6 → 1 star
+  if (rawSize < 3.2) return 2; // Bin 2: 1.6-3.2 → 2 stars
+  if (rawSize < 4.8) return 3; // Bin 3: 3.2-4.8 → 3 stars
+  if (rawSize < 6.4) return 4; // Bin 4: 4.8-6.4 → 4 stars (was 5)
+  return 5; // Bin 5: 6.4+ → 5 stars (was 8)
 }
 
 /**

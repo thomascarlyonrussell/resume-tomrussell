@@ -6,9 +6,9 @@ The project.md currently lists generic technology choices (e.g., "D3.js" for vis
 
 **Problem**: Generic tech stack decisions don't provide enough guidance for implementation. Questions remain:
 - Which specific D3 integration approach? (Pure D3, Visx, Recharts, Nivo, Victory?)
-- Which AI chatbot framework? (Vercel AI SDK, LangChain, custom?)
+- Which AI chatbot framework? (AI SDK, LangChain, custom?)
 - Free-tier LLM options and upgrade paths?
-- Vercel free tier limitations vs alternatives?
+- Netlify hosting limitations vs alternatives?
 - Build tool configuration (Next.js version, app router, SSG/SSR strategy)?
 
 **Opportunity**: Research has identified optimal choices for this specific use case (portfolio with custom Fibonacci spiral, stacked area chart, AI chatbot, dark mode, accessibility).
@@ -39,7 +39,7 @@ The project.md currently lists generic technology choices (e.g., "D3.js" for vis
 - Rationale: $0 cost to start, flexible model selection, simple upgrade
 
 **Hosting** (CLARIFIED):
-- **Vercel free tier** (Hobby plan) for excellent DX
+- **Netlify** managed hosting for deployment and preview workflows
 - Document limitations: 100GB bandwidth, 150k function invocations/month
 - Migration path to Cloudflare Pages if needed
 - Rationale: Best development experience, sufficient for initial launch
@@ -87,7 +87,7 @@ The project.md currently lists generic technology choices (e.g., "D3.js" for vis
 - Quality standards established upfront
 
 **Risks**:
-- Vercel free tier limits (mitigated: migration path documented)
+- Netlify tier limits (mitigated: migration path documented)
 - Free LLM quality (mitigated: easy upgrade path via env var)
 - Learning curve for Visx (mitigated: research shows it's best for custom layouts)
 

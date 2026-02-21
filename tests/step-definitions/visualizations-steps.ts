@@ -50,16 +50,22 @@ Then('the view smoothly transitions to the alternate visualization', async ({ pa
 });
 
 // Fibonacci layout steps
-Given('an active skill with proficiency {int} and {int} years experience', async ({ page }, proficiency: number, years: number) => {
-  await page.goto(baseUrl);
-  await page.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
-  // Skill data is pre-loaded in the app
-});
+Given(
+  'an active skill with proficiency {int} and {int} years experience',
+  async ({ page }, proficiency: number, years: number) => {
+    await page.goto(baseUrl);
+    await page.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
+    // Skill data is pre-loaded in the app
+  }
+);
 
-Given('an inactive skill ended {int} years ago with proficiency {int} and {int} years experience', async ({ page }, endedYears: number, proficiency: number, years: number) => {
-  await page.goto(baseUrl);
-  await page.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
-});
+Given(
+  'an inactive skill ended {int} years ago with proficiency {int} and {int} years experience',
+  async ({ page }, endedYears: number, proficiency: number, years: number) => {
+    await page.goto(baseUrl);
+    await page.locator('[data-testid="visualizations-section"]').scrollIntoViewIfNeeded();
+  }
+);
 
 Given('skills from different categories', async ({ page }) => {
   await page.goto(baseUrl);
@@ -77,12 +83,15 @@ Then('calculated size is mapped to Fibonacci sequence', async ({ page }) => {
   expect(count).toBeGreaterThan(0);
 });
 
-Then('appears much larger than a proficiency {int} skill with {int} years', async ({ page }, proficiency: number, years: number) => {
-  // Visual verification - ensure skills exist
-  const skillNodes = page.locator('[data-testid="skill-node"]');
-  const count = await skillNodes.count();
-  expect(count).toBeGreaterThan(1);
-});
+Then(
+  'appears much larger than a proficiency {int} skill with {int} years',
+  async ({ page }, proficiency: number, years: number) => {
+    // Visual verification - ensure skills exist
+    const skillNodes = page.locator('[data-testid="skill-node"]');
+    const count = await skillNodes.count();
+    expect(count).toBeGreaterThan(1);
+  }
+);
 
 Then('calculated size accounts for time degradation', async ({ page }) => {
   const skillNodes = page.locator('[data-testid="skill-node"]');

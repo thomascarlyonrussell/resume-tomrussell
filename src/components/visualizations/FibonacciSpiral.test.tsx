@@ -79,9 +79,7 @@ vi.mock('./hooks', () => ({
 
 describe('FibonacciSpiral Filtering Logic', () => {
   it('renders without filter (shows all skills)', () => {
-    const { container } = render(
-      <FibonacciSpiral skills={mockSkills} showLegend={false} />
-    );
+    const { container } = render(<FibonacciSpiral skills={mockSkills} showLegend={false} />);
 
     // Component should render successfully
     expect(container).toBeTruthy();

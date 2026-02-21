@@ -22,11 +22,11 @@ This migration replaces the Next.js framework with Vite while preserving the app
 │                              │ /api/chat (POST)                  │
 │                              ▼                                   │
 │  ┌─────────────────────────────────────────────────────────┐    │
-│  │              Vercel Serverless Functions                 │    │
+│  │                Netlify Functions                         │    │
 │  │  ┌─────────────────────────────────────────────────┐   │    │
 │  │  │              api/chat/route.ts                   │   │    │
 │  │  │  ┌─────────────┐    ┌─────────────────────────┐│   │    │
-│  │  │  │ Rate Limit  │ →  │  Vercel AI SDK Stream   ││   │    │
+│  │  │  │ Rate Limit  │ →  │     AI SDK Stream       ││   │    │
 │  │  │  └─────────────┘    └─────────────────────────┘│   │    │
 │  │  └─────────────────────────────────────────────────┘   │    │
 │  └─────────────────────────────────────────────────────────┘    │
@@ -64,7 +64,7 @@ src/app/
 │       └── globals.css  # Global styles (unchanged path)
 └── api/
     └── chat/
-        └── route.ts    # Vercel serverless function
+        └── chat.ts     # Netlify function
 ```
 
 ### Provider Stack Migration
@@ -120,7 +120,7 @@ function App() {
 
 ## API Route Migration
 
-The chat API route requires minimal changes. Vercel's serverless functions use the same Web API `Request`/`Response` pattern:
+The chat API route requires minimal changes. Netlify Functions support the same request/response model:
 
 ```typescript
 // Before: src/app/api/chat/route.ts
@@ -129,14 +129,14 @@ export async function POST(req: Request) {
   return result.toUIMessageStreamResponse();
 }
 
-// After: api/chat/route.ts (same file, new location)
+// After: netlify/functions/chat.ts (same behavior, new location)
 export async function POST(req: Request) {
   // ... identical implementation
   return result.toUIMessageStreamResponse();
 }
 ```
 
-The only structural change is the file location. Vercel automatically deploys files in `/api` as serverless functions.
+The only structural change is the file location. Netlify deploys functions from `netlify/functions`.
 
 ## Build Configuration
 
@@ -194,20 +194,20 @@ Remove Next.js plugin, update for Vite:
 
 ```bash
 npm run dev          # Vite dev server (localhost:3000)
-# API calls proxy to Vercel dev or mock
+# API calls proxy to Netlify dev or mock
 ```
 
-For API testing locally, use `vercel dev` which runs serverless functions:
+For API testing locally, use `netlify dev` which runs functions:
 
 ```bash
-vercel dev           # Full stack with serverless (localhost:3000)
+netlify dev          # Full stack with functions (localhost:3000)
 ```
 
 ### Production Build
 
 ```bash
 npm run build        # Vite build → dist/
-vercel --prod        # Deploy dist/ + api/ to Vercel
+netlify deploy --prod  # Deploy site + functions to Netlify
 ```
 
 ## Dependency Changes
@@ -264,7 +264,7 @@ The migration is fully reversible as it's primarily file restructuring with no d
 
 ## Security Considerations
 
-- **API Key Protection**: `OPENROUTER_API_KEY` remains server-side only (in Vercel environment)
+- **API Key Protection**: `OPENROUTER_API_KEY` remains server-side only (in Netlify environment)
 - **Rate Limiting**: Preserved in serverless function
-- **CORS**: Handled by Vercel's default CORS policy
+- **CORS**: Handled by Netlify defaults or explicit function headers
 - **No New Attack Surface**: Same endpoints, same authentication model

@@ -7,7 +7,7 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-import type { UIMessage } from '@ai-sdk/react';
+import type { UIMessage } from '@/hooks/useChat';
 import { Message } from './Message';
 import { LoadingIndicator } from './LoadingIndicator';
 

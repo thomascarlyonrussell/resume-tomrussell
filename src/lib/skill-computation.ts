@@ -32,10 +32,7 @@ import {
  * @param experiences - Array of all experiences
  * @returns Array of experiences that reference this skill
  */
-export function getExperiencesForSkill(
-  skillId: string,
-  experiences: Experience[],
-): Experience[] {
+export function getExperiencesForSkill(skillId: string, experiences: Experience[]): Experience[] {
   return experiences.filter((exp) => {
     // Check if skillIds array exists and includes this skill (legacy format)
     if (exp.skillIds && exp.skillIds.includes(skillId)) {
@@ -59,7 +56,7 @@ export function getExperiencesForSkill(
  */
 export function computeSkillTimeline(
   skillId: string,
-  experiences: Experience[],
+  experiences: Experience[]
 ): {
   startDate?: string;
   endDate?: string;
@@ -83,9 +80,7 @@ export function computeSkillTimeline(
   const startDate = startDates[0];
 
   // Check if any experience is currently active (no end date)
-  const hasActiveExperience = skillExperiences.some(
-    (exp) => !exp.endDate || exp.endDate === null,
-  );
+  const hasActiveExperience = skillExperiences.some((exp) => !exp.endDate || exp.endDate === null);
 
   // If active, endDate is undefined; otherwise, find latest end date
   let endDate: string | undefined;
@@ -115,7 +110,7 @@ export function computeSkillTimeline(
 function calculateDurationInMonths(
   startDate: string,
   endDate: string | null | undefined,
-  referenceDate: Date = new Date(),
+  referenceDate: Date = new Date()
 ): number {
   const [startYear, startMonth] = startDate.split('-').map(Number);
   const start = new Date(startYear, startMonth - 1);
@@ -129,8 +124,7 @@ function calculateDurationInMonths(
   }
 
   const months =
-    (end.getFullYear() - start.getFullYear()) * 12 +
-    (end.getMonth() - start.getMonth());
+    (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
 
   return Math.max(0, months);
 }
@@ -144,7 +138,7 @@ function calculateDurationInMonths(
  */
 export function getDegradationFactor(
   lastUsedDate: Date | null,
-  referenceDate: Date = new Date(),
+  referenceDate: Date = new Date()
 ): number {
   // Currently active or no end date
   if (!lastUsedDate) {
@@ -152,8 +146,7 @@ export function getDegradationFactor(
   }
 
   const yearsSinceLastUse =
-    (referenceDate.getTime() - lastUsedDate.getTime()) /
-    (1000 * 60 * 60 * 24 * 365.25);
+    (referenceDate.getTime() - lastUsedDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
 
   if (yearsSinceLastUse < 2) {
     return DEGRADATION_FACTORS.ACTIVE; // <2 years
@@ -181,7 +174,7 @@ export function getDegradationFactor(
 export function getSkillProficiency(
   skillId: string,
   experiences: Experience[],
-  referenceDate: Date = new Date(),
+  referenceDate: Date = new Date()
 ): number | undefined {
   const skillExperiences = getExperiencesForSkill(skillId, experiences);
 
@@ -211,11 +204,7 @@ export function getSkillProficiency(
     }
 
     // Calculate duration for this experience
-    const duration = calculateDurationInMonths(
-      exp.startDate,
-      exp.endDate,
-      referenceDate,
-    );
+    const duration = calculateDurationInMonths(exp.startDate, exp.endDate, referenceDate);
 
     totalWeightedProficiency += rigor * duration;
     totalDuration += duration;
@@ -242,10 +231,7 @@ export function getSkillProficiency(
   const baseWeightedAverage = totalWeightedProficiency / totalDuration;
 
   // Apply degradation factor
-  const degradationFactor = getDegradationFactor(
-    mostRecentEndDate,
-    referenceDate,
-  );
+  const degradationFactor = getDegradationFactor(mostRecentEndDate, referenceDate);
 
   return baseWeightedAverage * degradationFactor;
 }
@@ -259,7 +245,7 @@ export function getSkillProficiency(
  */
 export function getSkillProficiencyHistory(
   skillId: string,
-  experiences: Experience[],
+  experiences: Experience[]
 ): SkillTimelinePoint[] {
   const skillExperiences = getExperiencesForSkill(skillId, experiences);
 
@@ -299,9 +285,15 @@ export function getSkillProficiencyHistory(
  * @returns Computed skill with all derived properties
  */
 export function computeSkill(
-  skill: { id: string; name: string; category: CategoryId; subcategory: string; description?: string },
+  skill: {
+    id: string;
+    name: string;
+    category: CategoryId;
+    subcategory: string;
+    description?: string;
+  },
   experiences: Experience[],
-  referenceDate: Date = new Date(),
+  referenceDate: Date = new Date()
 ): ComputedSkill {
   const timeline = computeSkillTimeline(skill.id, experiences);
   const proficiency = getSkillProficiency(skill.id, experiences, referenceDate);
@@ -311,11 +303,8 @@ export function computeSkill(
   let yearsOfExperience = 0;
   if (timeline.startDate) {
     const endDateForCalc = timeline.endDate || new Date().toISOString().slice(0, 7);
-    yearsOfExperience = calculateDurationInMonths(
-      timeline.startDate,
-      endDateForCalc,
-      referenceDate,
-    ) / 12;
+    yearsOfExperience =
+      calculateDurationInMonths(timeline.startDate, endDateForCalc, referenceDate) / 12;
   }
 
   // Calculate degradation factor
@@ -418,7 +407,7 @@ export function calculateSkillProficiencyAtDate(
 
       if (TIMELINE_CONFIG.USE_EXPONENTIAL_DECAY) {
         // Exponential decay: slower initial, faster over time
-        const decayRatio = Math.exp(-3 * monthsSinceEnd / decayDuration);
+        const decayRatio = Math.exp((-3 * monthsSinceEnd) / decayDuration);
         totalProficiency += targetRigor * Math.max(0, decayRatio);
       } else {
         // Linear decay: constant rate

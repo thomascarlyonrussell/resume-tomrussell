@@ -6,15 +6,10 @@
 
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import dynamic from 'next/dynamic';
 import { useReducedMotion, useViewTransition } from '@/components/visualizations/hooks';
-import {
-  TimelineArea,
-  VisualizationToggle,
-  SkillDetailModal,
-} from '@/components/visualizations';
+import { TimelineArea, VisualizationToggle, SkillDetailModal } from '@/components/visualizations';
 import type { VisualizationView } from '@/components/visualizations/VisualizationToggle';
 import type { ComputedSkill, CategoryId } from '@/data/types';
 import { Container } from '@/components/ui/Container';
@@ -39,13 +34,19 @@ const VIEW_CONFIG: Record<VisualizationView, { title: string; subtitle: string }
   },
 };
 
-const FibonacciSpiral = dynamic(
-  () => import('@/components/visualizations').then((module) => module.FibonacciSpiral),
-  {
-    ssr: false,
-    loading: () => <div className="h-[400px] w-full sm:h-[500px] md:h-[600px] lg:h-[700px]" />,
-  }
+// Lazy load FibonacciSpiral for better performance
+const FibonacciSpiral = lazy(() =>
+  import('@/components/visualizations').then((module) => ({ default: module.FibonacciSpiral }))
 );
+
+// Loading fallback component
+function FibonacciSpiralLoading() {
+  return (
+    <div className="flex h-[400px] w-full items-center justify-center sm:h-[500px] md:h-[600px] lg:h-[700px]">
+      <div className="text-[var(--color-muted)]">Loading visualization...</div>
+    </div>
+  );
+}
 
 export function SkillsSection({ id = 'skills', className = '' }: SkillsSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
@@ -124,12 +125,14 @@ export function SkillsSection({ id = 'skills', className = '' }: SkillsSectionPr
                   onAnimationStart={onTransitionStart}
                   onAnimationComplete={onTransitionComplete}
                 >
-                  <FibonacciSpiral
-                    showLegend={true}
-                    onSkillClick={handleSkillClick}
-                    selectedCategoryFilter={selectedCategoryFilter}
-                    onCategoryToggle={handleCategoryToggle}
-                  />
+                  <Suspense fallback={<FibonacciSpiralLoading />}>
+                    <FibonacciSpiral
+                      showLegend={true}
+                      onSkillClick={handleSkillClick}
+                      selectedCategoryFilter={selectedCategoryFilter}
+                      onCategoryToggle={handleCategoryToggle}
+                    />
+                  </Suspense>
                 </motion.div>
               ) : (
                 <motion.div
