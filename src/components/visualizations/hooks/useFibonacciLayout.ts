@@ -211,11 +211,12 @@ export function useFibonacciLayout(options: FibonacciLayoutOptions): FibonacciLa
     // Calculate scale to fit within viewport
     const availableWidth = width - 2 * padding;
     const availableHeight = height - 2 * padding;
-    const scale = Math.min(
+    const fitScale = Math.min(
       availableWidth / Math.max(rawWidth, 1),
-      availableHeight / Math.max(rawHeight, 1),
-      1 // Don't scale up if already fits
+      availableHeight / Math.max(rawHeight, 1)
     );
+    const MAX_UPSCALE = 1.75;
+    const scale = Math.min(fitScale, MAX_UPSCALE);
 
     // Calculate offset to center the visualization
     const scaledWidth = rawWidth * scale;
