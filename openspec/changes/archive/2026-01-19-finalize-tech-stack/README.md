@@ -23,12 +23,12 @@ This change documents the research-backed technology decisions for the portfolio
 - **Tailwind CSS v4** with dark mode from day 1
 
 ### AI Chatbot
-- **Vercel AI SDK** + **assistant-ui**
+- **AI SDK** + **assistant-ui**
 - **OpenRouter** free tier (Llama 3.3 70B)
 - Easy upgrade path via environment variable
 
 ### Hosting
-- **Vercel** free tier (Hobby plan)
+- **Netlify** managed hosting
 - Migration path to Cloudflare Pages documented
 
 ## Implementation Status
@@ -52,7 +52,7 @@ All decisions are backed by 2026 industry data, usage statistics, and specific p
    - Configure Tailwind CSS v4
    - Set up dark mode
    - Configure development tooling
-   - Deploy to Vercel
+   - Deploy to Netlify
 
 2. Follow 8-phase implementation plan (see [tasks.md](tasks.md))
 

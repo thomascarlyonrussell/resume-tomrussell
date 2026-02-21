@@ -2,7 +2,7 @@
 
 ## Overview
 
-This delta updates the chatbot specification to reflect the migration from Next.js to Vite + React. The API endpoint moves to Vercel Serverless Functions while maintaining identical functionality.
+This delta updates the chatbot specification to reflect the migration from Next.js to Vite + React. The API endpoint moves to Netlify Functions while maintaining identical functionality.
 
 **Target Spec**: `chatbot`
 
@@ -17,21 +17,21 @@ This delta updates the chatbot specification to reflect the migration from Next.
 The chatbot SHALL use streaming to deliver responses for a responsive experience.
 
 The API endpoint SHALL:
-- Be deployed as a Vercel Serverless Function
+- Be deployed as a Netlify Function
 - Accept POST requests at `/api/chat`
 - Stream responses using Server-Sent Events
-- Support the Vercel AI SDK streaming protocol
+- Support the AI SDK streaming protocol
 
 Implementation uses:
-- Vercel Serverless Functions (framework-agnostic)
-- Vercel AI SDK for streaming
+- Netlify Functions
+- AI SDK for streaming
 - OpenRouter as LLM gateway
 
 #### Scenario: Stream initiation
 - **GIVEN** user sends a message
 - **WHEN** the API receives the request
 - **THEN** it begins streaming the response immediately
-- **AND** the response is delivered via Vercel Serverless Function
+- **AND** the response is delivered via Netlify Function
 
 #### Scenario: Progressive display
 - **GIVEN** a response is being streamed
@@ -58,10 +58,10 @@ The technical architecture diagram is updated to reflect the new infrastructure:
 |  |  - Starter prompts                           |   |
 |  +---------------------------------------------+   |
 |                          |                          |
-|                          | useChat hook (Vercel AI) |
+|                          | useChat hook (AI SDK) |
 |                          v                          |
 |  +---------------------------------------------+   |
-|  |        Vercel Serverless: /api/chat         |   |
+|  |         Netlify Function: /api/chat         |   |
 |  |  - Validates request                         |   |
 |  |  - Injects system prompt with knowledge      |   |
 |  |  - Calls OpenRouter                          |   |
@@ -80,7 +80,7 @@ The technical architecture diagram is updated to reflect the new infrastructure:
 ### Key Changes
 
 1. **Frontend**: "Next.js" → "Vite + React"
-2. **API Route**: "API Route" → "Vercel Serverless"
+2. **API Route**: "API Route" → "Netlify Functions"
 3. **File Location**: `src/app/api/chat/route.ts` → `api/chat/route.ts`
 
 ### Unchanged Behavior

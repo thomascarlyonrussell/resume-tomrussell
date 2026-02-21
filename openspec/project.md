@@ -21,9 +21,9 @@ A personal portfolio and resume website for Tom Russell that serves as a profess
 ## Tech Stack
 
 ### Hosting & Deployment
-- **Platform**: Vercel Hobby tier (free: 100GB bandwidth, 150k function invocations/month)
+- **Platform**: Netlify (managed hosting + functions)
 - **Repository**: GitHub
-- **CI/CD**: Vercel auto-deploy from GitHub with preview deployments
+- **CI/CD**: Netlify auto-deploy from GitHub with deploy previews
 - **Migration Path**: Cloudflare Pages if limits exceeded (unlimited bandwidth)
 
 ### Frontend
@@ -37,7 +37,7 @@ A personal portfolio and resume website for Tom Russell that serves as a profess
   - **Recharts** for stacked area timeline (declarative API for standard charts)
 
 ### AI/Chatbot
-- **SDK**: Vercel AI SDK (streaming support with useChat hook)
+- **SDK**: AI SDK (streaming support with useChat hook)
 - **UI Library**: assistant-ui (production-ready chat interface)
 - **LLM Gateway**: OpenRouter (supports 200+ models)
 - **Initial Model**: Llama 3.3 70B Instruct (free tier, rate-limited)
@@ -162,7 +162,7 @@ NEXT_PUBLIC_SITE_URL=   # Public site URL
 
 ### External Services
 - **OpenRouter** - LLM API gateway for chatbot
-- **Vercel** - Hosting and serverless functions
+- **Netlify** - Hosting and serverless functions
 - **GitHub** - Source control and CI/CD integration
 
 ## Technology Selection Rationale
@@ -211,10 +211,10 @@ NEXT_PUBLIC_SITE_URL=   # Public site URL
   ```
 - Flexible model selection based on needs and budget
 
-### Vercel Free Tier
+### Netlify Managed Hosting
 
-- Best developer experience (auto-deploy, preview URLs, edge functions)
-- 150k function invocations/month = 75k-150k chatbot messages
+- Managed deploy previews and branch-based workflows
+- Integrated serverless functions for chatbot API needs
 - Sufficient for initial launch and growth
 - Easy migration to Cloudflare Pages if limits exceeded
 
@@ -233,7 +233,7 @@ NEXT_PUBLIC_SITE_URL=   # Public site URL
 - Set up dark mode toggle (system preference + manual override)
 - Create base layout component with navigation
 - Configure ESLint, Prettier, and Git hooks
-- Set up Vercel deployment pipeline
+- Set up Netlify deployment pipeline
 
 ### Phase 2: Data Layer & Type System (Week 1)
 - Create TypeScript interfaces for all data models
@@ -262,7 +262,7 @@ NEXT_PUBLIC_SITE_URL=   # Public site URL
 ### Phase 5: AI Chatbot MVP (Week 3)
 - Set up OpenRouter account and API key
 - Create Next.js API route for chat
-- Integrate Vercel AI SDK with streaming
+- Integrate AI SDK with streaming
 - Configure Llama 3.3 70B (free tier)
 - Create chatbot-knowledge.ts with portfolio context
 - Install and configure assistant-ui components
@@ -288,7 +288,7 @@ NEXT_PUBLIC_SITE_URL=   # Public site URL
 - Full accessibility audit (WCAG 2.1 AA)
 - Cross-browser and mobile testing
 - Add meta tags and OpenGraph images
-- Set up Vercel Analytics
+- Set up Netlify analytics/monitoring
 - Deploy to production with custom domain
 
 **Estimated Timeline**: 3-4 weeks for production-ready site (prioritizing quality over speed)

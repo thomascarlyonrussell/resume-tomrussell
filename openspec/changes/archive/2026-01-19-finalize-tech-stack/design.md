@@ -13,10 +13,10 @@ The portfolio project requires careful technology selection to balance:
 
 Conducted comprehensive research across five areas:
 1. **Visualization libraries**: Compared 5 options (Visx, Recharts, Nivo, Victory, D3 direct)
-2. **AI chatbot frameworks**: Evaluated Vercel AI SDK vs LangChain vs custom
+2. **AI chatbot frameworks**: Evaluated AI SDK vs LangChain vs custom
 3. **Build tools**: Compared Vite vs Next.js vs CRA
 4. **Styling solutions**: Analyzed Tailwind vs Panda CSS vs styled-components
-5. **Hosting platforms**: Compared Vercel vs Cloudflare vs Netlify
+5. **Hosting platforms**: Compared Netlify vs Cloudflare
 
 All decisions backed by 2026 usage statistics, community adoption, and specific project requirements.
 
@@ -86,9 +86,9 @@ LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free  // Start
 - Pro: Model flexibility (can test different models)
 - Con: Free tier rate limits (acceptable for portfolio traffic)
 
-### 4. Vercel Free Tier with Migration Path
+### 4. Netlify Managed Hosting with Migration Path
 
-**Decision**: Start on Vercel free, document Cloudflare migration
+**Decision**: Start on Netlify, document Cloudflare migration
 
 **Rationale**:
 - **Best DX** in the industry (auto-deploy, preview URLs, edge functions)
@@ -103,7 +103,7 @@ LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free  // Start
 
 **Alternatives Considered**:
 - **Cloudflare Pages**: Better long-term (unlimited bandwidth) but steeper setup
-- **Netlify**: Middle ground, less DX than Vercel
+- **Netlify**: Selected primary deployment platform
 
 **Trade-offs**:
 - Pro: Best development experience
@@ -178,7 +178,7 @@ LLM_MODEL=anthropic/claude-3.5-sonnet  // $3/$15 per M tokens
 ```
 
 ### Hosting Migration
-If Vercel limits hit:
+If Netlify limits hit:
 1. Export Next.js static files
 2. Deploy to Cloudflare Pages
 3. Update DNS
@@ -195,7 +195,7 @@ If chatbot quality insufficient:
 
 | Risk | Probability | Impact | Mitigation |
 |------|-------------|--------|------------|
-| Vercel free tier exceeded | Low | Medium | Documented migration to Cloudflare |
+| Netlify tier limits exceeded | Low | Medium | Documented migration to Cloudflare |
 | Free LLM quality insufficient | Medium | Low | One-line upgrade to paid model |
 | Visx learning curve too steep | Low | Medium | Extensive documentation and examples |
 | Performance targets not met | Low | High | SSG ensures fast load, monitoring |
