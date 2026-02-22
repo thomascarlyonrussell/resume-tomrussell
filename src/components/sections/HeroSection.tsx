@@ -25,7 +25,7 @@ export interface HeroSectionProps {
 export function HeroSection({
   id = 'hero',
   name = 'Tom Russell',
-  headline = 'Product Manager @ Integral Analytics',
+  headline = 'Product Engineer',
   tagline = 'Building innovative software solutions that empower utilities to integrate sustainable energy into the grid',
   showScrollCue = true,
   className = '',
