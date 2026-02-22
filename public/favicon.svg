@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="4" fill="#0f172a" />
+
+  <!-- Serious, architectural construction -->
+  <defs>
+    <linearGradient id="metalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+  </defs>
+
+  <!-- Main body: Sharp, heavy, precision machined look -->
+  <path 
+    d="M 6,26 L 6,6 L 26,26 Z" 
+    fill="url(#metalGradient)" 
+  />
+
+  <!-- Internal cutout: Geometric, parallel, strictly functional -->
+  <path 
+    d="M 10,22 L 10,14 L 18,22 Z" 
+    fill="#0f172a" 
+  />
+
+  <!-- Technical accent: A single thin 'measurement' line -->
+  <line x1="6" y1="6" x2="26" y2="26" stroke="#60a5fa" stroke-width="0.5" opacity="0.5" />
+</svg>
