@@ -66,7 +66,10 @@ function Diamond({
 }
 
 // Chart margin constants (must match AreaChart margins)
-const CHART_MARGIN = { top: 20, right: 20, left: 50, bottom: 20 };
+// Left margin is responsive: narrower on mobile to reclaim horizontal space
+const CHART_MARGIN_DESKTOP = { top: 20, right: 20, left: 50, bottom: 20 };
+const CHART_MARGIN_MOBILE = { top: 10, right: 10, left: 0, bottom: 20 };
+const MOBILE_BREAKPOINT = 480;
 
 export interface TimelineAreaProps {
   className?: string;
@@ -101,6 +104,10 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
 
   // Milestone state
   const [hoveredMilestone, setHoveredMilestone] = useState<Milestone | null>(null);
+
+  // Derive responsive chart margin from tracked container width
+  const isMobile = chartDimensions.width > 0 && chartDimensions.width < MOBILE_BREAKPOINT;
+  const chartMargin = isMobile ? CHART_MARGIN_MOBILE : CHART_MARGIN_DESKTOP;
   const [hoveredYear, setHoveredYear] = useState<number | null>(null);
   const [selectedMilestone, setSelectedMilestone] = useState<Milestone | null>(null);
 
@@ -160,9 +167,11 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
     const sourceData = drillDownCategory && skillTimelineData ? skillTimelineData.data : data;
     if (sourceData.length === 0 || chartDimensions.width === 0) return [];
 
+    const margin = chartDimensions.width < MOBILE_BREAKPOINT ? CHART_MARGIN_MOBILE : CHART_MARGIN_DESKTOP;
+
     // Calculate the chart area dimensions (excluding margins)
-    const chartAreaWidth = chartDimensions.width - CHART_MARGIN.left - CHART_MARGIN.right;
-    const chartAreaHeight = chartDimensions.height - CHART_MARGIN.top - CHART_MARGIN.bottom;
+    const chartAreaWidth = chartDimensions.width - margin.left - margin.right;
+    const chartAreaHeight = chartDimensions.height - margin.top - margin.bottom;
 
     // Build a map of year -> data indices for that year
     const yearIndices: Record<number, number[]> = {};
@@ -191,7 +200,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
 
       if (thisYearIndices.length === 0) {
         // Year not in data, fall back to start
-        return { ...milestone, year, xPos: CHART_MARGIN.left, chartAreaHeight };
+        return { ...milestone, year, xPos: margin.left, chartAreaHeight };
       }
 
       // The year tick label is positioned at the CENTER of this year's data points
@@ -217,7 +226,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
       // Convert index to x percentage
       const xPercent = totalPoints > 1 ? milestoneIndex / (totalPoints - 1) : 0.5;
       const clampedPercent = Math.max(0, Math.min(1, xPercent));
-      const xPos = CHART_MARGIN.left + clampedPercent * chartAreaWidth;
+      const xPos = margin.left + clampedPercent * chartAreaWidth;
 
       return {
         ...milestone,
@@ -364,15 +373,20 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
           />
 
           <YAxis
-            tick={{ fontSize: 12, fill: 'var(--color-muted)' }}
+            width={isMobile ? 25 : 60}
+            tick={{ fontSize: isMobile ? 10 : 12, fill: 'var(--color-muted)' }}
             tickLine={{ stroke: 'var(--color-muted)' }}
             axisLine={{ stroke: 'var(--color-muted)' }}
-            label={{
-              value: 'Cumulative Proficiency',
-              angle: -90,
-              position: 'insideLeft',
-              style: { fontSize: 12, fill: 'var(--color-muted)' },
-            }}
+            label={
+              isMobile
+                ? undefined
+                : {
+                    value: 'Cumulative Proficiency',
+                    angle: -90,
+                    position: 'insideLeft',
+                    style: { fontSize: 12, fill: 'var(--color-muted)' },
+                  }
+            }
           />
 
           <Tooltip
@@ -434,15 +448,20 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
         />
 
         <YAxis
-          tick={{ fontSize: 12, fill: 'var(--color-muted)' }}
+          width={isMobile ? 25 : 60}
+          tick={{ fontSize: isMobile ? 10 : 12, fill: 'var(--color-muted)' }}
           tickLine={{ stroke: 'var(--color-muted)' }}
           axisLine={{ stroke: 'var(--color-muted)' }}
-          label={{
-            value: 'Cumulative Proficiency',
-            angle: -90,
-            position: 'insideLeft',
-            style: { fontSize: 12, fill: 'var(--color-muted)' },
-          }}
+          label={
+            isMobile
+              ? undefined
+              : {
+                  value: 'Cumulative Proficiency',
+                  angle: -90,
+                  position: 'insideLeft',
+                  style: { fontSize: 12, fill: 'var(--color-muted)' },
+                }
+          }
         />
 
         <Tooltip
@@ -554,7 +573,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
               Categories <span className="text-xs font-normal">(click to drill down)</span>
             </p>
             <div
-              className="flex flex-wrap gap-3"
+              className="flex flex-wrap gap-1.5 sm:gap-3"
               role="group"
               aria-label="Filter chart by category"
             >
@@ -568,7 +587,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
                     onClick={() => handleCategoryClick(category.id)}
                     onMouseEnter={() => handleCategoryHover(category.id)}
                     onMouseLeave={() => handleCategoryHover(null)}
-                    className={`flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 transition-all hover:shadow-md dark:border-gray-700 ${
+                    className={`flex cursor-pointer items-center gap-1.5 rounded-lg border border-gray-200 px-2 py-1.5 transition-all hover:shadow-md sm:gap-2 sm:px-4 sm:py-2.5 dark:border-gray-700 ${
                       isSelected
                         ? 'bg-gray-100 shadow-sm dark:bg-gray-800'
                         : 'bg-white dark:bg-gray-900'
@@ -576,13 +595,13 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
                     aria-label={`View ${category.name} skills (proficiency: ${proficiencyTotal})`}
                   >
                     <span
-                      className="h-4 w-4 flex-shrink-0 rounded-full"
+                      className="h-3 w-3 flex-shrink-0 rounded-full sm:h-4 sm:w-4"
                       style={{ backgroundColor: category.color }}
                     />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <span className="text-xs font-medium text-gray-700 sm:text-sm dark:text-gray-300">
                       {category.name}
                     </span>
-                    <span className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+                    <span className="text-xs font-semibold text-gray-500 sm:text-sm dark:text-gray-400">
                       {proficiencyTotal > 0 ? proficiencyTotal.toFixed(1) : ''}
                     </span>
                   </button>
@@ -673,7 +692,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={drillDownCategory && skillTimelineData ? skillTimelineData.data : data}
-            margin={CHART_MARGIN}
+            margin={chartMargin}
           >
             {renderChartContent()}
           </AreaChart>
@@ -705,7 +724,7 @@ export function TimelineArea({ className = '' }: TimelineAreaProps) {
                   {/* Diamond marker at top */}
                   <Diamond
                     cx={milestone.xPos}
-                    cy={CHART_MARGIN.top + 10}
+                    cy={chartMargin.top + 10}
                     size={isHovered ? 12 : 8}
                     fill={MILESTONE_COLOR}
                     stroke={isHovered ? '#fff' : MILESTONE_COLOR}

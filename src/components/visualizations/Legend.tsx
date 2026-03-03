@@ -20,6 +20,7 @@ export interface LegendProps {
   selectedCategoryFilter?: CategoryId | null;
   onCategoryToggle?: (categoryId: CategoryId) => void;
   skillCounts?: Record<CategoryId, number>;
+  defaultCollapsed?: boolean;
 }
 
 // Position styles mapping
@@ -38,8 +39,9 @@ export function Legend({
   selectedCategoryFilter,
   onCategoryToggle,
   skillCounts,
+  defaultCollapsed = false,
 }: LegendProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const buttonRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const liveRegionRef = useRef<HTMLDivElement>(null);

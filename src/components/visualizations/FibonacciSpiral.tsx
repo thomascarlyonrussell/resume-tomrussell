@@ -128,12 +128,13 @@ function SpiralContent({
     [computedSkills, selectedCategoryFilter]
   );
 
-  // Calculate layout
-  const { positions, sortedSkills, center } = useFibonacciLayout({
+  // Calculate layout — reduce padding on mobile to preserve node size
+  const layoutPadding = validWidth < 480 ? 20 : 60;
+  const { positions, sortedSkills, center, effectiveSizeMultiplier } = useFibonacciLayout({
     skills: filteredSkills,
     width: validWidth,
     height: validHeight,
-    padding: 60,
+    padding: layoutPadding,
     sizeMultiplier: SIZE_MULTIPLIER,
   });
 
@@ -159,13 +160,13 @@ function SpiralContent({
       if (hovering) {
         const pos = positions.get(skill.id);
         if (pos) {
-          tooltip.showTooltip(skill, pos.x, pos.y, (skill.fibonacciSize * SIZE_MULTIPLIER) / 2);
+          tooltip.showTooltip(skill, pos.x, pos.y, (skill.fibonacciSize * effectiveSizeMultiplier) / 2);
         }
       } else {
         tooltip.hideTooltip();
       }
     },
-    [positions, tooltip]
+    [positions, tooltip, effectiveSizeMultiplier]
   );
 
   const handleSkillFocus = useCallback(
@@ -176,14 +177,14 @@ function SpiralContent({
 
         const pos = positions.get(skill.id);
         if (pos) {
-          tooltip.showTooltip(skill, pos.x, pos.y, (skill.fibonacciSize * SIZE_MULTIPLIER) / 2);
+          tooltip.showTooltip(skill, pos.x, pos.y, (skill.fibonacciSize * effectiveSizeMultiplier) / 2);
         }
       } else {
         setFocusedIndex(-1);
         tooltip.hideTooltip();
       }
     },
-    [sortedSkills, positions, tooltip]
+    [sortedSkills, positions, tooltip, effectiveSizeMultiplier]
   );
 
   const handleSkillClick = useCallback(
@@ -362,7 +363,7 @@ function SpiralContent({
                 key={`focus-${skill.id}`}
                 x={pos.x}
                 y={pos.y}
-                size={skill.fibonacciSize * SIZE_MULTIPLIER}
+                size={skill.fibonacciSize * effectiveSizeMultiplier}
                 isVisible={focusedId === skill.id}
               />
             );
@@ -387,7 +388,7 @@ function SpiralContent({
                   skill={skill}
                   x={pos.x}
                   y={pos.y}
-                  size={skill.fibonacciSize * SIZE_MULTIPLIER}
+                  size={skill.fibonacciSize * effectiveSizeMultiplier}
                   isHovered={hoveredId === skill.id}
                   animationDelay={0}
                   reducedMotion={reducedMotion}
@@ -406,7 +407,7 @@ function SpiralContent({
               const pos = positions.get(skill.id);
               if (!pos) return null;
 
-              const radius = (skill.fibonacciSize * SIZE_MULTIPLIER) / 2;
+              const radius = (skill.fibonacciSize * effectiveSizeMultiplier) / 2;
 
               return (
                 <SkillLabel
@@ -438,11 +439,13 @@ function SpiralContent({
       {/* Legend */}
       {showLegend && (
         <Legend
+          key={validWidth < 480 ? 'mobile' : 'desktop'}
           position="bottom-left"
           reducedMotion={reducedMotion}
           selectedCategoryFilter={selectedCategoryFilter}
           onCategoryToggle={onCategoryToggle}
           skillCounts={skillCounts}
+          defaultCollapsed={validWidth < 480}
         />
       )}
     </div>

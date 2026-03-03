@@ -38,6 +38,8 @@ export interface FibonacciLayoutResult {
   sortedSkills: ComputedSkill[];
   center: { x: number; y: number };
   bounds: { minX: number; maxX: number; minY: number; maxY: number };
+  /** sizeMultiplier × viewport scale — use this for all rendered circle sizes */
+  effectiveSizeMultiplier: number;
 }
 
 // Golden ratio constants
@@ -122,6 +124,7 @@ export function useFibonacciLayout(options: FibonacciLayoutOptions): FibonacciLa
         sortedSkills: [],
         center: { x: width / 2, y: height / 2 },
         bounds: { minX: 0, maxX: width, minY: 0, maxY: height },
+        effectiveSizeMultiplier: sizeMultiplier,
       };
     }
 
@@ -218,6 +221,7 @@ export function useFibonacciLayout(options: FibonacciLayoutOptions): FibonacciLa
       sortedSkills,
       center: { x: width / 2, y: height / 2 },
       bounds: calculateBounds(positions, sortedSkills, sizeMultiplier * scale),
+      effectiveSizeMultiplier: sizeMultiplier * scale,
     };
   }, [skills, width, height, padding, sizeMultiplier]);
 }
