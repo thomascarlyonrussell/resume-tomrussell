@@ -29,7 +29,7 @@ export interface FibonacciSpiralProps {
 }
 
 // Size multiplier for converting Fibonacci values to pixels
-const SIZE_MULTIPLIER = 60;
+const SIZE_MULTIPLIER = 20;
 
 interface SpiralContentProps extends FibonacciSpiralProps {
   width: number;

@@ -2,12 +2,20 @@
  * useFibonacciLayout Hook
  *
  * Calculates positions for skills along a golden spiral pattern.
- * Skills are sorted by size (largest at center) and positioned to avoid overlap.
+ * Uses d3-force for mathematically correct collision detection:
+ * skills start at their ideal spiral positions then a force simulation
+ * resolves any overlaps while preserving the radial structure.
  */
 
 'use client';
 
 import { useMemo } from 'react';
+import {
+  forceSimulation,
+  forceCollide,
+  forceRadial,
+  type SimulationNodeDatum,
+} from 'd3-force';
 import type { ComputedSkill } from '@/data/types';
 
 export interface SpiralPosition {
@@ -32,14 +40,25 @@ export interface FibonacciLayoutResult {
   bounds: { minX: number; maxX: number; minY: number; maxY: number };
 }
 
-// Golden ratio constant
+// Golden ratio constants
 const PHI = (1 + Math.sqrt(5)) / 2;
-// Spiral growth factor based on golden ratio
 const SPIRAL_B = Math.log(PHI) / (Math.PI / 2);
-// Minimum angle between skills (radians) - increased for better spacing
-const MIN_ANGLE = Math.PI / 6;
-// Padding between adjacent skills - increased for visual breathing room
-const SKILL_PADDING = 16;
+// Gap between circle edges after collision resolution
+const SKILL_PADDING = 8;
+// d3-force simulation ticks — enough for convergence without blocking the thread
+const SIMULATION_TICKS = 300;
+// Strength of the radial force keeping nodes near their target spiral radius
+const RADIAL_STRENGTH = 0.4;
+
+interface SpiralNode extends SimulationNodeDatum {
+  id: string;
+  /** Target radius from origin on the spiral */
+  targetRadius: number;
+  /** Pixel radius of the circle */
+  circleRadius: number;
+  /** Angle on the spiral (preserved for the return value) */
+  spiralAngle: number;
+}
 
 function roundCoordinate(value: number, precision = 3): number {
   if (!Number.isFinite(value)) return 0;
@@ -47,98 +66,47 @@ function roundCoordinate(value: number, precision = 3): number {
   return Math.round(value * factor) / factor;
 }
 
-/**
- * Calculate position on a logarithmic spiral
- */
-function calculateSpiralPoint(
+/** Place a node at angle+radius on a logarithmic spiral centered at (0,0). */
+function spiralPoint(
   angle: number,
-  initialRadius: number,
-  centerX: number,
-  centerY: number
+  initialRadius: number
 ): { x: number; y: number; radius: number } {
   const radius = initialRadius * Math.exp(SPIRAL_B * angle);
-  return {
-    x: centerX + radius * Math.cos(angle),
-    y: centerY + radius * Math.sin(angle),
-    radius,
-  };
+  return { x: radius * Math.cos(angle), y: radius * Math.sin(angle), radius };
 }
 
 /**
- * Calculate angle increment to prevent skill overlap with lookback collision detection
+ * Calculate spiral angle increment so successive nodes have breathing room.
+ * This is a simple arc-length estimate; d3-force resolves any remaining overlap.
  */
-function calculateAngleIncrement(
-  currentIndex: number,
-  currentSize: number,
-  nextSize: number,
+function spiralAngleIncrement(
   currentRadius: number,
-  currentAngle: number,
-  positions: Map<string, SpiralPosition>,
-  sortedSkills: ComputedSkill[],
-  sizeMultiplier: number
+  currentCircleR: number,
+  nextCircleR: number
 ): number {
-  // Arc length needed = sum of radii plus padding
-  const currentPixelRadius = (currentSize * sizeMultiplier) / 2;
-  const nextPixelRadius = (nextSize * sizeMultiplier) / 2;
-  const baseMinArc = currentPixelRadius + nextPixelRadius + SKILL_PADDING;
-
-  // Base angle from adjacent skill
-  let requiredAngle = Math.max(MIN_ANGLE, baseMinArc / Math.max(currentRadius, 1));
-
-  // Look back at recent skills within collision range
-  const LOOKBACK_COUNT = Math.min(8, currentIndex); // Check last 8 skills
-  const COLLISION_BUFFER = 1.3; // 30% safety buffer
-
-  for (let i = currentIndex - 1; i >= currentIndex - LOOKBACK_COUNT; i--) {
-    const prevSkill = sortedSkills[i];
-    const prevPos = positions.get(prevSkill.id);
-    if (!prevPos) continue;
-
-    // Only check if radii are close (within 50% difference)
-    const radiusRatio =
-      Math.abs(prevPos.radius - currentRadius) / Math.max(prevPos.radius, currentRadius);
-    if (radiusRatio > 0.5) continue;
-
-    // Calculate distance needed to avoid collision
-    const prevPixelRadius = (prevSkill.fibonacciSize * sizeMultiplier) / 2;
-    const minDistance = (currentPixelRadius + prevPixelRadius) * COLLISION_BUFFER + SKILL_PADDING;
-
-    // Calculate angular distance needed at current radius
-    const neededAngle = minDistance / currentRadius;
-    const angleDiff = currentAngle + requiredAngle - prevPos.angle;
-
-    // If collision detected, increase angle
-    if (angleDiff < neededAngle) {
-      const angleAdjustment = neededAngle - angleDiff;
-      requiredAngle = Math.max(requiredAngle, requiredAngle + angleAdjustment);
-    }
-  }
-
-  return requiredAngle;
+  const minArc = currentCircleR + nextCircleR + SKILL_PADDING;
+  // At least PI/8 to keep spiral visually open
+  return Math.max(Math.PI / 8, minArc / Math.max(currentRadius, 1));
 }
 
-/**
- * Calculate bounds of all positions
- */
 function calculateBounds(
   positions: Map<string, SpiralPosition>,
   skills: ComputedSkill[],
   sizeMultiplier: number
 ): { minX: number; maxX: number; minY: number; maxY: number } {
-  let minX = Infinity;
-  let maxX = -Infinity;
-  let minY = Infinity;
-  let maxY = -Infinity;
+  let minX = Infinity,
+    maxX = -Infinity,
+    minY = Infinity,
+    maxY = -Infinity;
 
   for (const skill of skills) {
     const pos = positions.get(skill.id);
     if (!pos) continue;
-
-    const pixelRadius = (skill.fibonacciSize * sizeMultiplier) / 2;
-    minX = Math.min(minX, pos.x - pixelRadius);
-    maxX = Math.max(maxX, pos.x + pixelRadius);
-    minY = Math.min(minY, pos.y - pixelRadius);
-    maxY = Math.max(maxY, pos.y + pixelRadius);
+    const r = (skill.fibonacciSize * sizeMultiplier) / 2;
+    minX = Math.min(minX, pos.x - r);
+    maxX = Math.max(maxX, pos.x + r);
+    minY = Math.min(minY, pos.y - r);
+    maxY = Math.max(maxY, pos.y + r);
   }
 
   return { minX, maxX, minY, maxY };
@@ -157,75 +125,86 @@ export function useFibonacciLayout(options: FibonacciLayoutOptions): FibonacciLa
       };
     }
 
-    // Sort skills by fibonacciSize ascending (smallest at center, largest on outskirts)
-    // This ensures visual size matches spatial positioning in the spiral
-    const sortedSkills = [...skills].sort((a, b) => {
-      return a.fibonacciSize - b.fibonacciSize;
-    });
+    // Sort skills ascending by size (smallest at centre of spiral)
+    const sortedSkills = [...skills].sort((a, b) => a.fibonacciSize - b.fibonacciSize);
 
-    // Initial calculation with a base center
-    const centerX = 0;
-    const centerY = 0;
+    // ── Step 1: Assign initial spiral positions ──────────────────────────────
+    const baseInitialRadius = Math.max(
+      sortedSkills[0].fibonacciSize * sizeMultiplier * 0.5,
+      sizeMultiplier * 2
+    );
 
-    // Calculate positions along the spiral
-    const positions = new Map<string, SpiralPosition>();
-    let currentAngle = 0;
-
-    // Initial radius - start small so largest skill is near center
-    // Use Math.max to ensure we never have a 0 radius (which would keep everything at origin)
-    const baseInitialRadius = sortedSkills[0].fibonacciSize * sizeMultiplier * 0.5;
-    const initialRadius = Math.max(baseInitialRadius, sizeMultiplier * 2); // Minimum of 2x the size multiplier
+    const nodes: SpiralNode[] = [];
+    let angle = 0;
 
     for (let i = 0; i < sortedSkills.length; i++) {
       const skill = sortedSkills[i];
-      const point = calculateSpiralPoint(currentAngle, initialRadius, centerX, centerY);
+      const circleRadius = (skill.fibonacciSize * sizeMultiplier) / 2;
+      const pt = spiralPoint(angle, baseInitialRadius);
 
-      positions.set(skill.id, {
-        x: roundCoordinate(point.x),
-        y: roundCoordinate(point.y),
-        radius: roundCoordinate(point.radius),
-        angle: roundCoordinate(currentAngle, 6),
+      nodes.push({
+        id: skill.id,
+        x: pt.x,
+        y: pt.y,
+        targetRadius: pt.radius,
+        circleRadius,
+        spiralAngle: angle,
       });
 
-      // Calculate angle for next skill
       if (i < sortedSkills.length - 1) {
-        const nextSkill = sortedSkills[i + 1];
-        currentAngle += calculateAngleIncrement(
-          i, // current index
-          skill.fibonacciSize,
-          nextSkill.fibonacciSize,
-          point.radius,
-          currentAngle, // current angle
-          positions, // positions map
-          sortedSkills, // sorted skills array
-          sizeMultiplier
-        );
+        const nextCircleR = (sortedSkills[i + 1].fibonacciSize * sizeMultiplier) / 2;
+        angle += spiralAngleIncrement(pt.radius, circleRadius, nextCircleR);
       }
     }
 
-    // Calculate bounds of the raw positions
-    const rawBounds = calculateBounds(positions, sortedSkills, sizeMultiplier);
-    const rawWidth = rawBounds.maxX - rawBounds.minX;
-    const rawHeight = rawBounds.maxY - rawBounds.minY;
+    // ── Step 2: d3-force simulation ──────────────────────────────────────────
+    // forceCollide ensures no two circles overlap (quadtree-based, exact).
+    // forceRadial keeps each node near its spiral radius, preserving the
+    // outward growth pattern without freezing positions angularly.
+    const simulation = forceSimulation<SpiralNode>(nodes)
+      .force(
+        'collide',
+        forceCollide<SpiralNode>((d) => d.circleRadius + SKILL_PADDING / 2).iterations(3)
+      )
+      .force(
+        'radial',
+        forceRadial<SpiralNode>((d) => d.targetRadius, 0, 0).strength(RADIAL_STRENGTH)
+      )
+      .stop();
 
-    // Calculate scale to fit within viewport
-    const availableWidth = width - 2 * padding;
-    const availableHeight = height - 2 * padding;
-    const fitScale = Math.min(
-      availableWidth / Math.max(rawWidth, 1),
-      availableHeight / Math.max(rawHeight, 1)
-    );
-    const MAX_UPSCALE = 1.75;
-    const scale = Math.min(fitScale, MAX_UPSCALE);
+    // Run synchronously until convergence
+    for (let i = 0; i < SIMULATION_TICKS; i++) {
+      simulation.tick();
+    }
 
-    // Calculate offset to center the visualization
-    const scaledWidth = rawWidth * scale;
-    const scaledHeight = rawHeight * scale;
-    const offsetX = (width - scaledWidth) / 2 - rawBounds.minX * scale;
-    const offsetY = (height - scaledHeight) / 2 - rawBounds.minY * scale;
+    // ── Step 3: Build positions map from settled nodes ───────────────────────
+    const rawPositions = new Map<string, SpiralPosition>();
+    for (const node of nodes) {
+      const r = Math.sqrt((node.x ?? 0) ** 2 + (node.y ?? 0) ** 2);
+      rawPositions.set(node.id, {
+        x: roundCoordinate(node.x ?? 0),
+        y: roundCoordinate(node.y ?? 0),
+        radius: roundCoordinate(r),
+        angle: roundCoordinate(node.spiralAngle, 6),
+      });
+    }
 
-    // Apply scale and offset to all positions
-    for (const [id, pos] of positions) {
+    // ── Step 4: Scale & center to viewport ───────────────────────────────────
+    const rawBounds = calculateBounds(rawPositions, sortedSkills, sizeMultiplier);
+    const rawW = rawBounds.maxX - rawBounds.minX;
+    const rawH = rawBounds.maxY - rawBounds.minY;
+
+    const available = Math.min(width - 2 * padding, height - 2 * padding);
+    const fitScale = available / Math.max(rawW, rawH, 1);
+    const scale = Math.min(fitScale, 1.75);
+
+    const scaledW = rawW * scale;
+    const scaledH = rawH * scale;
+    const offsetX = (width - scaledW) / 2 - rawBounds.minX * scale;
+    const offsetY = (height - scaledH) / 2 - rawBounds.minY * scale;
+
+    const positions = new Map<string, SpiralPosition>();
+    for (const [id, pos] of rawPositions) {
       positions.set(id, {
         ...pos,
         x: roundCoordinate(pos.x * scale + offsetX),
@@ -234,14 +213,11 @@ export function useFibonacciLayout(options: FibonacciLayoutOptions): FibonacciLa
       });
     }
 
-    // Calculate final bounds
-    const finalBounds = calculateBounds(positions, sortedSkills, sizeMultiplier * scale);
-
     return {
       positions,
       sortedSkills,
       center: { x: width / 2, y: height / 2 },
-      bounds: finalBounds,
+      bounds: calculateBounds(positions, sortedSkills, sizeMultiplier * scale),
     };
   }, [skills, width, height, padding, sizeMultiplier]);
 }
